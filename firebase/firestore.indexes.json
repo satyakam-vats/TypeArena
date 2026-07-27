@@ -1,12 +1,4 @@
 {
-  "indexes": [
-    {
-      "collectionGroup": "recentRuns",
-      "queryScope": "COLLECTION_GROUP",
-      "fields": [
-        { "fieldPath": "completedAt", "order": "DESCENDING" }
-      ]
-    }
-  ],
+  "indexes": [],
   "fieldOverrides": []
 }
