@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isOwner(uid) { return signedIn() && request.auth.uid == uid; }
+    function isHost(roomId) {
+      return signedIn() && get(/databases/$(database)/documents/rooms/$(roomId)).data.hostId == request.auth.uid;
+    }
+
+    match /users/{uid} {
+      allow read, create, update: if isOwner(uid);
+      allow delete: if false;
+      match /recentRuns/{runId} {
+        allow read, write: if isOwner(uid);
+      }
+    }
+
+    match /testRuns/{runId} {
+      allow create: if signedIn() && request.resource.data.ownerId == request.auth.uid;
+      allow read: if signedIn() && resource.data.ownerId == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    match /rooms/{roomId} {
+      allow read: if signedIn();
+      allow create: if signedIn() && request.resource.data.hostId == request.auth.uid;
+      allow update: if isHost(roomId);
+      allow delete: if isHost(roomId);
+
+      match /players/{uid} {
+        allow read: if signedIn();
+        allow create: if isOwner(uid);
+        allow update: if isOwner(uid) || isHost(roomId);
+        allow delete: if isOwner(uid) || isHost(roomId);
+      }
+    }
+  }
+}

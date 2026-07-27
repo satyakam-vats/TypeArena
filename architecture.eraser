@@ -1,0 +1,163 @@
+// TypeArena — paste each titled diagram block into an Eraser canvas.
+// Uses Eraser diagram-as-code syntax: architecture, ERD, and sequence diagrams.
+
+// ================================================================
+// 1. CLOUD ARCHITECTURE
+// ================================================================
+direction right
+colorMode pastel
+styleMode shadow
+typeface clean
+
+Users [icon: users, color: blue]
+
+Vercel [icon: vercel, color: black] {
+  TypeArenaWeb [label: "TypeArena React app", icon: react, color: blue]
+  SoloEngine [label: "Local typing engine", icon: terminal, color: orange]
+  RaceClientA [label: "Race client A", icon: monitor, color: purple]
+  RaceClientB [label: "Race client B", icon: monitor, color: purple]
+}
+
+Firebase [icon: firebase, color: orange] {
+  FirebaseAuth [label: "Firebase Auth\nGoogle sign-in", icon: firebase, color: orange]
+  Firestore [label: "Cloud Firestore\nrooms + player progress + user data", icon: database, color: green]
+}
+
+Users > TypeArenaWeb: HTTPS
+TypeArenaWeb <> FirebaseAuth: sign in / session
+TypeArenaWeb > SoloEngine: locally calculate feedback and metrics
+TypeArenaWeb <> Firestore: user profile, tests, recent runs
+RaceClientA <> Firestore: room snapshot + own progress writes
+RaceClientB <> Firestore: room snapshot + own progress writes
+Firestore > RaceClientA, RaceClientB: realtime room/player listeners
+
+legend [position: bottom-left] {
+  [connection: <>, color: purple, label: Realtime bidirectional sync]
+  [connection: >, color: blue, label: Request or update]
+}
+
+// ================================================================
+// 2. FIRESTORE ENTITY-RELATIONSHIP DIAGRAM
+// ================================================================
+notation crows-feet
+colorMode pastel
+styleMode shadow
+typeface clean
+
+users [icon: user, color: blue] {
+  uid string pk
+  displayName string
+  photoURL string
+  email string
+  preferences map
+  stats map
+  featureData map
+  createdAt timestamp
+  updatedAt timestamp
+}
+
+recentRuns [icon: list, color: blue] {
+  id string pk
+  userId string fk
+  runId string
+  kind string
+  wpm number
+  accuracy number
+  completedAt timestamp
+  roomId string
+}
+
+testRuns [icon: file, color: green] {
+  id string pk
+  ownerId string fk
+  kind string
+  settings map
+  content map
+  metrics map
+  roomId string fk
+  race map
+  metadata map
+  createdAt timestamp
+  completedAt timestamp
+}
+
+rooms [icon: database, color: orange] {
+  id string pk
+  roomCode string
+  roomType string
+  hostId string fk
+  status string
+  settings map
+  content map
+  lifecycle map
+  metadata map
+}
+
+players [icon: users, color: purple] {
+  uid string pk
+  roomId string fk
+  role string
+  joinedAt timestamp
+  presence string
+  progress map
+  result map
+}
+
+users.uid < recentRuns.userId
+users.uid < testRuns.ownerId
+users.uid < rooms.hostId
+rooms.id < players.roomId
+rooms.id < testRuns.roomId
+
+// ================================================================
+// 3. MULTIPLAYER RACE SEQUENCE
+// ================================================================
+autoNumber on
+colorMode pastel
+styleMode shadow
+typeface clean
+
+Host [icon: user, color: blue] > HostApp [label: "Host browser", icon: monitor, color: blue]: Create room
+HostApp > Firestore [icon: database, color: green]: Create rooms/{roomId} with waiting status and seeded content
+Firestore > HostApp: Room code/link
+HostApp > Joiner [label: "Joining player", icon: user, color: purple]: Share code/link
+Joiner > JoinerApp [label: "Joiner browser", icon: monitor, color: purple]: Join room
+JoinerApp > Firestore: Create rooms/{roomId}/players/{uid}
+Firestore > HostApp, JoinerApp: Realtime lobby snapshot
+Host > HostApp: Start race
+HostApp > Firestore: Transaction: waiting to countdown; set countdownStartedAt
+Firestore > HostApp, JoinerApp: Realtime countdown timestamp
+
+par [label: synchronized client countdown] {
+  HostApp > HostApp: Derive 3-2-1 from server-clock offset
+}
+and {
+  JoinerApp > JoinerApp: Derive 3-2-1 from server-clock offset
+}
+
+HostApp > Firestore: Race start timestamp / status racing
+Firestore > HostApp, JoinerApp: Realtime race start and endsAt
+
+loop [label: while each player is racing] {
+  HostApp > Firestore: Throttled own progress + live WPM update
+  JoinerApp > Firestore: Throttled own progress + live WPM update
+  Firestore > HostApp, JoinerApp: Realtime player progress snapshots
+}
+
+par [label: player completes text] {
+  HostApp > Firestore: Transaction: lock final metrics and finishElapsedMs
+}
+and {
+  JoinerApp > Firestore: Transaction: lock final metrics and finishElapsedMs
+}
+
+alt [label: all players finished] {
+  Firestore > Firestore: Set room status finished
+}
+else [label: room timeout reached] {
+  Firestore > Firestore: Mark unfinished players timed_out; set status finished
+}
+
+Firestore > HostApp, JoinerApp: Final player results
+HostApp > Host: Render sorted leaderboard
+JoinerApp > Joiner: Render sorted leaderboard
