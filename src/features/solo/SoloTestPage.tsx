@@ -30,16 +30,24 @@ export function SoloTestPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const [settings, setSettingsState] = useState<TestSettings>(getSavedSettings);
-  const [round, setRound] = useState(0);
+  const [testSeed, setTestSeed] = useState(() => `${Date.now()}-${Math.random().toString(36).slice(2)}`);
 
   const setSettings = useCallback((newSettings: TestSettings) => {
     setSettingsState(newSettings);
+    setTestSeed(`${Date.now()}-${Math.random().toString(36).slice(2)}`);
     try {
       localStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
     } catch {}
   }, []);
-  const seed = `${settings.mode}-${settings.value}-${round}`;
-  const targetText = useMemo(() => wordSources[settings.wordSourceId].createText(wordCountFor(settings.value, settings.mode), seed), [seed, settings]);
+
+  const reset = useCallback(() => {
+    setTestSeed(`${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  }, []);
+
+  const targetText = useMemo(
+    () => wordSources[settings.wordSourceId].createText(wordCountFor(settings.value, settings.mode), testSeed),
+    [settings, testSeed]
+  );
   const onComplete = useCallback((run: CompletedRun) => {
     sessionStorage.setItem("typearena-last-run", JSON.stringify(run));
     saveRunToLocalStorage(run);
@@ -53,7 +61,6 @@ export function SoloTestPage() {
   }, [navigate, user]);
   const test = useTypingTest(targetText, settings, onComplete);
   const remaining = settings.mode === "time" ? Math.max(0, settings.value - Math.floor(test.elapsedMs / 1000)) : settings.value;
-  const reset = () => setRound((current) => current + 1);
 
   return <main className="mx-auto flex min-h-[calc(100vh-90px)] w-full max-w-6xl flex-col px-5 pb-10 pt-8 sm:px-8 sm:pt-16">
     <div className="mb-11 flex items-center justify-between">
