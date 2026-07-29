@@ -30,16 +30,25 @@ type RecentRun = {
   mode: string;
   value: number;
   roomId?: string;
-  completedAt: number;
+  completedAt: any;
   isWin?: boolean;
 };
+
+function parseTimestampMs(val: any): number {
+  if (!val) return Date.now();
+  if (typeof val === 'number') return val;
+  if (typeof val === 'object' && typeof val.toMillis === 'function') return val.toMillis();
+  if (typeof val === 'object' && typeof val.seconds === 'number') return val.seconds * 1000;
+  const parsed = Date.parse(val);
+  return isNaN(parsed) ? Date.now() : parsed;
+}
 
 function formatRelativeDate(timestampMs: number): string {
   const now = Date.now();
   const diffMs = now - timestampMs;
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffDays === 0) return 'today';
+  if (diffDays <= 0) return 'today';
   if (diffDays === 1) return 'yesterday';
   if (diffDays < 30) return `${diffDays} days ago`;
 
@@ -115,8 +124,15 @@ export function ProfilePage() {
   }, [targetUid]);
 
   const badgesStatus = useMemo(() => {
-    if (!profile?.stats) return [];
-    return evaluateBadges(profile.stats);
+    const defaultStats: UserStatsInput = {
+      personalBestWpm: 0,
+      testsCompleted: 0,
+      totalRaces: 0,
+      raceWins: 0,
+      avgAccuracy: 0,
+      avgConsistency: 0,
+    };
+    return evaluateBadges({ ...defaultStats, ...profile?.stats });
   }, [profile?.stats]);
 
   const unlockedCount = badgesStatus.filter(b => b.unlocked).length;
@@ -150,12 +166,16 @@ export function ProfilePage() {
     personalBestWpm: 0, avgWpm: 0, avgAccuracy: 0, testsCompleted: 0, totalRaces: 0, raceWins: 0, avgConsistency: 0, bestWpmByMode: {}
   };
 
-  const chartData = [...recentRuns].reverse().map(run => ({
-    label: new Date(run.completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-    value: Math.round(run.wpm)
-  }));
+  const chartData = [...recentRuns].reverse().map(run => {
+    const timeMs = parseTimestampMs(run.completedAt);
+    return {
+      label: new Date(timeMs).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
+      value: Math.round(run.wpm)
+    };
+  });
 
   const initial = (profile.displayName || profile.email || '?')[0].toUpperCase();
+  const joinedTimeMs = parseTimestampMs(profile.createdAt);
 
   return (
     <div className="profile-container">
@@ -182,7 +202,7 @@ export function ProfilePage() {
             )}
           </div>
           <p className="profile-joined">
-            joined {profile.createdAt ? formatRelativeDate(profile.createdAt) : 'recently'}
+            joined {formatRelativeDate(joinedTimeMs)}
           </p>
         </div>
       </header>
@@ -271,19 +291,22 @@ export function ProfilePage() {
         <h2 className="section-title">recent tests</h2>
         {recentRuns.length > 0 ? (
           <div className="recent-runs-list">
-            {recentRuns.map(run => (
-              <div key={run.id} className="run-row">
-                <div className="run-main-info">
-                  <span className="run-mode">{run.mode} {run.value}</span>
-                  {run.kind === 'race' && <Trophy size={14} className={run.isWin ? 'text-accent' : 'text-muted'} />}
+            {recentRuns.map(run => {
+              const runTimeMs = parseTimestampMs(run.completedAt);
+              return (
+                <div key={run.id} className="run-row">
+                  <div className="run-main-info">
+                    <span className="run-mode">{run.mode} {run.value}</span>
+                    {run.kind === 'race' && <Trophy size={14} className={run.isWin ? 'text-accent' : 'text-muted'} />}
+                  </div>
+                  <div className="run-metrics">
+                    <span className="run-wpm">{Math.round(run.wpm)} wpm</span>
+                    <span className="run-acc">{run.accuracy.toFixed(1)}%</span>
+                    <span className="run-date">{new Date(runTimeMs).toLocaleDateString()}</span>
+                  </div>
                 </div>
-                <div className="run-metrics">
-                  <span className="run-wpm">{Math.round(run.wpm)} wpm</span>
-                  <span className="run-acc">{run.accuracy.toFixed(1)}%</span>
-                  <span className="run-date">{new Date(run.completedAt).toLocaleDateString()}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <p style={{ color: 'var(--muted)' }}>No recent tests found.</p>

@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { Link } from 'react-router-dom';
 import { useRunHistory } from '../../hooks/useRunHistory';
 import { TrendChart } from '../../components/charts/TrendChart';
 import { useAuth } from '../../context/AuthContext';
@@ -23,15 +24,15 @@ export function AnalyticsDashboard() {
   }, [runs, filter]);
 
   const { wpmData, accData, consData, averages } = useMemo(() => {
-    const wpmData = filteredRuns.map((r, i) => ({
+    const wpmData = filteredRuns.map((r) => ({
       label: new Date(r.completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
       value: Math.round(r.metrics.wpm)
     }));
-    const accData = filteredRuns.map((r, i) => ({
+    const accData = filteredRuns.map((r) => ({
       label: new Date(r.completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
       value: Math.round(r.metrics.accuracy)
     }));
-    const consData = filteredRuns.map((r, i) => ({
+    const consData = filteredRuns.map((r) => ({
       label: new Date(r.completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
       value: Math.round(r.metrics.consistency)
     }));
@@ -61,13 +62,13 @@ export function AnalyticsDashboard() {
         <p style={{ color: 'var(--muted)', fontFamily: '"DM Sans", sans-serif' }}>
           complete a typing test to see your analytics
         </p>
-        <a 
-          href="/" 
+        <Link 
+          to="/" 
           className="quiet-button px-4 py-2 rounded transition-colors"
           style={{ background: 'var(--surface)', color: 'var(--ink)', fontFamily: '"IBM Plex Mono", monospace' }}
         >
           back to home
-        </a>
+        </Link>
       </div>
     );
   }

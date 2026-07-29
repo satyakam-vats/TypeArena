@@ -34,9 +34,9 @@ export function TrendChart({
     const rangeV = maxV === minV ? 1 : maxV - minV;
     
     // Add small padding to range to avoid lines directly touching SVG edges
-    const paddedMin = maxV === minV ? 0 : minV - rangeV * 0.1;
-    const paddedMax = maxV === minV ? minV * 2 || 10 : maxV + rangeV * 0.1;
-    const finalRange = paddedMax - paddedMin;
+    const paddedMin = maxV === minV ? Math.max(0, minV - 10) : Math.max(0, minV - rangeV * 0.1);
+    const paddedMax = maxV === minV ? minV + 10 || 10 : maxV + rangeV * 0.1;
+    const finalRange = paddedMax - paddedMin || 1;
 
     const coords = data.map((d, i) => {
       const x = paddingX + (i / Math.max(1, data.length - 1)) * (svgWidth - paddingX * 1.5);
@@ -46,7 +46,7 @@ export function TrendChart({
 
     const lPath = coords.map((c, i) => `${i === 0 ? 'M' : 'L'} ${c.x},${c.y}`).join(' ');
     
-    const aPath = coords.length > 0
+    const aPath = coords.length > 1
       ? `${lPath} L ${coords[coords.length - 1].x},${svgHeight - paddingY} L ${coords[0].x},${svgHeight - paddingY} Z`
       : '';
 
@@ -104,8 +104,16 @@ export function TrendChart({
           );
         })}
 
-        {/* X Axis Labels (First and Last only) */}
-        {points.length > 1 && (
+        {/* X Axis Labels */}
+        {points.length === 1 ? (
+          <text 
+            x={points[0].x} y={svgHeight - 10} 
+            textAnchor="middle" fill="var(--muted)" fontSize="12"
+            style={{ fontFamily: '"IBM Plex Mono", monospace' }}
+          >
+            {points[0].label}
+          </text>
+        ) : points.length > 1 && (
           <>
             <text 
               x={points[0].x} y={svgHeight - 10} 
