@@ -1,12 +1,12 @@
 import { Copy, Crown, Flag, RotateCcw } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { LiveMetrics } from "../../components/typing/LiveMetrics";
 import { ReactionBar } from "../../components/typing/ReactionBar";
 import { TypingViewport } from "../../components/typing/TypingViewport";
 import { useAuth } from "../../context/AuthContext";
 import { useTypingTest } from "../../hooks/useTypingTest";
-import { endRace, finishRace, startCountdown, startRace, subscribePlayers, subscribeRoom, updateProgress } from "../../lib/firestore/rooms";
+import { endRace, finishRace, leaveRoom, startCountdown, startRace, subscribePlayers, subscribeRoom, updateProgress } from "../../lib/firestore/rooms";
 import type { RacePlayer, RaceRoom } from "../../types/room";
 import type { CompletedRun } from "../../types/typing";
 
@@ -16,14 +16,35 @@ function orderedPlayers(players: RacePlayer[]) {
 
 export function RoomPage() {
   const { roomId = "" } = useParams();
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [room, setRoom] = useState<RaceRoom | null>(null);
   const [players, setPlayers] = useState<RacePlayer[]>([]);
   const [now, setNow] = useState(Date.now());
   const [copied, setCopied] = useState(false);
+  const leftRef = useRef(false);
+
   useEffect(() => subscribeRoom(roomId, setRoom), [roomId]);
   useEffect(() => subscribePlayers(roomId, setPlayers), [roomId]);
   useEffect(() => { const tick = window.setInterval(() => setNow(Date.now()), 100); return () => window.clearInterval(tick); }, []);
+
+  // Clean leave on unmount / navigation so ghost hosts don't stick in quick-match.
+  useEffect(() => {
+    leftRef.current = false;
+    return () => {
+      if (leftRef.current || !user || !roomId) return;
+      leftRef.current = true;
+      void leaveRoom(roomId, user.uid);
+    };
+  }, [roomId, user]);
+
+  const handleLeave = useCallback(async () => {
+    if (user && roomId && !leftRef.current) {
+      leftRef.current = true;
+      await leaveRoom(roomId, user.uid);
+    }
+    navigate("/race");
+  }, [navigate, roomId, user]);
   const raceStartedAt = room?.lifecycle.raceStartedAt?.toMillis();
   const countdownAt = room?.lifecycle.countdownStartedAt?.toMillis();
   const countdown = countdownAt ? Math.max(0, 3 - Math.floor((now - countdownAt) / 1000)) : 3;
@@ -43,26 +64,73 @@ export function RoomPage() {
     void startRace(roomId, user.uid, room.settings.raceTimeoutMs);
   }, [countdownAt, now, room, roomId, user]);
   const isHost = room?.hostId === user?.uid;
-  const allFinished = players.length > 0 && players.every((player) => player.result.status !== "pending");
+  const activePlayers = players.filter((p) => p.presence !== "left");
+  const allFinished = activePlayers.length > 0 && activePlayers.every((player) => player.result.status !== "pending");
   const timedOut = room?.lifecycle.endsAt ? now >= room.lifecycle.endsAt.toMillis() : false;
   useEffect(() => {
     if (room?.status === "racing" && isHost && user && (allFinished || timedOut)) void endRace(roomId, user.uid);
   }, [allFinished, isHost, room?.status, roomId, timedOut, user]);
   if (!room) return <main className="center-page"><p>Loading race room…</p></main>;
+  if (room.abandoned && room.status === "finished" && !allFinished && test.status !== "finished") {
+    return (
+      <main className="center-page">
+        <p>This lobby closed because everyone left.</p>
+        <Link className="primary-button" to="/race">find another race</Link>
+      </main>
+    );
+  }
   const showLeaderboard = room.status === "finished" || allFinished || test.status === "finished";
   const copyLink = async () => { await navigator.clipboard.writeText(`${window.location.origin}/race/${roomId}`); setCopied(true); };
 
+  const aloneInPublic = room.roomType === "public" && room.status === "waiting" && activePlayers.length <= 1;
+
   return <main className="mx-auto w-full max-w-5xl px-5 pb-12 pt-9 sm:px-8 sm:pt-14">
-    <div className="room-topline"><Link to="/race">← leave</Link><span>room <b>{room.roomCode}</b></span><button onClick={() => void copyLink()} className="copy-button"><Copy size={14} /> {copied ? "copied" : "copy invite"}</button></div>
-    {room.status === "waiting" && <section className="lobby-panel"><p className="eyebrow">waiting room</p><h1>{players.length} {players.length === 1 ? "racer" : "racers"} ready to type.</h1><p>Everyone receives the same text. The host starts a three-second countdown when the room is ready.</p><div className="player-list">{players.map((player) => <div key={player.uid} className="player-row"><span>{player.photoURL ? <img src={player.photoURL} alt="" /> : player.displayName.slice(0, 1)}</span>{player.displayName}{player.role === "host" && <Crown size={14} />}</div>)}</div>{isHost && <button onClick={() => void startCountdown(roomId, user!.uid)} className="primary-button">start countdown</button>}</section>}
+    <div className="room-topline">
+      <button type="button" onClick={() => void handleLeave()} className="quiet-button" style={{ padding: 0 }}>← leave</button>
+      <span>room <b>{room.roomCode}</b></span>
+      <button onClick={() => void copyLink()} className="copy-button"><Copy size={14} /> {copied ? "copied" : "copy invite"}</button>
+    </div>
+    {room.status === "waiting" && (
+      <section className="lobby-panel">
+        <p className="eyebrow">waiting room</p>
+        <h1>{activePlayers.length} {activePlayers.length === 1 ? "racer" : "racers"} ready to type.</h1>
+        <p>
+          {aloneInPublic
+            ? "Waiting for another typist to join this quick match. Leave anytime — the room will free up for others."
+            : "Everyone receives the same text. The host starts a three-second countdown when the room is ready."}
+        </p>
+        <div className="player-list">
+          {activePlayers.map((player) => (
+            <div key={player.uid} className="player-row">
+              <span>{player.photoURL ? <img src={player.photoURL} alt="" /> : player.displayName.slice(0, 1)}</span>
+              {player.displayName}
+              {(player.role === "host" || player.uid === room.hostId) && <Crown size={14} />}
+            </div>
+          ))}
+        </div>
+        {isHost && activePlayers.length >= 1 && (
+          <button
+            onClick={() => void startCountdown(roomId, user!.uid)}
+            className="primary-button"
+            disabled={room.roomType === "public" && activePlayers.length < 2}
+            title={room.roomType === "public" && activePlayers.length < 2 ? "Need at least 2 racers for quick match" : undefined}
+          >
+            start countdown
+          </button>
+        )}
+        {isHost && room.roomType === "public" && activePlayers.length < 2 && (
+          <p className="mt-3 text-sm text-[var(--muted)]">Quick match starts once a second racer joins.</p>
+        )}
+      </section>
+    )}
     {room.status === "countdown" && <section className="countdown-screen"><span>race begins in</span><strong>{countdown || "go"}</strong></section>}
     {room.status === "racing" && !showLeaderboard && <section className="race-room">
-      <div className="mb-7 flex justify-between text-sm text-[var(--muted)]"><span>live race · {players.length} racers</span><LiveMetrics metrics={test.metrics} /></div>
-      <div className="race-progress">{players.map((player) => <div className="racer-line" key={player.uid}><span>{player.displayName}</span><div><i style={{ width: `${player.progress.percent}%` }} /></div><b>{player.result.finalWpm ?? player.progress.liveWpm} wpm</b></div>)}</div>
+      <div className="mb-7 flex justify-between text-sm text-[var(--muted)]"><span>live race · {activePlayers.length} racers</span><LiveMetrics metrics={test.metrics} /></div>
+      <div className="race-progress">{activePlayers.map((player) => <div className="racer-line" key={player.uid}><span>{player.displayName}</span><div><i style={{ width: `${player.progress.percent}%` }} /></div><b>{player.result.finalWpm ?? player.progress.liveWpm} wpm</b></div>)}</div>
       {user && <ReactionBar roomId={roomId} uid={user.uid} displayName={user.displayName ?? "Anonymous"} active={!showLeaderboard} />}
       <TypingViewport target={room.content.text} typed={test.typedText} active />
       <textarea autoFocus value={test.typedText} onChange={(event) => test.updateTypedText(event.target.value)} onPaste={(event) => event.preventDefault()} className="typing-input" aria-label="Race typing input" spellCheck={false} autoCapitalize="off" autoCorrect="off" />
     </section>}
-    {showLeaderboard && <section className="leaderboard"><p className="eyebrow"><Flag size={13} /> race results</p><h1>Final standings</h1>{orderedPlayers(players).map((player, index) => <div className="leaderboard-row" key={player.uid}><span>{index + 1}</span><b>{player.displayName}</b><em>{player.result.finalWpm ?? player.progress.liveWpm} wpm</em><small>{player.result.finishElapsedMs ? `${(player.result.finishElapsedMs / 1000).toFixed(2)}s` : "—"}</small></div>)}<Link className="primary-button" to="/race"><RotateCcw size={16} /> race again</Link></section>}
+    {showLeaderboard && <section className="leaderboard"><p className="eyebrow"><Flag size={13} /> race results</p><h1>Final standings</h1>{orderedPlayers(activePlayers).map((player, index) => <div className="leaderboard-row" key={player.uid}><span>{index + 1}</span><b>{player.displayName}</b><em>{player.result.finalWpm ?? player.progress.liveWpm} wpm</em><small>{player.result.finishElapsedMs ? `${(player.result.finishElapsedMs / 1000).toFixed(2)}s` : "—"}</small></div>)}<Link className="primary-button" to="/race" onClick={() => { leftRef.current = true; }}><RotateCcw size={16} /> race again</Link></section>}
   </main>;
 }

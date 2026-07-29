@@ -1,5 +1,5 @@
 import type { User } from "firebase/auth";
-import { addDoc, collection, doc, getDocs, limit, onSnapshot, orderBy, query, runTransaction, serverTimestamp, setDoc, updateDoc, where, writeBatch, type Unsubscribe } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, getDocs, limit, onSnapshot, orderBy, query, runTransaction, serverTimestamp, setDoc, updateDoc, where, writeBatch, type Unsubscribe } from "firebase/firestore";
 import { db } from "../firebase";
 import { wordCountFor, wordSources } from "../typing/wordSources";
 import type { RacePlayer, RaceRoom } from "../../types/room";
@@ -66,10 +66,67 @@ export async function joinRoom(roomId: string, user: User) {
     if (!freshRoom.exists()) throw new Error("Room not found");
     const data = freshRoom.data() as Omit<RaceRoom, "id">;
     if (data.status !== "waiting") throw new Error("Race already started");
+    if ((data as { abandoned?: boolean }).abandoned) throw new Error("Room abandoned");
     const playerReference = doc(firestore, "rooms", roomId, "players", user.uid);
     const currentPlayer = await transaction.get(playerReference);
     if (!currentPlayer.exists()) transaction.set(playerReference, playerPayload(user, "player"));
   });
+}
+
+/** Remove player from room; reassign host or close empty waiting public rooms. */
+export async function leaveRoom(roomId: string, uid: string): Promise<void> {
+  const firestore = db;
+  if (!firestore || !roomId || !uid) return;
+
+  const roomRef = doc(firestore, "rooms", roomId);
+  const playerRef = doc(firestore, "rooms", roomId, "players", uid);
+
+  try {
+    await deleteDoc(playerRef);
+  } catch {
+    // Player doc may already be gone.
+  }
+
+  const playersSnap = await getDocs(collection(firestore, "rooms", roomId, "players"));
+  const remaining = playersSnap.docs
+    .map((d) => d.data() as RacePlayer)
+    .filter((p) => p.uid !== uid);
+
+  const roomSnap = await runTransaction(firestore, async (transaction) => {
+    const snapshot = await transaction.get(roomRef);
+    if (!snapshot.exists()) return null;
+    return { id: snapshot.id, ...(snapshot.data() as Omit<RaceRoom, "id">) };
+  });
+
+  if (!roomSnap) return;
+
+  // Empty waiting lobby → close so quick-match never reuses ghost rooms.
+  if (remaining.length === 0 && (roomSnap.status === "waiting" || roomSnap.status === "countdown")) {
+    await updateDoc(roomRef, {
+      status: "finished",
+      abandoned: true,
+      hostId: null,
+      "lifecycle.finishedAt": serverTimestamp(),
+    });
+    return;
+  }
+
+  // Host left while waiting → promote next racer.
+  if (roomSnap.hostId === uid && remaining.length > 0) {
+    const nextHost = remaining.find((p) => p.role === "player") ?? remaining[0];
+    const batch = writeBatch(firestore);
+    batch.update(roomRef, { hostId: nextHost.uid });
+    batch.update(doc(firestore, "rooms", roomId, "players", nextHost.uid), { role: "host" });
+    await batch.commit();
+  }
+}
+
+/** Count active (non-left) players in a room. */
+export async function countRoomPlayers(roomId: string): Promise<number> {
+  const firestore = db;
+  if (!firestore) return 0;
+  const snap = await getDocs(collection(firestore, "rooms", roomId, "players"));
+  return snap.size;
 }
 
 export function subscribeRoom(roomId: string, callback: (room: RaceRoom | null) => void): Unsubscribe {

@@ -23,26 +23,33 @@ export function getStoredRuns(): CompletedRun[] {
   }
 }
 
+/**
+ * Recency-weighted key stats (Monkeytype-style).
+ * Recent correct presses pull keys off the weak list instead of lifetime errors locking them in.
+ */
 export function getAllTimeKeyStatsFromStorage(): {
   keyErrors: Record<string, number>;
   keyTotals: Record<string, number>;
 } {
-  const runs = getStoredRuns();
+  const runs = getStoredRuns().slice(0, 40); // newest-first history
   const keyErrors: Record<string, number> = {};
   const keyTotals: Record<string, number> = {};
 
-  for (const run of runs) {
-    if (run.metrics.keyErrors) {
-      for (const [key, errCount] of Object.entries(run.metrics.keyErrors)) {
-        keyErrors[key] = (keyErrors[key] || 0) + errCount;
-      }
-    }
+  runs.forEach((run, index) => {
+    // Newer runs weigh more; oldest in the window still counts a little.
+    const weight = Math.pow(0.92, index);
+
     if (run.metrics.keyTotals) {
       for (const [key, totalCount] of Object.entries(run.metrics.keyTotals)) {
-        keyTotals[key] = (keyTotals[key] || 0) + totalCount;
+        keyTotals[key] = (keyTotals[key] || 0) + totalCount * weight;
       }
     }
-  }
+    if (run.metrics.keyErrors) {
+      for (const [key, errCount] of Object.entries(run.metrics.keyErrors)) {
+        keyErrors[key] = (keyErrors[key] || 0) + errCount * weight;
+      }
+    }
+  });
 
   return { keyErrors, keyTotals };
 }

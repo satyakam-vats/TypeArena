@@ -49,11 +49,46 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
 .race-intro { max-width:550px; }.race-intro h1,.lobby-panel h1,.leaderboard h1 { margin:9px 0 13px; font-size:clamp(2.25rem,5.5vw,4.5rem); font-weight:500; letter-spacing:-.055em; line-height:1.04; }.race-intro>p:last-child,.lobby-panel>p:not(.eyebrow) { max-width:500px; color:var(--muted); font-size:1.04rem; line-height:1.6; }.notice { margin-top:28px; border-left:2px solid var(--accent); padding:10px 13px; background:var(--accent-soft); color:var(--ink); font-size:.86rem; }.race-actions { display:grid; grid-template-columns:1fr 1fr; gap:1px; margin-top:50px; background:var(--line); border:1px solid var(--line); }.race-card { min-height:255px; padding:25px; background:var(--paper); }.race-card svg { color:var(--accent); }.race-card h2 { margin:23px 0 6px; font-family:"IBM Plex Mono",monospace; font-size:1.1rem; font-weight:500; }.race-card p { min-height:43px; color:var(--muted); font-size:.88rem; line-height:1.5; }.join-row { display:flex; gap:7px; }.join-row input { min-width:0; flex:1; border:1px solid var(--line); border-radius:6px; background:transparent; color:var(--ink); padding:9px 10px; font-family:"IBM Plex Mono",monospace; font-size:.85rem; letter-spacing:.12em; outline-color:var(--accent); }.race-footnote { display:flex; align-items:center; justify-content:center; gap:7px; margin-top:22px; color:var(--muted); font-size:.78rem; }
 .room-topline { display:flex; align-items:center; justify-content:space-between; color:var(--muted); font-family:"IBM Plex Mono",monospace; font-size:.78rem; }.room-topline b { color:var(--ink); letter-spacing:.12em; }.copy-button { display:flex; gap:5px; align-items:center; border-radius:5px; padding:5px 7px; font-size:.75rem; }.lobby-panel,.leaderboard { max-width:670px; margin:13vh auto 0; }.player-list { display:grid; gap:1px; margin:35px 0 25px; background:var(--line); border:1px solid var(--line); }.player-row { display:flex; align-items:center; gap:10px; padding:11px 13px; background:var(--paper); font-size:.88rem; }.player-row>span { display:grid; height:24px; width:24px; place-items:center; border-radius:50%; background:var(--accent-soft); color:var(--accent); font-family:"IBM Plex Mono",monospace; }.player-row svg { margin-left:auto; color:var(--accent); }.countdown-screen { display:grid; min-height:55vh; place-content:center; text-align:center; }.countdown-screen span { color:var(--muted); font-family:"IBM Plex Mono",monospace; font-size:.9rem; }.countdown-screen strong { color:var(--accent); font-family:"IBM Plex Mono",monospace; font-size:clamp(6rem,20vw,13rem); font-weight:400; line-height:1; }.race-room { position:relative; padding-top:45px; }.race-progress { display:grid; gap:10px; margin-bottom:45px; }.racer-line { display:grid; grid-template-columns:minmax(80px,130px) 1fr 70px; align-items:center; gap:10px; font-family:"IBM Plex Mono",monospace; font-size:.74rem; }.racer-line>span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }.racer-line>div { height:7px; overflow:hidden; border-radius:99px; background:var(--surface); }.racer-line i { display:block; height:100%; border-radius:inherit; background:var(--accent); transition:width .2s ease; }.racer-line b { text-align:right; color:var(--muted); font-weight:400; }.leaderboard .eyebrow { display:flex; align-items:center; gap:6px; }.leaderboard-row { display:grid; grid-template-columns:45px 1fr 80px 70px; gap:10px; align-items:center; border-bottom:1px solid var(--line); padding:14px 5px; font-family:"IBM Plex Mono",monospace; font-size:.85rem; }.leaderboard-row span { color:var(--muted); }.leaderboard-row b { font-weight:400; }.leaderboard-row em { color:var(--accent); font-style:normal; text-align:right; }.leaderboard-row small { color:var(--muted); text-align:right; }.leaderboard .primary-button { margin-top:25px; }
 
-/* --- Practice Weak Key Badges --- */
-.practice-weak-keys-bar { padding:14px 18px; background:var(--surface); border:1px solid var(--line); border-radius:10px; }
-.weak-key-chip { display:inline-flex; align-items:center; gap:7px; padding:5px 9px; background:var(--paper); border:1px solid var(--line); border-radius:6px; font-family:"IBM Plex Mono",monospace; font-size:.78rem; box-shadow:0 1px 3px rgba(0,0,0,.06); }
-.weak-key-cap { display:inline-grid; place-items:center; min-width:22px; height:22px; padding:0 5px; background:var(--surface); border:1px solid var(--line); border-radius:4px; font-weight:600; color:var(--ink); box-shadow:0 1px 0 var(--line); }
-.weak-key-rate-pill { font-size:.7rem; font-weight:500; padding:1px 6px; border-radius:4px; font-family:"IBM Plex Mono",monospace; }
+/* --- Solo / Practice layout (keyboard docked, text scrolls) --- */
+.solo-test-page { position:relative; min-height:calc(100vh - 72px); padding-bottom:1.5rem; }
+.solo-test-page.solo-with-keyboard { padding-bottom:calc(210px + env(safe-area-inset-bottom, 0px)); }
+.solo-typing-stage { flex:1 1 auto; min-height:0; }
+.solo-hints { margin-top:1.25rem; margin-bottom:.5rem; }
+.solo-keyboard-dock {
+  position:fixed; left:0; right:0; bottom:0; z-index:30;
+  display:flex; justify-content:center;
+  padding:10px 12px calc(12px + env(safe-area-inset-bottom, 0px));
+  background:linear-gradient(to top, var(--paper) 70%, color-mix(in srgb, var(--paper) 80%, transparent));
+  border-top:1px solid var(--line);
+  pointer-events:none;
+}
+.solo-keyboard-dock > * { pointer-events:auto; max-width:720px; width:100%; }
+
+/* --- Practice Weak Key Badges (compact) --- */
+.practice-weak-keys-bar {
+  display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  margin-bottom:12px; padding:6px 10px;
+  background:var(--surface); border:1px solid var(--line); border-radius:8px;
+}
+.practice-weak-keys-label {
+  display:inline-flex; align-items:center; gap:5px; flex-shrink:0;
+  color:var(--accent); font-family:"IBM Plex Mono",monospace;
+  font-size:.68rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+}
+.practice-weak-keys-list { display:flex; flex-wrap:wrap; align-items:center; gap:5px; }
+.practice-weak-keys-empty { margin:0; color:var(--muted); font-family:"IBM Plex Mono",monospace; font-size:.72rem; }
+.weak-key-chip {
+  display:inline-flex; align-items:center; gap:4px;
+  padding:2px 5px 2px 3px; background:var(--paper);
+  border:1px solid var(--line); border-radius:5px;
+  font-family:"IBM Plex Mono",monospace; font-size:.72rem;
+}
+.weak-key-cap {
+  display:inline-grid; place-items:center; min-width:18px; height:18px; padding:0 3px;
+  background:var(--surface); border:1px solid var(--line); border-radius:3px;
+  font-weight:600; font-size:.7rem; color:var(--ink);
+}
+.weak-key-rate-pill { font-size:.65rem; font-weight:500; padding:0 4px; border-radius:3px; font-family:"IBM Plex Mono",monospace; }
 .rate-red { color:#ef4444; background:rgba(239,68,68,.14); }
 .rate-orange { color:#f97316; background:rgba(249,115,22,.14); }
 .rate-yellow { color:#eab308; background:rgba(234,179,8,.14); }
@@ -75,8 +110,13 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
 .legend-label { font-size:.65rem; }
 
 /* ─── Live Touch Keyboard ────────────────────────────────────────── */
-.live-touch-keyboard-container { margin-top:32px; display:flex; flex-direction:column; align-items:center; }
-.touch-finger-hint { margin-bottom:12px; font-family:"IBM Plex Mono",monospace; font-size:.78rem; color:var(--muted); letter-spacing:.04em; }
+.live-touch-keyboard-container { margin-top:0; display:flex; flex-direction:column; align-items:center; }
+.solo-keyboard-dock .live-touch-keyboard-container { margin-top:0; }
+.solo-keyboard-dock .keyboard-key { width:38px; height:38px; font-size:.72rem; }
+.solo-keyboard-dock .key-space { width:200px; }
+.solo-keyboard-dock .keyboard-layout { gap:5px; }
+.solo-keyboard-dock .keyboard-row { gap:5px; }
+.touch-finger-hint { margin-bottom:8px; font-family:"IBM Plex Mono",monospace; font-size:.72rem; color:var(--muted); letter-spacing:.04em; }
 .finger-highlight { color:var(--accent); font-weight:600; text-transform:capitalize; }
 .key-highlight { color:var(--ink); font-weight:600; }
 .live-key { transition:all .1s cubic-bezier(.4,0,.2,1); }

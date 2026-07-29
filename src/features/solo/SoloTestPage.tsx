@@ -86,12 +86,12 @@ export function SoloTestPage({ initialWordSource }: Props) {
   );
 
   const { keyErrors, keyTotals } = useMemo(() => getAllTimeKeyStatsFromStorage(), [testSeed]);
-  const weakKeys = useMemo(() => getWeakKeys(keyErrors, keyTotals, 8), [keyErrors, keyTotals]);
+  const weakKeys = useMemo(() => getWeakKeys(keyErrors, keyTotals, 5, 6), [keyErrors, keyTotals]);
 
   const getRateColorClass = (rate: number) => {
-    if (rate < 0.05) return "rate-green";
-    if (rate < 0.15) return "rate-yellow";
-    if (rate < 0.3) return "rate-orange";
+    if (rate < 0.08) return "rate-green";
+    if (rate < 0.16) return "rate-yellow";
+    if (rate < 0.28) return "rate-orange";
     return "rate-red";
   };
 
@@ -138,37 +138,35 @@ export function SoloTestPage({ initialWordSource }: Props) {
   }, [test, nextTest]);
 
   return (
-    <main className="mx-auto flex min-h-[calc(100vh-90px)] w-full max-w-6xl flex-col px-5 pb-10 pt-8 sm:px-8 sm:pt-16 animate-fade-in">
-      {settings.wordSourceId === "practice" && (
-        <div className="practice-weak-keys-bar mb-6 animate-fade-in">
-          <div className="flex items-center gap-2 mb-2 font-mono text-xs font-semibold uppercase tracking-wider text-[var(--accent)]">
-            <Target size={14} /> Weak Keys Practice Mode
+    <main className={`solo-test-page mx-auto flex w-full max-w-6xl flex-col px-5 pt-8 sm:px-8 sm:pt-12 animate-fade-in ${showKeyboard ? "solo-with-keyboard" : ""} ${isPracticeMode ? "solo-practice" : ""}`}>
+      {isPracticeMode && (
+        <div className="practice-weak-keys-bar animate-fade-in">
+          <div className="practice-weak-keys-label">
+            <Target size={12} /> weak keys
           </div>
           {weakKeys.length > 0 ? (
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="practice-weak-keys-list">
               {weakKeys.map((wk) => (
-                <div key={wk.key} className="weak-key-chip">
-                  <span className="weak-key-cap">{wk.key === ' ' ? 'Space' : wk.key.toUpperCase()}</span>
+                <div key={wk.key} className="weak-key-chip" title={`${(wk.errorRate * 100).toFixed(1)}% recent error rate`}>
+                  <span className="weak-key-cap">{wk.key === " " || wk.key === "space" ? "␣" : wk.key.toUpperCase()}</span>
                   <span className={`weak-key-rate-pill ${getRateColorClass(wk.errorRate)}`}>
-                    {(wk.errorRate * 100).toFixed(1)}% error
+                    {(wk.errorRate * 100).toFixed(0)}%
                   </span>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-xs text-[var(--muted)] font-mono">
-              Complete a few regular tests to build your error history. Generating weighted practice text.
-            </p>
+            <p className="practice-weak-keys-empty">type a few tests — weak keys appear as error history builds</p>
           )}
         </div>
       )}
 
-      <div className="mb-11 flex items-center justify-between flex-wrap gap-4">
+      <div className="solo-toolbar mb-6 flex items-center justify-between flex-wrap gap-3">
         <TestControls settings={settings} onChange={setSettings} disabled={test.status === "running"} />
         <div className="flex items-center gap-2">
           <button
             onClick={() => setShowKeyboard(!showKeyboard)}
-            className={`icon-button ${showKeyboard ? 'text-[var(--accent)]' : ''}`}
+            className={`icon-button ${showKeyboard ? "text-[var(--accent)]" : ""}`}
             title={showKeyboard ? "Hide touch typing keyboard" : "Show touch typing keyboard"}
           >
             <Keyboard size={16} />
@@ -177,8 +175,9 @@ export function SoloTestPage({ initialWordSource }: Props) {
           <button onClick={nextTest} className="icon-button" title="Next test (Tab + Enter)"><ArrowRight size={16} /></button>
         </div>
       </div>
-      <section className="typing-stage">
-        <div className="mb-4 flex items-center justify-between text-sm text-[var(--muted)]">
+
+      <section className="typing-stage solo-typing-stage">
+        <div className="mb-3 flex items-center justify-between text-sm text-[var(--muted)]">
           <span>{test.status === "ready" ? "start typing when ready" : settings.mode === "time" ? `${remaining}s remaining` : `${settings.value} words`}</span>
           <LiveMetrics metrics={test.metrics} />
         </div>
@@ -194,15 +193,21 @@ export function SoloTestPage({ initialWordSource }: Props) {
           autoCapitalize="off"
           autoCorrect="off"
         />
-        {showKeyboard && (
+      </section>
+
+      <p className="solo-hints text-center text-sm text-[var(--muted)]">
+        <kbd>esc</kbd> restart&nbsp;&nbsp; · &nbsp;&nbsp;<kbd>tab</kbd> + <kbd>enter</kbd> next
+      </p>
+
+      {showKeyboard && (
+        <div className="solo-keyboard-dock">
           <LiveTouchKeyboard
             targetText={targetText}
             typedText={test.typedText}
             active={test.status !== "finished"}
           />
-        )}
-      </section>
-      <p className="mt-10 text-center text-sm text-[var(--muted)]"><kbd>esc</kbd> restart test&nbsp;&nbsp; · &nbsp;&nbsp;<kbd>tab</kbd> + <kbd>enter</kbd> next test</p>
+        </div>
+      )}
     </main>
   );
 }

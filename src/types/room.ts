@@ -5,8 +5,9 @@ export type RaceRoom = {
   id: string;
   roomCode: string;
   roomType: "race" | "public";
-  hostId: string;
+  hostId: string | null;
   status: RoomStatus;
+  abandoned?: boolean;
   settings: TestSettings & { maxPlayers: number; raceTimeoutMs: number };
   content: { sourceId: string; seed: string; text: string; version: number };
   lifecycle: { createdAt?: unknown; countdownStartedAt?: { toMillis: () => number } | null; raceStartedAt?: { toMillis: () => number } | null; endsAt?: { toMillis: () => number } | null };
