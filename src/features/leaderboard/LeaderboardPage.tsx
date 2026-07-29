@@ -17,21 +17,24 @@ export function LeaderboardPage() {
 
   useEffect(() => {
     setLoading(true);
-    fetchLeaderboard({
-      mode: mode === 'all' ? undefined : mode,
-      value: mode === 'time' ? timeValue : mode === 'words' ? wordsValue : undefined,
-      timeframe,
-      max: 50
-    }).then(res => {
+    fetchLeaderboard(
+      {
+        mode: mode === 'all' ? undefined : mode,
+        value: mode === 'time' ? timeValue : mode === 'words' ? wordsValue : undefined,
+        timeframe,
+        max: 50
+      },
+      user ? { uid: user.uid, displayName: user.displayName, photoURL: user.photoURL } : null
+    ).then(res => {
       setEntries(res);
       setLoading(false);
     }).catch(err => {
       console.error('Failed to fetch leaderboard:', err);
       setLoading(false);
     });
-  }, [timeframe, mode, timeValue, wordsValue]);
+  }, [timeframe, mode, timeValue, wordsValue, user]);
 
-  const userRankIndex = entries.findIndex(e => e.uid === user?.uid);
+  const userRankIndex = entries.findIndex(e => e.uid === (user?.uid || 'local-user'));
   const isUserInTop = userRankIndex !== -1;
 
   const getRankMedal = (rank: number) => {
@@ -155,7 +158,7 @@ export function LeaderboardPage() {
         ) : (
           <div className="flex flex-col gap-2">
             {entries.map((entry, idx) => {
-              const isCurrentUser = user && user.uid === entry.uid;
+              const isCurrentUser = (user && user.uid === entry.uid) || (!user && entry.uid === 'local-user');
               return (
                 <div 
                   key={entry.id} 
@@ -164,7 +167,7 @@ export function LeaderboardPage() {
                   <div className={`font-mono flex items-center justify-center w-6 h-6 ${idx < 3 ? 'text-lg' : 'text-[var(--muted)]'}`}>
                     {getRankMedal(idx + 1)}
                   </div>
-                  <Link to={entry.uid === 'local-user' ? '#' : `/profile/${entry.uid}`} className="flex items-center gap-3 overflow-hidden hover:underline">
+                  <Link to={entry.uid === 'local-user' || (user && entry.uid === user.uid) ? '/profile' : `/profile/${entry.uid}`} className="flex items-center gap-3 overflow-hidden hover:underline">
                     {entry.photoURL ? (
                       <img src={entry.photoURL} alt={entry.displayName} className="w-6 h-6 rounded-full" />
                     ) : (
