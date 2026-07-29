@@ -5,16 +5,49 @@ export type CharacterState = "correct" | "incorrect" | "pending" | "extra";
 export function countCharacters(target: string, typed: string): CharacterCounts {
   let correct = 0;
   let incorrect = 0;
-  for (let index = 0; index < Math.min(target.length, typed.length); index += 1) {
-    if (target[index] === typed[index]) correct += 1;
-    else incorrect += 1;
+  let extra = 0;
+  let missed = 0;
+
+  const targetWords = target.split(" ");
+  const typedWords = typed.split(" ");
+
+  for (let i = 0; i < typedWords.length; i++) {
+    const targetWord = targetWords[i];
+    const typedWord = typedWords[i];
+
+    if (targetWord === undefined) {
+      extra += typedWord.length + (i > 0 ? 1 : 0);
+      continue;
+    }
+
+    const minLen = Math.min(targetWord.length, typedWord.length);
+    for (let c = 0; c < minLen; c++) {
+      if (targetWord[c] === typedWord[c]) {
+        correct++;
+      } else {
+        incorrect++;
+      }
+    }
+
+    if (typedWord.length > targetWord.length) {
+      extra += typedWord.length - targetWord.length;
+    }
+
+    const isLastWord = i === typedWords.length - 1;
+
+    if (!isLastWord) {
+      if (typedWord.length < targetWord.length) {
+        missed += targetWord.length - typedWord.length;
+      }
+      correct++;
+    } else {
+      if (typedWord.length < targetWord.length && typed.length >= target.length) {
+        missed += targetWord.length - typedWord.length;
+      }
+    }
   }
-  return {
-    correct,
-    incorrect,
-    extra: Math.max(0, typed.length - target.length),
-    missed: Math.max(0, target.length - typed.length),
-  };
+
+  return { correct, incorrect, extra, missed };
 }
 
 export function getCharacterStates(target: string, typed: string): CharacterState[] {

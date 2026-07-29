@@ -61,6 +61,16 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
 .legend-gradient { width:120px; height:8px; border-radius:4px; background:linear-gradient(to right,var(--accent-soft),var(--danger)); }
 .legend-label { font-size:.65rem; }
 
+/* ─── Live Touch Keyboard ────────────────────────────────────────── */
+.live-touch-keyboard-container { margin-top:32px; display:flex; flex-direction:column; align-items:center; }
+.touch-finger-hint { margin-bottom:12px; font-family:"IBM Plex Mono",monospace; font-size:.78rem; color:var(--muted); letter-spacing:.04em; }
+.finger-highlight { color:var(--accent); font-weight:600; text-transform:capitalize; }
+.key-highlight { color:var(--ink); font-weight:600; }
+.live-key { transition:all .1s cubic-bezier(.4,0,.2,1); }
+.key-target { border-color:var(--accent) !important; background-color:var(--accent-soft) !important; color:var(--accent) !important; box-shadow:0 0 12px var(--accent-soft); font-weight:700 !important; }
+.key-pressed { transform:translateY(3px) scale(.95) !important; background-color:var(--accent) !important; color:var(--paper) !important; border-color:var(--accent) !important; box-shadow:0 0 16px var(--accent) !important; z-index:5; }
+.key-error-flash { background-color:var(--danger) !important; color:#fff !important; border-color:var(--danger) !important; box-shadow:0 0 12px var(--danger) !important; }
+
 /* ─── Results Heatmap Section ──────────────────────────────────── */
 .results-heatmap-section { margin-top:36px; padding-top:24px; border-top:1px solid var(--line); }
 .results-section-title { margin:0 0 8px; color:var(--muted); font-family:"IBM Plex Mono",monospace; font-size:.78rem; letter-spacing:.06em; text-transform:uppercase; }

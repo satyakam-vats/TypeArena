@@ -1,9 +1,10 @@
-import { RotateCcw } from "lucide-react";
+import { RotateCcw, Keyboard } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { LiveMetrics } from "../../components/typing/LiveMetrics";
 import { TestControls } from "../../components/typing/TestControls";
 import { TypingViewport } from "../../components/typing/TypingViewport";
+import { LiveTouchKeyboard } from "../../components/typing/LiveTouchKeyboard";
 import { useAuth } from "../../context/AuthContext";
 import { saveRun } from "../../lib/firestore/testRuns";
 import { recordRunStats } from "../../lib/firestore/users";
@@ -59,13 +60,23 @@ export function SoloTestPage() {
     }
     navigate("/results");
   }, [navigate, user]);
+  const [showKeyboard, setShowKeyboard] = useState(true);
   const test = useTypingTest(targetText, settings, onComplete);
   const remaining = settings.mode === "time" ? Math.max(0, settings.value - Math.floor(test.elapsedMs / 1000)) : settings.value;
 
   return <main className="mx-auto flex min-h-[calc(100vh-90px)] w-full max-w-6xl flex-col px-5 pb-10 pt-8 sm:px-8 sm:pt-16">
     <div className="mb-11 flex items-center justify-between">
       <TestControls settings={settings} onChange={setSettings} disabled={test.status === "running"} />
-      <button onClick={reset} className="icon-button" aria-label="Restart test"><RotateCcw size={16} /></button>
+      <div className="flex items-center gap-2">
+        <button
+          onClick={() => setShowKeyboard(!showKeyboard)}
+          className={`icon-button ${showKeyboard ? 'text-[var(--accent)]' : ''}`}
+          title={showKeyboard ? "Hide touch typing keyboard" : "Show touch typing keyboard"}
+        >
+          <Keyboard size={16} />
+        </button>
+        <button onClick={reset} className="icon-button" aria-label="Restart test"><RotateCcw size={16} /></button>
+      </div>
     </div>
     <section className="typing-stage">
       <div className="mb-4 flex items-center justify-between text-sm text-[var(--muted)]">
@@ -85,6 +96,13 @@ export function SoloTestPage() {
         autoCapitalize="off"
         autoCorrect="off"
       />
+      {showKeyboard && (
+        <LiveTouchKeyboard
+          targetText={targetText}
+          typedText={test.typedText}
+          active={test.status !== "finished"}
+        />
+      )}
     </section>
     <p className="mt-10 text-center text-sm text-[var(--muted)]"><kbd>esc</kbd> restart&nbsp;&nbsp; · &nbsp;&nbsp;sign in to save your runs</p>
   </main>;
