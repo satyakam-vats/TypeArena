@@ -12,13 +12,32 @@ import { wordCountFor, wordSources } from "../../lib/typing/wordSources";
 import { useTypingTest } from "../../hooks/useTypingTest";
 import type { CompletedRun, TestSettings } from "../../types/typing";
 
+const SETTINGS_KEY = "typearena_test_settings_v1";
 const defaultSettings: TestSettings = { mode: "time", value: 30, wordSourceId: "common-en" };
+
+function getSavedSettings(): TestSettings {
+  try {
+    const raw = localStorage.getItem(SETTINGS_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as TestSettings;
+      if (parsed && parsed.mode && parsed.value) return parsed;
+    }
+  } catch {}
+  return defaultSettings;
+}
 
 export function SoloTestPage() {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [settings, setSettings] = useState<TestSettings>(defaultSettings);
+  const [settings, setSettingsState] = useState<TestSettings>(getSavedSettings);
   const [round, setRound] = useState(0);
+
+  const setSettings = useCallback((newSettings: TestSettings) => {
+    setSettingsState(newSettings);
+    try {
+      localStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
+    } catch {}
+  }, []);
   const seed = `${settings.mode}-${settings.value}-${round}`;
   const targetText = useMemo(() => wordSources[settings.wordSourceId].createText(wordCountFor(settings.value, settings.mode), seed), [seed, settings]);
   const onComplete = useCallback((run: CompletedRun) => {

@@ -1,5 +1,5 @@
 import { ArrowLeft, RotateCcw } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { CompletedRun } from "../../types/typing";
 import { KeyboardHeatmap } from "../heatmap/KeyboardHeatmap";
@@ -25,6 +25,17 @@ export function ResultsPage() {
   const run = raw ? JSON.parse(raw) as CompletedRun : null;
 
   const [heatmapMode, setHeatmapMode] = useState<'run' | 'alltime'>('run');
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Tab" || e.key === "Enter" || e.key === "Escape" || e.key === " ") {
+        e.preventDefault();
+        navigate("/");
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [navigate]);
 
   if (!run) return <main className="center-page"><p>No completed test yet.</p><Link className="primary-button" to="/">Start a test</Link></main>;
 
@@ -61,6 +72,13 @@ export function ResultsPage() {
       />
     </section>
 
-    <div className="mt-10 flex justify-center"><button onClick={restart} className="primary-button"><RotateCcw size={16} /> restart same settings</button></div>
+    <div className="mt-10 flex flex-col items-center gap-3">
+      <button onClick={restart} autoFocus className="primary-button flex items-center gap-2">
+        <RotateCcw size={16} /> restart test
+      </button>
+      <p className="text-xs text-[var(--muted)] font-mono">
+        press <kbd className="px-1.5 py-0.5 bg-[var(--paper)] border border-[var(--line)] rounded">tab</kbd>, <kbd className="px-1.5 py-0.5 bg-[var(--paper)] border border-[var(--line)] rounded">enter</kbd>, <kbd className="px-1.5 py-0.5 bg-[var(--paper)] border border-[var(--line)] rounded">esc</kbd>, or <kbd className="px-1.5 py-0.5 bg-[var(--paper)] border border-[var(--line)] rounded">space</kbd> to restart
+      </p>
+    </div>
   </main>;
 }
