@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { CompletedRun } from '../../types/typing';
+import type { CompletedRun } from '../types/typing';
 
 const RUNS_KEY = 'typearena_run_history_v1';
 

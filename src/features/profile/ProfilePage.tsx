@@ -4,7 +4,7 @@ import { doc, getDoc, collection, getDocs, query, orderBy, limit } from 'firebas
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { evaluateBadges, type UserStatsInput } from '../../lib/achievements';
-import { Trophy, Edit2, LogOut } from 'lucide-react';
+import { Trophy, LogOut } from 'lucide-react';
 import { TrendChart } from '../../components/charts/TrendChart';
 
 type UserProfileData = {
@@ -70,7 +70,8 @@ export function ProfilePage() {
       return;
     }
 
-    if (!db) {
+    const database = db;
+    if (!database) {
       setLoading(false);
       setError("Profiles require Firebase configuration");
       return;
@@ -80,7 +81,7 @@ export function ProfilePage() {
       setLoading(true);
       setError(null);
       try {
-        const userDocRef = doc(db, 'users', targetUid);
+        const userDocRef = doc(database, 'users', targetUid);
         const userDoc = await getDoc(userDocRef);
 
         if (!userDoc.exists()) {
@@ -92,7 +93,7 @@ export function ProfilePage() {
         const userData = userDoc.data() as UserProfileData;
         setProfile({ ...userData, uid: targetUid });
 
-        const runsRef = collection(db, 'users', targetUid, 'recentRuns');
+        const runsRef = collection(database, 'users', targetUid, 'recentRuns');
         const q = query(runsRef, orderBy('completedAt', 'desc'), limit(20));
         const runsSnap = await getDocs(q);
 
@@ -149,7 +150,6 @@ export function ProfilePage() {
     personalBestWpm: 0, avgWpm: 0, avgAccuracy: 0, testsCompleted: 0, totalRaces: 0, raceWins: 0, avgConsistency: 0, bestWpmByMode: {}
   };
 
-  // Convert recentRuns into TrendChart-compatible data (chronological, oldest first)
   const chartData = [...recentRuns].reverse().map(run => ({
     label: new Date(run.completedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
     value: Math.round(run.wpm)

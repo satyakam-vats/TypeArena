@@ -1,4 +1,4 @@
-import { collection, getDocs, limit, orderBy, query, where } from 'firebase/firestore';
+import { collection, getDocs, limit, orderBy, query, where, type QueryConstraint } from 'firebase/firestore';
 import { db } from '../firebase';
 
 export type LeaderboardEntry = {
@@ -22,7 +22,7 @@ export async function fetchLeaderboard(opts: {
   max?: number;
 }): Promise<LeaderboardEntry[]> {
   if (!db) return [];
-  const constraints = [
+  const constraints: QueryConstraint[] = [
     orderBy('metrics.wpm', 'desc'),
     limit(opts.max ?? 50),
   ];
