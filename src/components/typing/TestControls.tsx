@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import type { TestSettings } from "../../types/typing";
-import { wordSourceList } from "../../lib/typing/wordSources";
+import { selectableWordSources } from "../../lib/typing/wordSources";
 
 type Props = { settings: TestSettings; onChange: (settings: TestSettings) => void; disabled?: boolean };
 const timeOptions = [15, 30, 60, 120] as const;
@@ -69,15 +69,21 @@ export function TestControls({ settings, onChange, disabled }: Props) {
       </button>
     )}
     <span className="control-divider" />
-    {wordSourceList.map((source) => (
-      <button
-        key={source.id}
-        disabled={disabled}
-        onClick={() => onChange({ ...settings, wordSourceId: source.id })}
-        className={(settings.wordSourceId || "common-en") === source.id ? "control-active" : "control"}
-      >
-        {source.label}
+    {settings.wordSourceId === "practice" ? (
+      <button type="button" className="control-active" disabled title="Weak-key practice mode">
+        practice
       </button>
-    ))}
+    ) : (
+      selectableWordSources.map((source) => (
+        <button
+          key={source.id}
+          disabled={disabled}
+          onClick={() => onChange({ ...settings, wordSourceId: source.id })}
+          className={(settings.wordSourceId || "common-en") === source.id ? "control-active" : "control"}
+        >
+          {source.label}
+        </button>
+      ))
+    )}
   </div>;
 }

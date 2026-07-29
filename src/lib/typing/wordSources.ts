@@ -3,6 +3,8 @@ import { quotes } from "../../data/quotes";
 import { codeSnippets } from "../../data/codeSnippets";
 import { punctuationWords } from "../../data/punctuationWords";
 import { numberWords } from "../../data/numberWords";
+import { getAllTimeKeyStatsFromStorage } from "../storage/analyticsStorage";
+import { generatePracticeText } from "./practiceTextGen";
 import type { WordSource } from "../../types/typing";
 
 function cyrb128(str: string): [number, number, number, number] {
@@ -131,15 +133,29 @@ const numbersSource: WordSource = {
   },
 };
 
+const practiceSource: WordSource = {
+  id: "practice",
+  label: "practice",
+  createText(wordCount, seed) {
+    const { keyErrors, keyTotals } = getAllTimeKeyStatsFromStorage();
+    return generatePracticeText(keyErrors, keyTotals, wordCount, seed);
+  },
+};
+
 export const wordSources: Record<WordSource["id"], WordSource> = {
   "common-en": commonEnglish,
+  practice: practiceSource,
   quotes: quotesSource,
   code: codeSource,
   punctuation: punctuationSource,
   numbers: numbersSource,
 };
 
+/** All sources including internal ones like practice. */
 export const wordSourceList: WordSource[] = Object.values(wordSources);
+
+/** Sources shown in test/race controls (practice is only via /practice). */
+export const selectableWordSources: WordSource[] = wordSourceList.filter((s) => s.id !== "practice");
 
 export function wordCountFor(settingsValue: number, mode: "time" | "words") {
   return mode === "words" ? settingsValue : Math.max(120, Math.ceil(settingsValue * 3.5));
