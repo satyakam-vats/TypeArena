@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { db } from '../../lib/firebase';
 import { fetchLeaderboard, type LeaderboardEntry } from '../../lib/firestore/leaderboards';
 
 export function LeaderboardPage() {
@@ -17,11 +16,6 @@ export function LeaderboardPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!db) {
-      setLoading(false);
-      return;
-    }
-
     setLoading(true);
     fetchLeaderboard({
       mode: mode === 'all' ? undefined : mode,
@@ -36,14 +30,6 @@ export function LeaderboardPage() {
       setLoading(false);
     });
   }, [timeframe, mode, timeValue, wordsValue]);
-
-  if (!db) {
-    return (
-      <div className="flex flex-col items-center justify-center p-12 text-center text-[var(--muted)]">
-        <p>leaderboards require sign-in and Firebase configuration.</p>
-      </div>
-    );
-  }
 
   const userRankIndex = entries.findIndex(e => e.uid === user?.uid);
   const isUserInTop = userRankIndex !== -1;
@@ -178,7 +164,7 @@ export function LeaderboardPage() {
                   <div className={`font-mono flex items-center justify-center w-6 h-6 ${idx < 3 ? 'text-lg' : 'text-[var(--muted)]'}`}>
                     {getRankMedal(idx + 1)}
                   </div>
-                  <Link to={`/profile/${entry.uid}`} className="flex items-center gap-3 overflow-hidden hover:underline">
+                  <Link to={entry.uid === 'local-user' ? '#' : `/profile/${entry.uid}`} className="flex items-center gap-3 overflow-hidden hover:underline">
                     {entry.photoURL ? (
                       <img src={entry.photoURL} alt={entry.displayName} className="w-6 h-6 rounded-full" />
                     ) : (
