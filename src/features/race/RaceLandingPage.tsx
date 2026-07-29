@@ -1,8 +1,9 @@
-import { ArrowRight, Copy, Plus, Users } from "lucide-react";
+import { ArrowRight, Copy, Plus, Users, Zap } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { createRoom, joinRoomByCode } from "../../lib/firestore/rooms";
+import { findOrCreatePublicRoom } from "../../lib/firestore/matchmaking";
 import type { TestSettings } from "../../types/typing";
 
 const defaultSettings: TestSettings = { mode: "words", value: 25, wordSourceId: "common-en" };
@@ -12,8 +13,18 @@ export function RaceLandingPage() {
   const { user, enabled, signIn } = useAuth();
   const [code, setCode] = useState("");
   const [busy, setBusy] = useState(false);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState("");
   const requireUser = async () => { if (!user) await signIn(); return user; };
+  const quickMatch = async () => {
+    setError(""); setSearching(true); setBusy(true);
+    try {
+      const currentUser = await requireUser();
+      if (!currentUser) { setError("Sign in with Google to quick match."); return; }
+      const roomId = await findOrCreatePublicRoom(currentUser, defaultSettings);
+      navigate(`/race/${roomId}`);
+    } catch { setError("Could not find or create a public match."); } finally { setSearching(false); setBusy(false); }
+  };
   const create = async () => {
     setError(""); setBusy(true);
     try {
@@ -35,7 +46,8 @@ export function RaceLandingPage() {
   return <main className="mx-auto w-full max-w-4xl px-5 pb-16 pt-12 sm:px-8 sm:pt-20">
     <div className="race-intro"><p className="eyebrow">multiplayer</p><h1>Race people, not the clock.</h1><p>Make a private room, share the code, then type the same text at the same time.</p></div>
     {!enabled && <div className="notice">Add Firebase values to <code>.env.local</code> to enable live rooms and Google sign-in.</div>}
-    <div className="race-actions">
+    <div className="race-actions" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '1rem' }}>
+      <section className="race-card featured quick-match-pulse"><Zap size={20} /><h2>Quick match</h2><p>Jump into a race instantly. We'll match you with other typists.</p><button disabled={busy || !enabled} onClick={() => void quickMatch()} className="primary-button">{searching ? <span className="match-spinner"></span> : "find match"}</button>{searching && <p className="text-sm mt-2">Searching for opponents...</p>}</section>
       <section className="race-card"><Plus size={20} /><h2>Start a room</h2><p>You host. Up to 8 players can join before the countdown.</p><button disabled={busy || !enabled} onClick={() => void create()} className="primary-button">create room <ArrowRight size={16} /></button></section>
       <section className="race-card"><Users size={20} /><h2>Join a room</h2><p>Paste a code from a friend and enter their lobby.</p><div className="join-row"><input value={code} onChange={(event) => setCode(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 6))} placeholder="ABC123" aria-label="Room code" /><button disabled={busy || code.length < 6 || !enabled} onClick={() => void join()} className="primary-button">join</button></div></section>
     </div>

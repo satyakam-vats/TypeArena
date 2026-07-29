@@ -1,4 +1,8 @@
 import { commonEnglishWords } from "../../data/commonEnglishWords";
+import { quotes } from "../../data/quotes";
+import { codeSnippets } from "../../data/codeSnippets";
+import { punctuationWords } from "../../data/punctuationWords";
+import { numberWords } from "../../data/numberWords";
 import type { WordSource } from "../../types/typing";
 
 function cyrb128(str: string): [number, number, number, number] {
@@ -55,9 +59,87 @@ const commonEnglish: WordSource = {
   },
 };
 
+const quotesSource: WordSource = {
+  id: "quotes",
+  label: "quotes",
+  createText(wordCount, seed) {
+    const random = createRandomGenerator(seed);
+    const result: string[] = [];
+    let currentWords = 0;
+    while (currentWords < wordCount) {
+      const quote = quotes[Math.floor(random() * quotes.length)];
+      const words = quote.split(" ");
+      result.push(...words);
+      currentWords += words.length;
+    }
+    return result.slice(0, wordCount).join(" ");
+  },
+};
+
+const codeSource: WordSource = {
+  id: "code",
+  label: "code",
+  createText(wordCount, seed) {
+    const random = createRandomGenerator(seed);
+    const result: string[] = [];
+    let currentWords = 0;
+    while (currentWords < wordCount) {
+      const snippet = codeSnippets[Math.floor(random() * codeSnippets.length)];
+      const words = snippet.split(" ");
+      result.push(...words);
+      currentWords += words.length;
+    }
+    return result.slice(0, wordCount).join(" ");
+  },
+};
+
+const punctuationSource: WordSource = {
+  id: "punctuation",
+  label: "punctuation",
+  createText(wordCount, seed) {
+    const random = createRandomGenerator(seed);
+    const result: string[] = [];
+    let lastWord = "";
+    for (let i = 0; i < wordCount; i++) {
+      let word = punctuationWords[Math.floor(random() * punctuationWords.length)];
+      while (word === lastWord && punctuationWords.length > 1) {
+        word = punctuationWords[Math.floor(random() * punctuationWords.length)];
+      }
+      result.push(word);
+      lastWord = word;
+    }
+    return result.join(" ");
+  },
+};
+
+const numbersSource: WordSource = {
+  id: "numbers",
+  label: "numbers",
+  createText(wordCount, seed) {
+    const random = createRandomGenerator(seed);
+    const result: string[] = [];
+    let lastWord = "";
+    for (let i = 0; i < wordCount; i++) {
+      let word = numberWords[Math.floor(random() * numberWords.length)];
+      while (word === lastWord && numberWords.length > 1) {
+        word = numberWords[Math.floor(random() * numberWords.length)];
+      }
+      result.push(word);
+      lastWord = word;
+    }
+    return result.join(" ");
+  },
+};
+
 export const wordSources: Record<WordSource["id"], WordSource> = {
   "common-en": commonEnglish,
+  quotes: quotesSource,
+  code: codeSource,
+  punctuation: punctuationSource,
+  numbers: numbersSource,
 };
+
+export const wordSourceList: WordSource[] = Object.values(wordSources);
 
 export function wordCountFor(settingsValue: number, mode: "time" | "words") {
   return mode === "words" ? settingsValue : Math.max(120, Math.ceil(settingsValue * 3.5));

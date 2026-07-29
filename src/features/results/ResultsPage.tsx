@@ -1,9 +1,10 @@
-import { ArrowLeft, RotateCcw } from "lucide-react";
+import { ArrowLeft, RotateCcw, Share2, Download } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { CompletedRun } from "../../types/typing";
 import { KeyboardHeatmap } from "../heatmap/KeyboardHeatmap";
 import { getAllTimeKeyStatsFromStorage } from "../../lib/storage/analyticsStorage";
+import { shareShareCard, downloadShareCard } from "../../lib/shareCard";
 
 function Chart({ run }: { run: CompletedRun }) {
   const samples = run.metrics.samples.length > 1 ? run.metrics.samples : [{ elapsedMs: 0, wpm: 0, rawWpm: 0 }, { elapsedMs: run.metrics.durationMs, wpm: run.metrics.wpm, rawWpm: run.metrics.rawWpm }];
@@ -25,6 +26,28 @@ export function ResultsPage() {
   const run = raw ? JSON.parse(raw) as CompletedRun : null;
 
   const [heatmapMode, setHeatmapMode] = useState<'run' | 'alltime'>('run');
+  const [isSharing, setIsSharing] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
+
+  const handleShare = async () => {
+    if (!run) return;
+    setIsSharing(true);
+    try {
+      await shareShareCard(run);
+    } finally {
+      setIsSharing(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!run) return;
+    setIsDownloading(true);
+    try {
+      await downloadShareCard(run);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
 
   useEffect(() => {
     let tabPressed = false;
@@ -86,6 +109,15 @@ export function ResultsPage() {
         onModeChange={setHeatmapMode}
       />
     </section>
+
+    <div className="share-row">
+      <button onClick={handleShare} disabled={isSharing} className="share-btn">
+        <Share2 size={14} /> {isSharing ? "generating..." : "share"}
+      </button>
+      <button onClick={handleDownload} disabled={isDownloading} className="share-btn">
+        <Download size={14} /> {isDownloading ? "generating..." : "download"}
+      </button>
+    </div>
 
     <div className="mt-10 flex flex-col items-center gap-4">
       <div className="flex flex-wrap items-center justify-center gap-4">

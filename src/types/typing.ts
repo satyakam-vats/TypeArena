@@ -1,9 +1,12 @@
 export type TestMode = "time" | "words";
 
+export type TimePreset = 15 | 30 | 60 | 120;
+export type WordPreset = 10 | 25 | 50 | 100;
+
 export type TestSettings = {
   mode: TestMode;
-  value: 15 | 30 | 60 | 120 | 10 | 25 | 50 | 100;
-  wordSourceId: "common-en";
+  value: number;
+  wordSourceId: string;
 };
 
 export type CharacterCounts = {
@@ -39,10 +42,11 @@ export type CompletedRun = {
   metrics: RunMetrics;
   completedAt: number;
   roomId?: string;
+  ghostSamples?: { elapsedMs: number; charIndex: number }[];
 };
 
 export type WordSource = {
-  id: TestSettings["wordSourceId"];
+  id: string;
   label: string;
   createText: (wordCount: number, seed: string) => string;
 };

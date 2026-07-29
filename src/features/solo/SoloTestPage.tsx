@@ -1,6 +1,6 @@
-import { RotateCcw, Keyboard } from "lucide-react";
-import { useCallback, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { RotateCcw, Keyboard, ArrowRight } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { LiveMetrics } from "../../components/typing/LiveMetrics";
 import { TestControls } from "../../components/typing/TestControls";
 import { TypingViewport } from "../../components/typing/TypingViewport";
@@ -29,8 +29,11 @@ function getSavedSettings(): TestSettings {
 
 export function SoloTestPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
   const [settings, setSettingsState] = useState<TestSettings>(getSavedSettings);
+  const [showKeyboard, setShowKeyboard] = useState(true);
+
   const [testSeed, setTestSeed] = useState(() => `${Date.now()}-${Math.random().toString(36).slice(2)}`);
 
   const setSettings = useCallback((newSettings: TestSettings) => {
@@ -41,7 +44,7 @@ export function SoloTestPage() {
     } catch {}
   }, []);
 
-  const reset = useCallback(() => {
+  const nextTest = useCallback(() => {
     setTestSeed(`${Date.now()}-${Math.random().toString(36).slice(2)}`);
   }, []);
 
@@ -49,6 +52,7 @@ export function SoloTestPage() {
     () => wordSources[settings.wordSourceId].createText(wordCountFor(settings.value, settings.mode), testSeed),
     [settings, testSeed]
   );
+
   const onComplete = useCallback((run: CompletedRun) => {
     sessionStorage.setItem("typearena-last-run", JSON.stringify(run));
     saveRunToLocalStorage(run);
@@ -60,9 +64,36 @@ export function SoloTestPage() {
     }
     navigate("/results");
   }, [navigate, user]);
-  const [showKeyboard, setShowKeyboard] = useState(true);
+
   const test = useTypingTest(targetText, settings, onComplete);
   const remaining = settings.mode === "time" ? Math.max(0, settings.value - Math.floor(test.elapsedMs / 1000)) : settings.value;
+
+  // Keyboard shortcuts: Esc = reset current test, Tab+Enter = next test
+  useEffect(() => {
+    let tabPressed = false;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        e.preventDefault();
+        test.reset();
+        return;
+      }
+      if (e.key === "Tab") {
+        tabPressed = true;
+        setTimeout(() => { tabPressed = false; }, 1000);
+        return;
+      }
+      if (e.key === "Enter" && tabPressed) {
+        e.preventDefault();
+        tabPressed = false;
+        nextTest();
+        return;
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [test, nextTest]);
 
   return <main className="mx-auto flex min-h-[calc(100vh-90px)] w-full max-w-6xl flex-col px-5 pb-10 pt-8 sm:px-8 sm:pt-16">
     <div className="mb-11 flex items-center justify-between">
@@ -75,7 +106,8 @@ export function SoloTestPage() {
         >
           <Keyboard size={16} />
         </button>
-        <button onClick={reset} className="icon-button" aria-label="Restart test"><RotateCcw size={16} /></button>
+        <button onClick={test.reset} className="icon-button" title="Restart current test (Esc)"><RotateCcw size={16} /></button>
+        <button onClick={nextTest} className="icon-button" title="Next test (Tab + Enter)"><ArrowRight size={16} /></button>
       </div>
     </div>
     <section className="typing-stage">
@@ -89,7 +121,6 @@ export function SoloTestPage() {
         value={test.typedText}
         onChange={(event) => test.updateTypedText(event.target.value)}
         onPaste={(event) => event.preventDefault()}
-        onKeyDown={(event) => { if (event.key === "Escape") reset(); }}
         aria-label="Type the displayed text"
         className="typing-input"
         spellCheck={false}
@@ -104,6 +135,6 @@ export function SoloTestPage() {
         />
       )}
     </section>
-    <p className="mt-10 text-center text-sm text-[var(--muted)]"><kbd>esc</kbd> restart&nbsp;&nbsp; · &nbsp;&nbsp;sign in to save your runs</p>
+    <p className="mt-10 text-center text-sm text-[var(--muted)]"><kbd>esc</kbd> restart test&nbsp;&nbsp; · &nbsp;&nbsp;<kbd>tab</kbd> + <kbd>enter</kbd> next test</p>
   </main>;
 }

@@ -2,6 +2,7 @@ import { Copy, Crown, Flag, RotateCcw } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { LiveMetrics } from "../../components/typing/LiveMetrics";
+import { ReactionBar } from "../../components/typing/ReactionBar";
 import { TypingViewport } from "../../components/typing/TypingViewport";
 import { useAuth } from "../../context/AuthContext";
 import { useTypingTest } from "../../hooks/useTypingTest";
@@ -58,6 +59,7 @@ export function RoomPage() {
     {room.status === "racing" && !showLeaderboard && <section className="race-room">
       <div className="mb-7 flex justify-between text-sm text-[var(--muted)]"><span>live race · {players.length} racers</span><LiveMetrics metrics={test.metrics} /></div>
       <div className="race-progress">{players.map((player) => <div className="racer-line" key={player.uid}><span>{player.displayName}</span><div><i style={{ width: `${player.progress.percent}%` }} /></div><b>{player.result.finalWpm ?? player.progress.liveWpm} wpm</b></div>)}</div>
+      {user && <ReactionBar roomId={roomId} uid={user.uid} displayName={user.displayName ?? "Anonymous"} active={!showLeaderboard} />}
       <TypingViewport target={room.content.text} typed={test.typedText} active />
       <textarea autoFocus value={test.typedText} onChange={(event) => test.updateTypedText(event.target.value)} onPaste={(event) => event.preventDefault()} className="typing-input" aria-label="Race typing input" spellCheck={false} autoCapitalize="off" autoCorrect="off" />
     </section>}

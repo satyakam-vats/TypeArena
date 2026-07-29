@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { calculateMetrics, liveMetrics } from "../lib/typing/metrics";
 import type { CompletedRun, TestSettings, WpmSample } from "../types/typing";
+import { soundManager } from "../lib/sound";
 
 type TestStatus = "ready" | "running" | "finished";
 
@@ -10,6 +11,7 @@ export function useTypingTest(targetText: string, settings: TestSettings, onComp
   const [elapsedMs, setElapsedMs] = useState(0);
   const startedAt = useRef<number | null>(null);
   const samples = useRef<WpmSample[]>([]);
+  const ghostSamples = useRef<{ elapsedMs: number; charIndex: number }[]>([]);
 
   const finish = useCallback((typed = typedText) => {
     if (status === "finished" || startedAt.current === null) return;
@@ -22,8 +24,10 @@ export function useTypingTest(targetText: string, settings: TestSettings, onComp
       typedText: typed,
       metrics: calculateMetrics(targetText, typed, durationMs, samples.current),
       completedAt: Date.now(),
+      ghostSamples: ghostSamples.current,
     };
     setStatus("finished");
+    soundManager.playComplete();
     onComplete(completed);
   }, [onComplete, settings, status, targetText, typedText]);
 
@@ -39,6 +43,10 @@ export function useTypingTest(targetText: string, settings: TestSettings, onComp
           samples.current = [...samples.current, { elapsedMs: elapsed, wpm: point.wpm, rawWpm: point.rawWpm }];
         }
       }
+      const lastGhost = ghostSamples.current.at(-1);
+      if (!lastGhost || elapsed - lastGhost.elapsedMs >= 200) {
+        ghostSamples.current = [...ghostSamples.current, { elapsedMs: elapsed, charIndex: typedText.length }];
+      }
       if (settings.mode === "time" && elapsed >= settings.value * 1000) finish();
     }, 80);
     return () => window.clearInterval(ticker);
@@ -49,6 +57,7 @@ export function useTypingTest(targetText: string, settings: TestSettings, onComp
     setStatus("ready");
     setElapsedMs(0);
     samples.current = [];
+    ghostSamples.current = [];
     startedAt.current = null;
   }, [targetText]);
 
@@ -65,20 +74,31 @@ export function useTypingTest(targetText: string, settings: TestSettings, onComp
       startedAt.current = Date.now();
       setStatus("running");
     }
+
+    if (nextValue.length > typedText.length) {
+      const lastIdx = nextValue.length - 1;
+      if (lastIdx < targetText.length && nextValue[lastIdx] === targetText[lastIdx]) {
+        soundManager.playKeystroke();
+      } else {
+        soundManager.playError();
+      }
+    }
+
     setTypedText(nextValue);
     if (settings.mode === "words" && nextValue.length >= targetText.length) {
       window.setTimeout(() => finish(nextValue), 0);
     }
-  }, [finish, settings.mode, status, targetText.length]);
+  }, [finish, settings.mode, status, targetText, typedText.length]);
 
   const reset = useCallback(() => {
     setTypedText("");
     setStatus("ready");
     setElapsedMs(0);
     samples.current = [];
+    ghostSamples.current = [];
     startedAt.current = null;
   }, []);
 
   const metrics = useMemo(() => liveMetrics(targetText, typedText, elapsedMs), [elapsedMs, targetText, typedText]);
-  return { typedText, status, elapsedMs, metrics, updateTypedText, finish, reset };
+  return { typedText, status, elapsedMs, metrics, updateTypedText, finish, reset, ghostSamples: ghostSamples.current };
 }

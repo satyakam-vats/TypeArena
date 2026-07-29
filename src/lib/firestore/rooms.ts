@@ -1,5 +1,5 @@
 import type { User } from "firebase/auth";
-import { addDoc, collection, doc, getDocs, limit, onSnapshot, query, runTransaction, serverTimestamp, setDoc, updateDoc, where, writeBatch, type Unsubscribe } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, limit, onSnapshot, orderBy, query, runTransaction, serverTimestamp, setDoc, updateDoc, where, writeBatch, type Unsubscribe } from "firebase/firestore";
 import { db } from "../firebase";
 import { wordCountFor, wordSources } from "../typing/wordSources";
 import type { RacePlayer, RaceRoom } from "../../types/room";
@@ -55,6 +55,21 @@ export async function joinRoomByCode(user: User, code: string) {
     if (!currentPlayer.exists()) transaction.set(playerReference, playerPayload(user, "player"));
   });
   return room.id;
+}
+
+export async function joinRoom(roomId: string, user: User) {
+  const firestore = db;
+  if (!firestore) throw new Error("Firebase is not configured");
+  await runTransaction(firestore, async (transaction) => {
+    const ref = doc(firestore, "rooms", roomId);
+    const freshRoom = await transaction.get(ref);
+    if (!freshRoom.exists()) throw new Error("Room not found");
+    const data = freshRoom.data() as Omit<RaceRoom, "id">;
+    if (data.status !== "waiting") throw new Error("Race already started");
+    const playerReference = doc(firestore, "rooms", roomId, "players", user.uid);
+    const currentPlayer = await transaction.get(playerReference);
+    if (!currentPlayer.exists()) transaction.set(playerReference, playerPayload(user, "player"));
+  });
 }
 
 export function subscribeRoom(roomId: string, callback: (room: RaceRoom | null) => void): Unsubscribe {
@@ -128,4 +143,30 @@ export async function endRace(roomId: string, uid: string) {
   batch.update(roomRef, { status: "finished", "lifecycle.finishedAt": serverTimestamp() });
   await batch.commit();
   return room;
+}
+
+export async function sendReaction(roomId: string, uid: string, emoji: string, displayName: string): Promise<void> {
+  const firestore = db;
+  if (!firestore) return;
+  await addDoc(collection(firestore, "rooms", roomId, "reactions"), {
+    uid,
+    emoji,
+    displayName,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export function subscribeReactions(roomId: string, callback: (reactions: { id: string; uid: string; emoji: string; displayName: string; createdAt: unknown }[]) => void): Unsubscribe {
+  if (!db) return () => undefined;
+  return onSnapshot(
+    query(collection(db, "rooms", roomId, "reactions"), orderBy("createdAt"), limit(20)),
+    (snapshot) => {
+      callback(
+        snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...(doc.data() as { uid: string; emoji: string; displayName: string; createdAt: unknown }),
+        }))
+      );
+    }
+  );
 }

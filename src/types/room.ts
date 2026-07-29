@@ -4,7 +4,7 @@ export type RoomStatus = "waiting" | "countdown" | "racing" | "finished" | "canc
 export type RaceRoom = {
   id: string;
   roomCode: string;
-  roomType: "race";
+  roomType: "race" | "public";
   hostId: string;
   status: RoomStatus;
   settings: TestSettings & { maxPlayers: number; raceTimeoutMs: number };
@@ -16,7 +16,7 @@ export type RacePlayer = {
   uid: string;
   displayName: string;
   photoURL: string | null;
-  role: "host" | "player";
+  role: "host" | "player" | "spectator";
   joinedAt?: unknown;
   presence: "joined" | "ready" | "left";
   progress: { typedChars: number; totalChars: number; percent: number; liveWpm: number; accuracy: number; updatedAt?: unknown };
