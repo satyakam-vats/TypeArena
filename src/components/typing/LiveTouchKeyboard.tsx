@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 type Props = {
   targetText: string;
@@ -31,21 +31,41 @@ export function LiveTouchKeyboard({ targetText, typedText, active }: Props) {
   const [pressedKeys, setPressedKeys] = useState<Set<string>>(new Set());
   const [lastErrorKey, setLastErrorKey] = useState<string | null>(null);
 
-  // Track physical key presses in real-time
+  // Identify next key target to type for touch typing
+  const nextRawChar = targetText[typedText.length]?.toLowerCase();
+  const nextTargetKey = nextRawChar === ' ' ? 'space' : nextRawChar;
+  const targetFinger = nextTargetKey ? FINGER_MAP[nextTargetKey] : null;
+
+  const nextTargetKeyRef = useRef(nextTargetKey);
+  nextTargetKeyRef.current = nextTargetKey;
+
+  // Track physical key presses and error flash in real-time
   useEffect(() => {
     if (!active) {
       setPressedKeys(new Set());
+      setLastErrorKey(null);
       return;
     }
 
     const handleKeyDown = (e: KeyboardEvent) => {
       let key = e.key.toLowerCase();
       if (key === ' ') key = 'space';
+
       setPressedKeys((prev) => {
         const next = new Set(prev);
         next.add(key);
         return next;
       });
+
+      // Instantaneous 80ms error flash on wrong key stroke
+      if ((key.length === 1 || key === 'space') && !e.ctrlKey && !e.altKey && !e.metaKey) {
+        if (nextTargetKeyRef.current && key !== nextTargetKeyRef.current) {
+          setLastErrorKey(key);
+          setTimeout(() => {
+            setLastErrorKey((current) => (current === key ? null : current));
+          }, 80);
+        }
+      }
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
@@ -56,6 +76,7 @@ export function LiveTouchKeyboard({ targetText, typedText, active }: Props) {
         next.delete(key);
         return next;
       });
+      setLastErrorKey((current) => (current === key ? null : current));
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -65,30 +86,6 @@ export function LiveTouchKeyboard({ targetText, typedText, active }: Props) {
       window.removeEventListener('keyup', handleKeyUp);
     };
   }, [active]);
-
-  // Flash error key when user makes a mistake
-  useEffect(() => {
-    if (typedText.length === 0) {
-      setLastErrorKey(null);
-      return;
-    }
-
-    const idx = typedText.length - 1;
-    const targetChar = targetText[idx]?.toLowerCase();
-    const typedChar = typedText[idx]?.toLowerCase();
-
-    if (targetChar && typedChar && targetChar !== typedChar) {
-      const errorKey = typedChar === ' ' ? 'space' : typedChar;
-      setLastErrorKey(errorKey);
-      const timer = setTimeout(() => setLastErrorKey(null), 120);
-      return () => clearTimeout(timer);
-    }
-  }, [typedText, targetText]);
-
-  // Identify next key target to type for touch typing
-  const nextRawChar = targetText[typedText.length]?.toLowerCase();
-  const nextTargetKey = nextRawChar === ' ' ? 'space' : nextRawChar;
-  const targetFinger = nextTargetKey ? FINGER_MAP[nextTargetKey] : null;
 
   return (
     <div className="live-touch-keyboard-container animate-fade-in">
