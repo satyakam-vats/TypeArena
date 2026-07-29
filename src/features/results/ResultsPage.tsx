@@ -27,19 +27,34 @@ export function ResultsPage() {
   const [heatmapMode, setHeatmapMode] = useState<'run' | 'alltime'>('run');
 
   useEffect(() => {
+    let tabPressed = false;
+
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Tab" || e.key === "Enter" || e.key === "Escape" || e.key === " ") {
+      if (e.key === "Escape") {
         e.preventDefault();
-        navigate("/");
+        navigate("/", { state: { repeat: true } });
+        return;
+      }
+      if (e.key === "Tab") {
+        tabPressed = true;
+        setTimeout(() => { tabPressed = false; }, 1200);
+        return;
+      }
+      if (e.key === "Enter") {
+        e.preventDefault();
+        navigate("/", { state: { repeat: false } });
+        return;
       }
     };
+
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [navigate]);
 
   if (!run) return <main className="center-page"><p>No completed test yet.</p><Link className="primary-button" to="/">Start a test</Link></main>;
 
-  const restart = () => navigate("/");
+  const repeatTest = () => navigate("/", { state: { repeat: true } });
+  const nextTest = () => navigate("/", { state: { repeat: false } });
   const metrics = run.metrics;
 
   const allTimeStats = heatmapMode === 'alltime' ? getAllTimeKeyStatsFromStorage() : null;
@@ -72,13 +87,15 @@ export function ResultsPage() {
       />
     </section>
 
-    <div className="mt-10 flex flex-col items-center gap-3">
-      <button onClick={restart} autoFocus className="primary-button flex items-center gap-2">
-        <RotateCcw size={16} /> restart test
-      </button>
-      <p className="text-xs text-[var(--muted)] font-mono">
-        press <kbd className="px-1.5 py-0.5 bg-[var(--paper)] border border-[var(--line)] rounded">tab</kbd>, <kbd className="px-1.5 py-0.5 bg-[var(--paper)] border border-[var(--line)] rounded">enter</kbd>, <kbd className="px-1.5 py-0.5 bg-[var(--paper)] border border-[var(--line)] rounded">esc</kbd>, or <kbd className="px-1.5 py-0.5 bg-[var(--paper)] border border-[var(--line)] rounded">space</kbd> to restart
-      </p>
+    <div className="mt-10 flex flex-col items-center gap-4">
+      <div className="flex flex-wrap items-center justify-center gap-4">
+        <button onClick={repeatTest} className="control hover:text-[var(--ink)] flex items-center gap-2 px-4 py-2 border border-[var(--line)] rounded">
+          <RotateCcw size={16} /> repeat test <kbd className="text-xs text-[var(--muted)]">esc</kbd>
+        </button>
+        <button onClick={nextTest} autoFocus className="primary-button flex items-center gap-2 px-5 py-2">
+          next test <kbd className="text-xs opacity-80">tab + enter</kbd>
+        </button>
+      </div>
     </div>
   </main>;
 }

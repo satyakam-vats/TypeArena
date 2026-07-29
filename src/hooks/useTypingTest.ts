@@ -71,6 +71,14 @@ export function useTypingTest(targetText: string, settings: TestSettings, onComp
     }
   }, [finish, settings.mode, status, targetText.length]);
 
+  const reset = useCallback(() => {
+    setTypedText("");
+    setStatus("ready");
+    setElapsedMs(0);
+    samples.current = [];
+    startedAt.current = null;
+  }, []);
+
   const metrics = useMemo(() => liveMetrics(targetText, typedText, elapsedMs), [elapsedMs, targetText, typedText]);
-  return { typedText, status, elapsedMs, metrics, updateTypedText, finish };
+  return { typedText, status, elapsedMs, metrics, updateTypedText, finish, reset };
 }

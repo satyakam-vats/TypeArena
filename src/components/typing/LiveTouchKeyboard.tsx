@@ -80,7 +80,7 @@ export function LiveTouchKeyboard({ targetText, typedText, active }: Props) {
     if (targetChar && typedChar && targetChar !== typedChar) {
       const errorKey = typedChar === ' ' ? 'space' : typedChar;
       setLastErrorKey(errorKey);
-      const timer = setTimeout(() => setLastErrorKey(null), 400);
+      const timer = setTimeout(() => setLastErrorKey(null), 120);
       return () => clearTimeout(timer);
     }
   }, [typedText, targetText]);
