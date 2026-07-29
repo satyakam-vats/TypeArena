@@ -23,8 +23,11 @@ export type RunMetrics = CharacterCounts & {
   wpm: number;
   rawWpm: number;
   accuracy: number;
+  consistency: number;
   durationMs: number;
   samples: WpmSample[];
+  keyErrors: Record<string, number>;
+  keyTotals: Record<string, number>;
 };
 
 export type CompletedRun = {

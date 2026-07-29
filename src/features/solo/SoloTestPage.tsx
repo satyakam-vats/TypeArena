@@ -6,7 +6,8 @@ import { TestControls } from "../../components/typing/TestControls";
 import { TypingViewport } from "../../components/typing/TypingViewport";
 import { useAuth } from "../../context/AuthContext";
 import { saveRun } from "../../lib/firestore/testRuns";
-import { recordPersonalBest } from "../../lib/firestore/users";
+import { recordRunStats } from "../../lib/firestore/users";
+import { saveRunToLocalStorage } from "../../lib/storage/analyticsStorage";
 import { wordCountFor, wordSources } from "../../lib/typing/wordSources";
 import { useTypingTest } from "../../hooks/useTypingTest";
 import type { CompletedRun, TestSettings } from "../../types/typing";
@@ -22,8 +23,12 @@ export function SoloTestPage() {
   const targetText = useMemo(() => wordSources[settings.wordSourceId].createText(wordCountFor(settings.value, settings.mode), seed), [seed, settings]);
   const onComplete = useCallback((run: CompletedRun) => {
     sessionStorage.setItem("typearena-last-run", JSON.stringify(run));
+    saveRunToLocalStorage(run);
     if (user) {
-      void Promise.all([saveRun(user.uid, run), recordPersonalBest(user.uid, run.metrics.wpm)]);
+      void Promise.all([
+        saveRun(user.uid, run, user.displayName ?? undefined, user.photoURL),
+        recordRunStats(user.uid, run),
+      ]);
     }
     navigate("/results");
   }, [navigate, user]);

@@ -1,4 +1,4 @@
-import { Moon, Sun, Trophy } from "lucide-react";
+import { BarChart3, Moon, Sun, Trophy, User } from "lucide-react";
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
@@ -12,17 +12,19 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
       typearena
     </Link>
     <nav className="hidden items-center gap-6 text-sm text-[var(--muted)] sm:flex">
-      <NavLink to="/" className={({ isActive }) => isActive ? "text-[var(--ink)]" : "hover:text-[var(--ink)]"}>type</NavLink>
+      <NavLink to="/" end className={({ isActive }) => isActive ? "text-[var(--ink)]" : "hover:text-[var(--ink)]"}>type</NavLink>
       <NavLink to="/race" className={({ isActive }) => isActive ? "text-[var(--ink)]" : "hover:text-[var(--ink)]"}>race</NavLink>
+      <NavLink to="/leaderboard" className={({ isActive }) => isActive ? "text-[var(--ink)]" : "hover:text-[var(--ink)]"}>leaderboard</NavLink>
+      <NavLink to="/analytics" className={({ isActive }) => isActive ? "text-[var(--ink)]" : "hover:text-[var(--ink)]"}>analytics</NavLink>
     </nav>
     <div className="flex items-center gap-2">
       <button aria-label="Toggle theme" onClick={onToggleTheme} className="icon-button">
         {theme === "light" ? <Moon size={17} /> : <Sun size={17} />}
       </button>
-      {enabled && (user ? <button onClick={() => void signOutUser()} className="user-chip" title="Sign out">
+      {enabled && (user ? <Link to="/profile" className="user-chip" title="View profile">
         {user.photoURL ? <img src={user.photoURL} alt="" /> : <span>{user.displayName?.slice(0, 1) ?? "U"}</span>}
         <span className="hidden sm:inline">{user.displayName?.split(" ")[0] ?? "profile"}</span>
-      </button> : <button onClick={() => void signIn()} className="quiet-button">sign in</button>)}
+      </Link> : <button onClick={() => void signIn()} className="quiet-button">sign in</button>)}
     </div>
   </header>;
 }
