@@ -29,16 +29,16 @@ export class SoundManager {
       const ctx = this.getContext();
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      
+
       osc.type = type;
       osc.frequency.setValueAtTime(frequency, ctx.currentTime);
-      
+
       gain.gain.setValueAtTime(this.volume * volMultiplier, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + duration);
-      
+
       osc.connect(gain);
       gain.connect(ctx.destination);
-      
+
       osc.start();
       osc.stop(ctx.currentTime + duration);
     } catch (e) {
@@ -46,8 +46,36 @@ export class SoundManager {
     }
   }
 
-  playKeystroke() {
-    this.playTone(800, 'sine', 0.02, 0.2);
+  playKeystroke(comboMultiplier: number = 1) {
+    // Escalate frequency based on combo multiplier (800Hz -> 1200Hz)
+    const pitchOffset = Math.min((comboMultiplier - 1) * 100, 400);
+    const baseFreq = 800 + pitchOffset;
+    this.playTone(baseFreq, 'sine', 0.025, 0.25);
+  }
+
+  playFeverSound() {
+    if (!this.isEnabled || this.volume <= 0) return;
+    try {
+      const ctx = this.getContext();
+      const playTone = (freq: number, startOffset: number) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + startOffset);
+        gain.gain.setValueAtTime(this.volume * 0.35, ctx.currentTime + startOffset);
+        gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + startOffset + 0.2);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + startOffset);
+        osc.stop(ctx.currentTime + startOffset + 0.2);
+      };
+      playTone(523.25, 0);   // C5
+      playTone(659.25, 0.08); // E5
+      playTone(783.99, 0.16); // G5
+      playTone(1046.50, 0.24);// C6
+    } catch (e) {
+      console.error("Audio error", e);
+    }
   }
 
   playError() {
@@ -62,7 +90,7 @@ export class SoundManager {
     if (!this.isEnabled || this.volume <= 0) return;
     try {
       const ctx = this.getContext();
-      
+
       const playNote = (freq: number, startTime: number) => {
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();

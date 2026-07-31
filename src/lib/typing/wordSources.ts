@@ -3,8 +3,9 @@ import { quotes } from "../../data/quotes";
 import { codeSnippets } from "../../data/codeSnippets";
 import { punctuationWords } from "../../data/punctuationWords";
 import { numberWords } from "../../data/numberWords";
+import { GITHUB_CODE_PRESETS } from "../github/githubApi";
 import { getAllTimeKeyStatsFromStorage } from "../storage/analyticsStorage";
-import { generatePracticeText } from "./practiceTextGen";
+import { generatePracticeText, generateNgramPracticeText } from "./practiceTextGen";
 import type { QuoteLength, TestMode, TestSettings, WordSource } from "../../types/typing";
 
 function cyrb128(str: string): [number, number, number, number] {
@@ -13,7 +14,7 @@ function cyrb128(str: string): [number, number, number, number] {
     ch = str.charCodeAt(i);
     h1 = h2 ^ Math.imul(h1 ^ ch, 597399067);
     h2 = h3 ^ Math.imul(h2 ^ ch, 2869860233);
-    h3 = h4 ^ Math.imul(h3 ^ ch, 951274213);
+    h3 = h4 ^ Math.imul(h4 ^ ch, 951274213);
     h4 = h1 ^ Math.imul(h4 ^ ch, 2716044179);
   }
   h1 = Math.imul(h3 ^ (h1 >>> 18), 597399067);
@@ -117,6 +118,24 @@ const codeSource: WordSource = {
   },
 };
 
+const githubSource: WordSource = {
+  id: "github",
+  label: "github",
+  createText(_wordCount, _seed, settings) {
+    const preset = GITHUB_CODE_PRESETS.find((p) => p.id === settings?.githubPresetId) ?? GITHUB_CODE_PRESETS[0]!;
+    return preset.fallbackCode.trim().replace(/\s+/g, " ");
+  },
+};
+
+const ngramSource: WordSource = {
+  id: "ngram",
+  label: "n-grams",
+  createText(wordCount, seed, settings) {
+    const ngrams = (settings?.selectedNgrams || ["th", "ch", "sh", "ing", "str", "qu"]) as any[];
+    return generateNgramPracticeText(ngrams, wordCount, seed);
+  },
+};
+
 const punctuationSource: WordSource = {
   id: "punctuation",
   label: "punctuation",
@@ -147,13 +166,14 @@ export const wordSources: Record<string, WordSource> = {
   practice: practiceSource,
   quotes: quotesSource,
   code: codeSource,
+  github: githubSource,
+  ngram: ngramSource,
   punctuation: punctuationSource,
   numbers: numbersSource,
 };
 
 export const wordSourceList: WordSource[] = Object.values(wordSources);
 
-/** Sources shown in test controls (practice is only via /practice). */
 export const selectableWordSources: WordSource[] = wordSourceList.filter(
   (s) => s.id !== "practice" && s.id !== "quotes" && s.id !== "punctuation" && s.id !== "numbers",
 );
@@ -162,7 +182,6 @@ export function wordCountFor(settingsValue: number, mode: TestMode) {
   if (mode === "words") return settingsValue;
   if (mode === "zen") return 200;
   if (mode === "quote" || mode === "custom") return 50;
-  // Time mode: generous buffer; streaming appends more as needed.
   return Math.max(200, Math.ceil(settingsValue * 8));
 }
 
@@ -182,7 +201,6 @@ export function createQuoteText(length: QuoteLength, seed: string): string {
   return pool[Math.floor(random() * pool.length)]!.q;
 }
 
-/** Build target text for the current settings (initial generation). */
 export function createTestText(settings: TestSettings, seed: string): string {
   if (settings.mode === "custom") {
     const custom = settings.customText.trim().replace(/\s+/g, " ");
@@ -191,14 +209,17 @@ export function createTestText(settings: TestSettings, seed: string): string {
   if (settings.mode === "quote" || settings.wordSourceId === "quotes") {
     return createQuoteText(settings.quoteLength || "medium", seed);
   }
+  if (settings.wordSourceId === "github") {
+    const preset = GITHUB_CODE_PRESETS.find((p) => p.id === settings.githubPresetId) ?? GITHUB_CODE_PRESETS[0]!;
+    return preset.fallbackCode.trim().replace(/\s+/g, " ");
+  }
 
   const count = wordCountFor(settings.value, settings.mode);
   const sourceId = settings.wordSourceId === "practice" ? "practice" : (settings.wordSourceId || "common-en");
   const source = wordSources[sourceId] || commonEnglish;
 
-  // Dedicated punct/numbers lists ignore toggles (already specialized).
-  if (sourceId === "punctuation" || sourceId === "numbers" || sourceId === "code" || sourceId === "practice") {
-    return source.createText(count, seed);
+  if (sourceId === "punctuation" || sourceId === "numbers" || sourceId === "code" || sourceId === "practice" || sourceId === "ngram") {
+    return source.createText(count, seed, settings);
   }
 
   return pickWords(
@@ -210,12 +231,11 @@ export function createTestText(settings: TestSettings, seed: string): string {
   );
 }
 
-/** Append more words for time/zen streaming without resetting the run. */
 export function appendTestWords(settings: TestSettings, seed: string, wordCount = 40): string {
-  if (settings.mode === "quote" || settings.mode === "custom" || settings.mode === "words") return "";
+  if (settings.mode === "quote" || settings.mode === "custom" || settings.mode === "words" || settings.wordSourceId === "github") return "";
   const sourceId = settings.wordSourceId === "practice" ? "practice" : (settings.wordSourceId || "common-en");
-  if (sourceId === "code" || sourceId === "practice") {
-    return " " + (wordSources[sourceId] || commonEnglish).createText(wordCount, seed);
+  if (sourceId === "code" || sourceId === "practice" || sourceId === "ngram") {
+    return " " + (wordSources[sourceId] || commonEnglish).createText(wordCount, seed, settings);
   }
   if (sourceId === "punctuation") {
     return " " + pickWords(punctuationWords, wordCount, createRandomGenerator(seed));
@@ -223,11 +243,5 @@ export function appendTestWords(settings: TestSettings, seed: string, wordCount 
   if (sourceId === "numbers") {
     return " " + pickWords(numberWords, wordCount, createRandomGenerator(seed));
   }
-  return " " + pickWords(
-    commonEnglishWords,
-    wordCount,
-    createRandomGenerator(seed),
-    settings.punctuation,
-    settings.numbers,
-  );
+  return " " + pickWords(commonEnglishWords, wordCount, createRandomGenerator(seed), settings.punctuation, settings.numbers);
 }

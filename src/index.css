@@ -276,3 +276,11 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
 .onboarding-actions { display:flex; align-items:center; justify-content:space-between; }
 .onboarding-skip { border:0; background:transparent; color:var(--muted); font-size:.82rem; cursor:pointer; padding:4px 8px; }
 .onboarding-skip:hover { color:var(--ink); }
+
+/* --- Combo Badge & FEVER Glow ----------------------------------- */
+.combo-badge { position:absolute; top:12px; right:16px; z-index:10; display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:999px; background:var(--accent-soft); border:1px solid var(--accent); color:var(--accent); font-family:"IBM Plex Mono",monospace; font-size:.78rem; font-weight:600; animation:pulse-scale .2s ease-out; }
+.combo-badge.fever-badge { background:linear-gradient(135deg, rgba(239,68,68,0.2), rgba(245,158,11,0.2)); border-color:#f59e0b; color:#f59e0b; box-shadow:0 0 12px rgba(245,158,11,0.3); animation:fever-pulse .8s infinite alternate; }
+.typing-viewport-container.fever-glow { border-color:#f59e0b !important; box-shadow:0 0 20px rgba(245,158,11,0.25); }
+@keyframes fever-pulse { from { transform:scale(1); } to { transform:scale(1.06); } }
+@keyframes pulse-scale { from { transform:scale(0.85); opacity:0; } to { transform:scale(1); opacity:1; } }
+

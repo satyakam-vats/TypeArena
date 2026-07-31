@@ -13,6 +13,8 @@ type TypingViewportProps = {
   capsLock?: boolean;
   onRequestFocus?: () => void;
   replayIndex?: number | null;
+  comboCount?: number;
+  comboMultiplier?: number;
 };
 
 export function TypingViewport({
@@ -26,6 +28,8 @@ export function TypingViewport({
   capsLock = false,
   onRequestFocus,
   replayIndex = null,
+  comboCount = 0,
+  comboMultiplier = 1,
 }: TypingViewportProps) {
   const displayTyped = replayIndex != null ? target.slice(0, replayIndex) : typed;
   const states = getCharacterStates(target, displayTyped);
@@ -42,7 +46,6 @@ export function TypingViewport({
     }
     const el = activeCharRef.current;
     if (!el) {
-      // Caret at start
       const first = containerRef.current?.querySelector(".char") as HTMLElement | null;
       if (first) {
         setCaretPos({ left: first.offsetLeft, top: first.offsetTop, height: first.offsetHeight || 28 });
@@ -62,7 +65,6 @@ export function TypingViewport({
   }, [displayTyped, target, replayIndex]);
 
   useEffect(() => {
-    // Recalculate caret after translate settles
     const id = requestAnimationFrame(() => {
       const el = activeCharRef.current;
       if (el) {
@@ -76,10 +78,18 @@ export function TypingViewport({
   const showOverlay = !focused && active && replayIndex == null;
 
   return (
-    <div className={`typing-viewport-container ${blind ? "viewport-blind" : ""}`} ref={containerRef}>
+    <div className={`typing-viewport-container ${blind ? "viewport-blind" : ""} ${comboMultiplier >= 5 ? "fever-glow" : ""}`} ref={containerRef}>
       {capsLock && active && (
         <div className="caps-lock-warn" role="status">Caps Lock</div>
       )}
+
+      {comboCount >= 5 && active && replayIndex == null && (
+        <div className={`combo-badge ${comboMultiplier >= 5 ? "fever-badge" : ""}`}>
+          <span className="combo-count">{comboCount}x</span>
+          <span className="combo-multiplier">{comboMultiplier >= 5 ? "FEVER 🔥" : `x${comboMultiplier}`}</span>
+        </div>
+      )}
+
       {showOverlay && (
         <button type="button" className="focus-overlay" onClick={onRequestFocus}>
           click here or press any key to focus
@@ -122,7 +132,6 @@ export function TypingViewport({
           style={{
             transform: `translate(${caretPos.left}px, ${caretPos.top - translateY}px)`,
             height: caretStyle === "underline" ? 3 : caretPos.height * 0.87,
-            top: caretStyle === "underline" ? undefined : undefined,
           }}
         />
       )}

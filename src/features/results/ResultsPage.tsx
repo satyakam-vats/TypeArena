@@ -151,6 +151,7 @@ export function ResultsPage() {
           <span>raw <b>{metrics.rawWpm}</b></span>
           <span>accuracy <b>{metrics.accuracy}%</b></span>
           <span>consistency <b>{metrics.consistency}%</b></span>
+          {metrics.maxCombo ? <span>max combo <b>{metrics.maxCombo}x</b></span> : null}
         </div>
       </section>
       <Chart run={run} />

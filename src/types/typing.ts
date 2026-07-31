@@ -24,6 +24,9 @@ export type TestSettings = {
   focusMode: boolean;
   quoteLength: QuoteLength;
   customText: string;
+  githubPresetId?: string;
+  githubRepoUrl?: string;
+  selectedNgrams?: string[];
 };
 
 export const defaultTestSettings: TestSettings = {
@@ -41,6 +44,9 @@ export const defaultTestSettings: TestSettings = {
   focusMode: false,
   quoteLength: "medium",
   customText: "",
+  githubPresetId: "react-hooks",
+  githubRepoUrl: "",
+  selectedNgrams: ["th", "ch", "sh", "ing", "str", "qu"],
 };
 
 /** Merge partial/legacy settings with defaults. */
@@ -50,9 +56,6 @@ export function normalizeSettings(partial?: Partial<TestSettings> | null): TestS
   if (!validModes.includes(base.mode)) base.mode = "time";
   if (!base.value || base.value < 1) base.value = base.mode === "words" ? 25 : 30;
   if (!base.wordSourceId) base.wordSourceId = "common-en";
-  if (base.wordSourceId === "practice" && base.mode !== "words") {
-    /* practice stays words-like; keep id for practice route */
-  }
   return base;
 }
 
@@ -78,6 +81,7 @@ export type RunMetrics = CharacterCounts & {
   samples: WpmSample[];
   keyErrors: Record<string, number>;
   keyTotals: Record<string, number>;
+  maxCombo?: number;
 };
 
 export type CompletedRun = {
@@ -95,5 +99,5 @@ export type CompletedRun = {
 export type WordSource = {
   id: string;
   label: string;
-  createText: (wordCount: number, seed: string) => string;
+  createText: (wordCount: number, seed: string, settings?: TestSettings) => string;
 };

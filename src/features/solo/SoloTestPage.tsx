@@ -139,7 +139,7 @@ export function SoloTestPage({ initialWordSource }: Props) {
     navigate("/results");
   }, [navigate, user]);
 
-  const test = useTypingTest(targetText, settings, onComplete, undefined, testSeed);
+  const test = useTypingTest(targetText, settings, onComplete, testSeed);
 
   // Stream more words for time/zen when buffer runs low
   useEffect(() => {
@@ -324,6 +324,8 @@ export function SoloTestPage({ initialWordSource }: Props) {
           focused={focused}
           capsLock={capsLock}
           onRequestFocus={() => inputRef.current?.focus()}
+          comboCount={test.comboCount}
+          comboMultiplier={test.comboMultiplier}
         />
         <textarea
           ref={inputRef}

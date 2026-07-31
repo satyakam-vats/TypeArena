@@ -1,61 +1,69 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { calculateMetrics } from "../lib/typing/metrics";
 import type { CompletedRun, TestSettings, WpmSample } from "../types/typing";
+import { calculateMetrics } from "../lib/typing/metrics";
 import { soundManager } from "../lib/sound";
 
-type TestStatus = "ready" | "running" | "finished";
-
-function wordHasError(target: string, typed: string, upToExclusive: number): boolean {
-  // Check the word ending at upToExclusive (space index or end).
-  const before = typed.slice(0, upToExclusive);
-  const wordStart = before.lastIndexOf(" ") + 1;
-  const tWord = target.slice(wordStart, upToExclusive);
-  const yWord = typed.slice(wordStart, upToExclusive);
-  if (yWord.length !== tWord.length) return true;
-  for (let i = 0; i < tWord.length; i++) {
-    if (tWord[i] !== yWord[i]) return true;
+function wordHasError(target: string, typed: string, spaceIdx: number): boolean {
+  let start = spaceIdx - 1;
+  while (start >= 0 && typed[start] !== " ") {
+    start--;
   }
-  return false;
+  start++;
+  const wordTyped = typed.slice(start, spaceIdx);
+  const wordTarget = target.slice(start, spaceIdx);
+  return wordTyped !== wordTarget;
 }
 
-/**
- * @param resetKey — change this to fully reset the test. Growing `targetText` alone does not reset.
- */
 export function useTypingTest(
   targetText: string,
   settings: TestSettings,
   onComplete: (run: CompletedRun) => void,
-  raceStartedAt?: number,
-  resetKey?: string | number,
+  resetKey?: string,
+  raceStartedAt?: number | null,
 ) {
   const [typedText, setTypedText] = useState("");
-  const [status, setStatus] = useState<TestStatus>("ready");
+  const [status, setStatus] = useState<"ready" | "running" | "finished">("ready");
   const [elapsedMs, setElapsedMs] = useState(0);
-  const startedAt = useRef<number | null>(null);
-  const samples = useRef<WpmSample[]>([]);
-  const ghostSamples = useRef<{ elapsedMs: number; charIndex: number }[]>([]);
-  const statusRef = useRef<TestStatus>("ready");
+  const [comboCount, setComboCount] = useState(0);
+
   const typedRef = useRef("");
   const targetRef = useRef(targetText);
   const settingsRef = useRef(settings);
+  const statusRef = useRef<"ready" | "running" | "finished">("ready");
+  const startedAt = useRef<number | null>(null);
+  const samples = useRef<WpmSample[]>([]);
+  const ghostSamples = useRef<{ elapsedMs: number; charIndex: number }[]>([]);
   const finishingRef = useRef(false);
 
-  statusRef.current = status;
-  typedRef.current = typedText;
+  const lastKeyTime = useRef<number | null>(null);
+  const maxComboRef = useRef(0);
+
   targetRef.current = targetText;
   settingsRef.current = settings;
 
-  const finish = useCallback((typed = typedRef.current) => {
-    if (finishingRef.current || statusRef.current === "finished" || startedAt.current === null) return;
+  const comboMultiplier = useMemo(() => {
+    if (comboCount >= 50) return 5;
+    if (comboCount >= 30) return 4;
+    if (comboCount >= 20) return 3;
+    if (comboCount >= 10) return 2;
+    return 1;
+  }, [comboCount]);
+
+  const finish = useCallback((typed?: string) => {
+    if (statusRef.current === "finished" || finishingRef.current) return;
     finishingRef.current = true;
-    const durationMs = Math.max(1, Date.now() - startedAt.current);
+    const finalTyped = typed ?? typedRef.current;
+    const durationMs = Math.max(1, Date.now() - (startedAt.current ?? Date.now()));
+    const finalMetrics = calculateMetrics(targetRef.current, finalTyped, durationMs, samples.current);
+    finalMetrics.maxCombo = maxComboRef.current;
+
     const completed: CompletedRun = {
       id: crypto.randomUUID(),
       kind: raceStartedAt ? "race" : "solo",
       settings: settingsRef.current,
       targetText: targetRef.current,
-      typedText: typed,
-      metrics: calculateMetrics(targetRef.current, typed, durationMs, samples.current),
+      typedText: finalTyped,
+      metrics: finalMetrics,
       completedAt: Date.now(),
       ghostSamples: ghostSamples.current,
     };
@@ -72,12 +80,14 @@ export function useTypingTest(
     setStatus("ready");
     statusRef.current = "ready";
     setElapsedMs(0);
+    setComboCount(0);
+    maxComboRef.current = 0;
+    lastKeyTime.current = null;
     samples.current = [];
     ghostSamples.current = [];
     startedAt.current = null;
   }, []);
 
-  // Full reset only when resetKey changes (or targetText if no resetKey — race fallback).
   useEffect(() => {
     hardReset();
   }, [resetKey ?? targetText, hardReset]);
@@ -96,6 +106,11 @@ export function useTypingTest(
       if (!lastGhost || elapsed - lastGhost.elapsedMs >= 200) {
         ghostSamples.current = [...ghostSamples.current, { elapsedMs: elapsed, charIndex: typedRef.current.length }];
       }
+
+      if (lastKeyTime.current && Date.now() - lastKeyTime.current > 1800) {
+        setComboCount(0);
+      }
+
       const mode = settingsRef.current.mode;
       if (mode === "time" && elapsed >= settingsRef.current.value * 1000) {
         finish(typedRef.current);
@@ -121,19 +136,18 @@ export function useTypingTest(
     const mode = settingsRef.current.mode;
     const target = targetRef.current;
     const prev = typedRef.current;
+    const now = Date.now();
 
-    // Confidence: block backspace
     if ((conf === "on" || conf === "max") && nextValue.length < prev.length) {
       return;
     }
 
-    // Max confidence: only allow advancing by at most one char (no jumps)
     if (conf === "max" && nextValue.length > prev.length + 1) {
       nextValue = prev + nextValue.slice(prev.length, prev.length + 1);
     }
 
     if (statusRef.current === "ready" && nextValue.length > 0) {
-      startedAt.current = Date.now();
+      startedAt.current = now;
       setStatus("running");
       statusRef.current = "running";
     }
@@ -149,6 +163,7 @@ export function useTypingTest(
 
         if (!correct) {
           soundManager.playError();
+          setComboCount(0);
 
           if (stop === "letter" || diff === "master") {
             accepted += ch;
@@ -158,7 +173,6 @@ export function useTypingTest(
             return;
           }
 
-          // Expert: wrong chars allowed inside word; fail when committing with space
           accepted += ch;
           if (ch === " " && (stop === "word" || diff === "expert")) {
             if (wordHasError(target, accepted, accepted.length - 1)) {
@@ -171,11 +185,23 @@ export function useTypingTest(
           continue;
         }
 
-        soundManager.playKeystroke();
+        setComboCount((prevCombo) => {
+          const nextCombo = prevCombo + 1;
+          if (nextCombo > maxComboRef.current) {
+            maxComboRef.current = nextCombo;
+          }
+          if (nextCombo === 50) {
+            soundManager.playFeverSound();
+          }
+          const mult = nextCombo >= 50 ? 5 : nextCombo >= 30 ? 4 : nextCombo >= 20 ? 3 : nextCombo >= 10 ? 2 : 1;
+          soundManager.playKeystroke(mult);
+          return nextCombo;
+        });
+
+        lastKeyTime.current = now;
         accepted += ch;
 
         if (ch === " " && (stop === "word" || diff === "expert")) {
-          // Space is correct — still check previous word body for latent errors
           if (wordHasError(target, accepted, accepted.length - 1)) {
             typedRef.current = accepted;
             setTypedText(accepted);
@@ -198,7 +224,7 @@ export function useTypingTest(
       return;
     }
 
-    // Backspace / shorten
+    setComboCount(0);
     typedRef.current = nextValue;
     setTypedText(nextValue);
   }, [finish]);
@@ -207,16 +233,19 @@ export function useTypingTest(
     hardReset();
   }, [hardReset]);
 
-  const metrics = useMemo(
-    () => calculateMetrics(targetText, typedText, Math.max(elapsedMs, 1000), samples.current),
-    [elapsedMs, targetText, typedText],
-  );
+  const metrics = useMemo(() => {
+    const computed = calculateMetrics(targetText, typedText, Math.max(elapsedMs, 1000), samples.current);
+    computed.maxCombo = maxComboRef.current;
+    return computed;
+  }, [elapsedMs, targetText, typedText]);
 
   return {
     typedText,
     status,
     elapsedMs,
     metrics,
+    comboCount,
+    comboMultiplier,
     updateTypedText,
     finish,
     reset,

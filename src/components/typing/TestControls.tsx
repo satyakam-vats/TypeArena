@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { TestSettings } from "../../types/typing";
 import { selectableWordSources } from "../../lib/typing/wordSources";
+import { GITHUB_CODE_PRESETS } from "../../lib/github/githubApi";
 
 type Props = {
   settings: TestSettings;
@@ -17,6 +18,8 @@ const quoteLengths = [
   { id: "long" as const, label: "long" },
   { id: "all" as const, label: "all" },
 ];
+
+const availableNgrams = ["th", "ch", "sh", "ion", "str", "qu"] as const;
 
 export function TestControls({ settings, onChange, disabled, compact }: Props) {
   const [showCustom, setShowCustom] = useState(false);
@@ -60,6 +63,13 @@ export function TestControls({ settings, onChange, disabled, compact }: Props) {
   const showLength = settings.mode === "time" || settings.mode === "words";
   const showPunctNum = settings.mode === "time" || settings.mode === "words" || settings.mode === "zen";
   const showSources = showPunctNum && settings.wordSourceId !== "practice";
+
+  const toggleNgram = (ngram: string) => {
+    const current = settings.selectedNgrams || ["th", "ch", "sh", "ing", "str", "qu"];
+    const exists = current.includes(ngram);
+    const next = exists ? current.filter((n) => n !== ngram) : [...current, ngram];
+    onChange({ ...settings, selectedNgrams: next.length > 0 ? next : [ngram] });
+  };
 
   return (
     <div className={`test-controls-wrap ${compact ? "compact" : ""}`}>
@@ -138,7 +148,7 @@ export function TestControls({ settings, onChange, disabled, compact }: Props) {
           </>
         )}
 
-        {showPunctNum && settings.wordSourceId !== "practice" && settings.wordSourceId !== "code" && (
+        {showPunctNum && settings.wordSourceId !== "practice" && settings.wordSourceId !== "code" && settings.wordSourceId !== "github" && settings.wordSourceId !== "ngram" && (
           <>
             <span className="control-divider" />
             <button
@@ -171,6 +181,41 @@ export function TestControls({ settings, onChange, disabled, compact }: Props) {
           more
         </button>
       </div>
+
+      {settings.wordSourceId === "github" && (
+        <div className="control-row flex-wrap gap-y-2 mt-2" aria-label="GitHub Code Presets">
+          <span className="control-label">repo preset</span>
+          {GITHUB_CODE_PRESETS.map((preset) => (
+            <button
+              key={preset.id}
+              disabled={disabled}
+              onClick={() => onChange({ ...settings, githubPresetId: preset.id })}
+              className={(settings.githubPresetId || "react-hooks") === preset.id ? "control-active" : "control"}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      )}
+
+      {settings.wordSourceId === "ngram" && (
+        <div className="control-row flex-wrap gap-y-2 mt-2" aria-label="N-gram targets">
+          <span className="control-label">target n-grams</span>
+          {availableNgrams.map((ng) => {
+            const active = (settings.selectedNgrams || ["th", "ch", "sh", "ion", "str", "qu"]).includes(ng);
+            return (
+              <button
+                key={ng}
+                disabled={disabled}
+                onClick={() => toggleNgram(ng)}
+                className={active ? "control-active" : "control"}
+              >
+                {ng}
+              </button>
+            );
+          })}
+        </div>
+      )}
 
       {showAdvanced && (
         <div className="control-row flex-wrap gap-y-2 mt-2 advanced-controls" aria-label="Behavior settings">

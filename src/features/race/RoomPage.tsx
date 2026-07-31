@@ -57,8 +57,8 @@ export function RoomPage() {
     room?.content.text ?? "",
     normalizeSettings(room?.settings),
     onComplete,
-    startTime,
     room?.content.seed ?? roomId,
+    startTime,
   );
   useEffect(() => {
     if (!room || !user || room.status !== "racing" || test.status === "finished") return;
