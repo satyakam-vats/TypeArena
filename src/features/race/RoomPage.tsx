@@ -8,7 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 import { useTypingTest } from "../../hooks/useTypingTest";
 import { endRace, finishRace, leaveRoom, startCountdown, startRace, subscribePlayers, subscribeRoom, updateProgress } from "../../lib/firestore/rooms";
 import type { RacePlayer, RaceRoom } from "../../types/room";
-import type { CompletedRun } from "../../types/typing";
+import { normalizeSettings, type CompletedRun } from "../../types/typing";
 
 function orderedPlayers(players: RacePlayer[]) {
   return [...players].sort((left, right) => (left.result.finishElapsedMs ?? Number.MAX_SAFE_INTEGER) - (right.result.finishElapsedMs ?? Number.MAX_SAFE_INTEGER));
@@ -53,7 +53,13 @@ export function RoomPage() {
     if (!user) return;
     void finishRace(roomId, user.uid, run.metrics, run.metrics.durationMs, run.id);
   }, [roomId, user]);
-  const test = useTypingTest(room?.content.text ?? "", room?.settings ?? { mode: "words", value: 25, wordSourceId: "common-en" }, onComplete, startTime);
+  const test = useTypingTest(
+    room?.content.text ?? "",
+    normalizeSettings(room?.settings),
+    onComplete,
+    startTime,
+    room?.content.seed ?? roomId,
+  );
   useEffect(() => {
     if (!room || !user || room.status !== "racing" || test.status === "finished") return;
     const timer = window.setTimeout(() => void updateProgress(roomId, user.uid, test.typedText.length, room.content.text.length, test.metrics), 250);

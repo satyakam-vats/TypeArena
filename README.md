@@ -1,56 +1,126 @@
 # TypeArena
 
-A focused typing-speed test with shareable real-time races. Built with React, TypeScript, Tailwind CSS, Firebase Authentication, and Cloud Firestore.
+A real-time multiplayer typing test and speed analytics platform built with React, TypeScript, Tailwind CSS, and Firebase.
 
-## MVP features
+Live Demo: [https://type-arena.vercel.app](https://type-arena.vercel.app)
 
-- Solo tests by time (15/30/60/120 seconds) or word count (10/25/50/100)
-- Live WPM, accuracy, character-level correct/incorrect feedback, and restart controls
-- Results view with final/raw WPM, accuracy, character breakdown, and a WPM timeline
-- Google sign-in, personal best tracking, and persisted run records
-- Private multiplayer rooms with shareable codes, synchronized countdowns, progress bars, live WPM, and a leaderboard
-- Light/dark theme with a deliberately restrained, monospace-forward interface
+---
 
-## Project layout
+## Features
+
+### Solo Tests & Practice
+- **Flexible Test Presets**: Test speed by duration (15, 30, 60, 120s), word count (10, 25, 50, 100 words), or custom length.
+- **Multiple Categories**: Practice using standard words, code snippets, quotes, numbers, or punctuation.
+- **Ghost Racing**: Race solo against a visual replay of your own personal best run.
+- **Weak Key Drills**: Practice mode that analyzes your error history to generate text focused on your most mistyped keys.
+
+### Real-Time Multiplayer
+- **Private & Public Rooms**: Create custom rooms with shareable codes or join quick-match queues to race other players.
+- **Synchronized Race Engine**: Live synchronized countdowns, real-time player progress bars, live WPM tracking, and post-race rankings powered by Cloud Firestore.
+- **Spectator & Reactions**: Watch ongoing races as a spectator and send live emoji reactions (`🔥`, `👍`, `😤`).
+
+### Analytics & Progress Tracking
+- **Detailed Metrics**: Raw WPM, Net WPM, accuracy percentage, consistency, and character-level error breakdown (correct, incorrect, extra, missed).
+- **Performance Chart**: Interactive SVG graph showing WPM and error progression over time.
+- **Keystroke Heatmap**: Keyboard matrix highlighting key-by-key speed and error hotspots.
+- **Daily Challenge & Streaks**: Unique daily challenge text with a dedicated daily leaderboard and practice streak counter.
+- **Achievements**: Unlockable achievement badges (e.g. 100 WPM Club, Perfect Accuracy, Win Streaks).
+
+### UI & Audio
+- **Custom Web Audio**: Low-latency synthesized keystroke clicks, error sounds, and countdown beeps using the Web Audio API (no external sound files required).
+- **Shareable Result Cards**: HTML5 Canvas generator to download and share a summary image of test results.
+- **Theme Support**: Monospace-forward interface with light and dark mode support.
+
+---
+
+## Tech Stack
+
+- **Frontend**: React 19, TypeScript, Vite 6, React Router v7, Tailwind CSS
+- **Backend & Database**: Firebase Authentication (Google provider), Cloud Firestore
+- **State & Sync**: Real-time Firestore snapshot listeners (`onSnapshot`)
+- **Audio & Visuals**: Web Audio API, HTML5 Canvas 2D, custom SVG chart engine
+- **Deployment**: Vercel
+
+---
+
+## Project Structure
 
 ```text
-src/       React frontend: screens, components, hooks, domain logic, Firebase client
-firebase/  Firestore security rules and indexes (the backend configuration)
+src/
+├── components/
+│   ├── charts/       # Custom SVG WPM trend chart
+│   ├── layout/       # App layout, header, theme toggle
+│   └── typing/       # Typing input viewport, live stats, character state
+├── features/
+│   ├── analytics/    # History graphs & analytics dashboard
+│   ├── daily/        # Daily challenge & streak tracking
+│   ├── heatmap/      # Keystroke speed & error heatmap
+│   ├── leaderboard/  # Global and daily leaderboards
+│   ├── practice/     # Weak key drills generator
+│   ├── profile/      # User profiles, statistics & achievements
+│   ├── race/         # Real-time room lobby, countdown & live race track
+│   ├── results/      # Results summary & Canvas card generator
+│   └── solo/         # Solo test setup & main game loop
+├── hooks/            # Custom hooks (useTheme, useAudio, etc.)
+└── lib/              # Firebase config, Firestore queries, sound synth, Canvas generator
 ```
 
-The word-source abstraction, extensible user stats, generic room schema, and player subcollections are intentionally designed for later additions such as custom word lists, ghosts, coaching, spectators, and matchmaking.
+---
 
-## Local development
+## Getting Started
 
-```bash
-npm install
-copy .env.example .env.local
-npm run dev
-```
+### Prerequisites
+- Node.js v18 or higher
+- npm v9 or higher
 
-Add your Firebase web-app configuration to `.env.local`. Google sign-in and races are disabled until those values are present.
+### Installation
 
-```text
-VITE_FIREBASE_API_KEY=
-VITE_FIREBASE_AUTH_DOMAIN=
-VITE_FIREBASE_PROJECT_ID=
-VITE_FIREBASE_STORAGE_BUCKET=
-VITE_FIREBASE_MESSAGING_SENDER_ID=
-VITE_FIREBASE_APP_ID=
-```
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/satyakam-vats/TypeArena.git
+   cd TypeArena
+   ```
 
-## Firebase setup
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-1. Create a Firebase project and enable Google as a Firebase Authentication provider.
-2. Create a Cloud Firestore database.
-3. Deploy the versioned rules and indexes from this repository:
+3. Configure environment variables:
+   Copy `.env.example` to `.env.local`:
+   ```bash
+   cp .env.example .env.local
+   ```
+   Add your Firebase config to `.env.local`:
+   ```env
+   VITE_FIREBASE_API_KEY=
+   VITE_FIREBASE_AUTH_DOMAIN=
+   VITE_FIREBASE_PROJECT_ID=
+   VITE_FIREBASE_STORAGE_BUCKET=
+   VITE_FIREBASE_MESSAGING_SENDER_ID=
+   VITE_FIREBASE_APP_ID=
+   ```
 
+4. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+---
+
+## Firebase & Deployment
+
+1. **Deploy Firestore Rules**:
    ```bash
    npx firebase-tools deploy --only firestore
    ```
+2. **Deploy to Vercel**:
+   - Connect repository to Vercel.
+   - Add the `VITE_FIREBASE_*` environment variables in Vercel settings.
+   - Build command: `npm run build`.
 
-4. Add the Vercel deployment domain under Firebase Authentication → Authorized domains.
+---
 
-## Deployment
+## License
 
-Import the repository into Vercel, add the same `VITE_FIREBASE_*` environment variables, and deploy. Vercel automatically uses `npm run build`.
+MIT

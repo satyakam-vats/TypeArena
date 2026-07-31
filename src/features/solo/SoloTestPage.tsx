@@ -1,5 +1,5 @@
-import { RotateCcw, Keyboard, ArrowRight, Target } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { RotateCcw, Keyboard, ArrowRight, Target, Check } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { LiveMetrics } from "../../components/typing/LiveMetrics";
 import { TestControls } from "../../components/typing/TestControls";
@@ -9,36 +9,33 @@ import { useAuth } from "../../context/AuthContext";
 import { saveRun } from "../../lib/firestore/testRuns";
 import { recordRunStats } from "../../lib/firestore/users";
 import { getAllTimeKeyStatsFromStorage, saveRunToLocalStorage } from "../../lib/storage/analyticsStorage";
+import { saveGhostReplay } from "../../lib/storage/ghostStorage";
 import { getWeakKeys } from "../../lib/typing/practiceTextGen";
-import { wordCountFor, wordSources } from "../../lib/typing/wordSources";
+import { appendTestWords, createTestText } from "../../lib/typing/wordSources";
 import { useTypingTest } from "../../hooks/useTypingTest";
-import type { CompletedRun, TestSettings } from "../../types/typing";
+import { normalizeSettings, type CompletedRun, type TestSettings } from "../../types/typing";
 
 const SETTINGS_KEY = "typearena_test_settings_v1";
-const defaultSettings: TestSettings = { mode: "time", value: 30, wordSourceId: "common-en" };
 
 function getSavedSettings(): TestSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (raw) {
-      const parsed = JSON.parse(raw) as TestSettings;
-      if (parsed && parsed.mode && parsed.value) {
-        // Never restore practice from shared settings — that mode is route-only.
-        if (parsed.wordSourceId === "practice") {
-          return { ...parsed, wordSourceId: "common-en" };
-        }
-        return parsed;
+      const parsed = normalizeSettings(JSON.parse(raw) as Partial<TestSettings>);
+      if (parsed.wordSourceId === "practice") {
+        return { ...parsed, wordSourceId: "common-en" };
       }
+      return parsed;
     }
-  } catch {}
-  return defaultSettings;
+  } catch { /* ignore */ }
+  return normalizeSettings();
 }
 
 function persistSettings(settings: TestSettings) {
   if (settings.wordSourceId === "practice") return;
   try {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
-  } catch {}
+  } catch { /* ignore */ }
 }
 
 type Props = { initialWordSource?: string };
@@ -47,8 +44,8 @@ export function SoloTestPage({ initialWordSource }: Props) {
   const navigate = useNavigate();
   const location = useLocation();
   const { user } = useAuth();
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
-  // Check URL search params for ?source=practice (or PracticePage prop)
   const searchParams = new URLSearchParams(location.search);
   const sourceParam = searchParams.get("source") || initialWordSource;
   const isPracticeMode = sourceParam === "practice";
@@ -56,34 +53,60 @@ export function SoloTestPage({ initialWordSource }: Props) {
   const [settings, setSettingsState] = useState<TestSettings>(() => {
     if (isPracticeMode) {
       const saved = getSavedSettings();
-      return { mode: "words", value: saved.mode === "words" ? saved.value : 50, wordSourceId: "practice" };
+      return normalizeSettings({
+        ...saved,
+        mode: "words",
+        value: saved.mode === "words" ? saved.value : 50,
+        wordSourceId: "practice",
+      });
     }
     return getSavedSettings();
   });
   const [showKeyboard, setShowKeyboard] = useState(true);
   const [testSeed, setTestSeed] = useState(() => `${Date.now()}-${Math.random().toString(36).slice(2)}`);
+  const [targetText, setTargetText] = useState("");
+  const [focused, setFocused] = useState(true);
+  const [capsLock, setCapsLock] = useState(false);
+  const appendCount = useRef(0);
+  const appendLock = useRef(false);
+  const didInit = useRef(false);
+
+  // Initial text (once) aligned with testSeed
+  useEffect(() => {
+    if (didInit.current) return;
+    didInit.current = true;
+    setTargetText(createTestText(settings, testSeed));
+  }, [settings, testSeed]);
 
   const setSettings = useCallback((newSettings: TestSettings) => {
-    // Stay locked on practice when opened via /practice.
-    const next =
+    const next = normalizeSettings(
       isPracticeMode
-        ? { ...newSettings, wordSourceId: "practice" as const }
+        ? { ...newSettings, wordSourceId: "practice" as const, mode: newSettings.mode === "zen" || newSettings.mode === "quote" || newSettings.mode === "custom" ? "words" : newSettings.mode }
         : newSettings.wordSourceId === "practice"
           ? { ...newSettings, wordSourceId: "common-en" }
-          : newSettings;
+          : newSettings,
+    );
     setSettingsState(next);
-    setTestSeed(`${Date.now()}-${Math.random().toString(36).slice(2)}`);
+    const seed = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    setTestSeed(seed);
+    setTargetText(createTestText(next, seed));
+    appendCount.current = 0;
+    appendLock.current = false;
     persistSettings(next);
   }, [isPracticeMode]);
 
   const nextTest = useCallback(() => {
-    setTestSeed(`${Date.now()}-${Math.random().toString(36).slice(2)}`);
-  }, []);
+    const seed = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    setTestSeed(seed);
+    setTargetText(createTestText(settings, seed));
+    appendCount.current = 0;
+    appendLock.current = false;
+  }, [settings]);
 
-  const targetText = useMemo(
-    () => (wordSources[settings.wordSourceId] || wordSources["common-en"]).createText(wordCountFor(settings.value, settings.mode), testSeed),
-    [settings, testSeed]
-  );
+  // Rebuild text when seed/settings change from outside setSettings (nextTest)
+  useEffect(() => {
+    // target already set by setSettings/nextTest; keep in sync if practice
+  }, [testSeed]);
 
   const { keyErrors, keyTotals } = useMemo(() => getAllTimeKeyStatsFromStorage(), [testSeed]);
   const weakKeys = useMemo(() => getWeakKeys(keyErrors, keyTotals, 5, 6), [keyErrors, keyTotals]);
@@ -98,6 +121,15 @@ export function SoloTestPage({ initialWordSource }: Props) {
   const onComplete = useCallback((run: CompletedRun) => {
     sessionStorage.setItem("typearena-last-run", JSON.stringify(run));
     saveRunToLocalStorage(run);
+    if (run.ghostSamples && run.ghostSamples.length > 0) {
+      saveGhostReplay(run.settings, {
+        settingsKey: "",
+        targetText: run.targetText,
+        samples: run.ghostSamples,
+        finalWpm: run.metrics.wpm,
+        completedAt: run.completedAt,
+      });
+    }
     if (user) {
       void Promise.all([
         saveRun(user.uid, run, user.displayName ?? undefined, user.photoURL),
@@ -107,40 +139,132 @@ export function SoloTestPage({ initialWordSource }: Props) {
     navigate("/results");
   }, [navigate, user]);
 
-  const test = useTypingTest(targetText, settings, onComplete);
-  const remaining = settings.mode === "time" ? Math.max(0, settings.value - Math.floor(test.elapsedMs / 1000)) : settings.value;
+  const test = useTypingTest(targetText, settings, onComplete, undefined, testSeed);
 
-  // Keyboard shortcuts: Esc = reset current test, Tab+Enter = next test
+  // Stream more words for time/zen when buffer runs low
+  useEffect(() => {
+    if (test.status !== "running") return;
+    if (settings.mode !== "time" && settings.mode !== "zen") return;
+    if (!targetText) return;
+    const remaining = targetText.length - test.typedText.length;
+    if (remaining >= 100 || appendLock.current) return;
+    appendLock.current = true;
+    appendCount.current += 1;
+    const extra = appendTestWords(settings, `${testSeed}-a${appendCount.current}`, 80);
+    if (extra) {
+      setTargetText((t) => {
+        appendLock.current = false;
+        return t + extra;
+      });
+    } else {
+      appendLock.current = false;
+    }
+  }, [test.typedText.length, test.status, targetText, settings, testSeed]);
+
+  // Focus mode class on body
+  useEffect(() => {
+    document.body.classList.toggle("focus-mode", Boolean(settings.focusMode && test.status === "running"));
+    return () => document.body.classList.remove("focus-mode");
+  }, [settings.focusMode, test.status]);
+
+  // Keyboard shortcuts
   useEffect(() => {
     let tabPressed = false;
+    let tabTimer: number | undefined;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.getModifierState?.("CapsLock")) setCapsLock(true);
+      else setCapsLock(false);
+
       if (e.key === "Escape") {
         e.preventDefault();
+        if (settings.mode === "zen" && test.status === "running") {
+          test.finish();
+          return;
+        }
         test.reset();
+        inputRef.current?.focus();
         return;
       }
+
       if (e.key === "Tab") {
+        e.preventDefault();
         tabPressed = true;
-        setTimeout(() => { tabPressed = false; }, 1000);
+        window.clearTimeout(tabTimer);
+        tabTimer = window.setTimeout(() => { tabPressed = false; }, 1000);
         return;
       }
+
       if (e.key === "Enter" && tabPressed) {
         e.preventDefault();
         tabPressed = false;
         nextTest();
+        inputRef.current?.focus();
         return;
+      }
+
+      // Shift+Enter finishes zen
+      if (settings.mode === "zen" && e.key === "Enter" && e.shiftKey && test.status === "running") {
+        e.preventDefault();
+        test.finish();
+        return;
+      }
+
+      // Refocus on any printable key when blurred
+      if (!focused && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        inputRef.current?.focus();
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [test, nextTest]);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.clearTimeout(tabTimer);
+    };
+  }, [test, nextTest, settings.mode, focused]);
+
+  // Repeat from results
+  useEffect(() => {
+    const state = location.state as { repeat?: boolean } | null;
+    if (state?.repeat) {
+      test.reset();
+      navigate(location.pathname, { replace: true, state: {} });
+    } else if (state && state.repeat === false) {
+      nextTest();
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const remaining =
+    settings.mode === "time"
+      ? Math.max(0, settings.value - Math.floor(test.elapsedMs / 1000))
+      : settings.mode === "words"
+        ? settings.value
+        : null;
+
+  const statusLabel =
+    test.status === "ready"
+      ? settings.mode === "zen"
+        ? "zen — type freely, shift+enter or esc to finish"
+        : "start typing when ready"
+      : settings.mode === "time"
+        ? `${remaining}s remaining`
+        : settings.mode === "words"
+          ? `${settings.value} words`
+          : settings.mode === "quote"
+            ? "quote"
+            : settings.mode === "custom"
+              ? "custom"
+              : settings.mode === "zen"
+                ? "zen"
+                : "";
 
   return (
-    <main className={`solo-test-page mx-auto flex w-full max-w-6xl flex-col px-5 pt-8 sm:px-8 sm:pt-12 animate-fade-in ${showKeyboard ? "solo-with-keyboard" : ""} ${isPracticeMode ? "solo-practice" : ""}`}>
+    <main
+      className={`solo-test-page mx-auto flex w-full max-w-6xl flex-col px-5 pt-8 sm:px-8 sm:pt-12 animate-fade-in ${showKeyboard ? "solo-with-keyboard" : ""} ${isPracticeMode ? "solo-practice" : ""} ${settings.focusMode && test.status === "running" ? "is-focus" : ""}`}
+    >
       {isPracticeMode && (
-        <div className="practice-weak-keys-bar animate-fade-in">
+        <div className="practice-weak-keys-bar animate-fade-in focus-hide">
           <div className="practice-weak-keys-label">
             <Target size={12} /> weak keys
           </div>
@@ -161,7 +285,7 @@ export function SoloTestPage({ initialWordSource }: Props) {
         </div>
       )}
 
-      <div className="solo-toolbar mb-6 flex items-center justify-between flex-wrap gap-3">
+      <div className="solo-toolbar mb-6 flex items-center justify-between flex-wrap gap-3 focus-hide">
         <TestControls settings={settings} onChange={setSettings} disabled={test.status === "running"} />
         <div className="flex items-center gap-2">
           <button
@@ -171,22 +295,44 @@ export function SoloTestPage({ initialWordSource }: Props) {
           >
             <Keyboard size={16} />
           </button>
-          <button onClick={test.reset} className="icon-button" title="Restart current test (Esc)"><RotateCcw size={16} /></button>
-          <button onClick={nextTest} className="icon-button" title="Next test (Tab + Enter)"><ArrowRight size={16} /></button>
+          {settings.mode === "zen" && test.status === "running" && (
+            <button onClick={() => test.finish()} className="icon-button" title="Finish zen (Shift+Enter / Esc)">
+              <Check size={16} />
+            </button>
+          )}
+          <button onClick={() => { test.reset(); inputRef.current?.focus(); }} className="icon-button" title="Restart (Esc)">
+            <RotateCcw size={16} />
+          </button>
+          <button onClick={() => { nextTest(); inputRef.current?.focus(); }} className="icon-button" title="Next test (Tab + Enter)">
+            <ArrowRight size={16} />
+          </button>
         </div>
       </div>
 
       <section className="typing-stage solo-typing-stage">
-        <div className="mb-3 flex items-center justify-between text-sm text-[var(--muted)]">
-          <span>{test.status === "ready" ? "start typing when ready" : settings.mode === "time" ? `${remaining}s remaining` : `${settings.value} words`}</span>
+        <div className="mb-3 flex items-center justify-between text-sm text-[var(--muted)] focus-hide-soft">
+          <span>{statusLabel}</span>
           <LiveMetrics metrics={test.metrics} />
         </div>
-        <TypingViewport target={targetText} typed={test.typedText} active={test.status !== "finished"} />
+        <TypingViewport
+          target={targetText}
+          typed={test.typedText}
+          active={test.status !== "finished"}
+          blind={settings.blind}
+          smoothCaret={settings.smoothCaret}
+          caretStyle={settings.caretStyle}
+          focused={focused}
+          capsLock={capsLock}
+          onRequestFocus={() => inputRef.current?.focus()}
+        />
         <textarea
+          ref={inputRef}
           autoFocus
           value={test.typedText}
           onChange={(event) => test.updateTypedText(event.target.value)}
           onPaste={(event) => event.preventDefault()}
+          onFocus={() => setFocused(true)}
+          onBlur={() => setFocused(false)}
           aria-label="Type the displayed text"
           className="typing-input"
           spellCheck={false}
@@ -195,12 +341,14 @@ export function SoloTestPage({ initialWordSource }: Props) {
         />
       </section>
 
-      <p className="solo-hints text-center text-sm text-[var(--muted)]">
-        <kbd>esc</kbd> restart&nbsp;&nbsp; · &nbsp;&nbsp;<kbd>tab</kbd> + <kbd>enter</kbd> next
+      <p className="solo-hints text-center text-sm text-[var(--muted)] focus-hide">
+        <kbd>esc</kbd> {settings.mode === "zen" ? "finish" : "restart"}
+        &nbsp;&nbsp; · &nbsp;&nbsp;<kbd>tab</kbd> + <kbd>enter</kbd> next
+        {settings.mode === "zen" && <>&nbsp;&nbsp; · &nbsp;&nbsp;<kbd>shift</kbd>+<kbd>enter</kbd> finish</>}
       </p>
 
       {showKeyboard && (
-        <div className="solo-keyboard-dock">
+        <div className="solo-keyboard-dock focus-hide">
           <LiveTouchKeyboard
             targetText={targetText}
             typedText={test.typedText}

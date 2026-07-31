@@ -21,9 +21,9 @@ import {
   markDailyChallengeComplete,
   getDailyChallengeBest
 } from "../../lib/dailyChallenge";
-import type { CompletedRun, TestSettings } from "../../types/typing";
+import { normalizeSettings, type CompletedRun, type TestSettings } from "../../types/typing";
 
-const dailySettings: TestSettings = { mode: "words", value: 50, wordSourceId: "common-en" };
+const dailySettings: TestSettings = normalizeSettings({ mode: "words", value: 50, wordSourceId: "common-en" });
 
 export function DailyChallengePage() {
   const navigate = useNavigate();
@@ -106,7 +106,7 @@ export function DailyChallengePage() {
           <span>{test.status === "ready" ? "Start typing to begin" : "50 words"}</span>
           <LiveMetrics metrics={test.metrics} />
         </div>
-        <TypingViewport target={targetText} typed={test.typedText} active={test.status !== "finished"} />
+        <TypingViewport target={targetText} typed={test.typedText} active={test.status !== "finished"} focused smoothCaret />
         <textarea
           autoFocus
           value={test.typedText}

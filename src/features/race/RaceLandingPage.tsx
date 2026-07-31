@@ -4,9 +4,9 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { createRoom, joinRoomByCode } from "../../lib/firestore/rooms";
 import { findOrCreatePublicRoom } from "../../lib/firestore/matchmaking";
-import type { TestSettings } from "../../types/typing";
+import { normalizeSettings, type TestSettings } from "../../types/typing";
 
-const defaultSettings: TestSettings = { mode: "words", value: 25, wordSourceId: "common-en" };
+const defaultSettings: TestSettings = normalizeSettings({ mode: "words", value: 25, wordSourceId: "common-en" });
 
 export function RaceLandingPage() {
   const navigate = useNavigate();

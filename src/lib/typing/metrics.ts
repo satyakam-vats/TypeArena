@@ -57,6 +57,40 @@ export function getCharacterStates(target: string, typed: string): CharacterStat
   });
 }
 
+/** Indices belonging to completed words that contain at least one error. */
+export function getFailedWordIndices(target: string, typed: string): Set<number> {
+  const failed = new Set<number>();
+  const tWords = target.split(" ");
+  const yWords = typed.split(" ");
+  let offset = 0;
+
+  for (let i = 0; i < tWords.length; i++) {
+    const tw = tWords[i] ?? "";
+    const yw = yWords[i];
+    // Completed = typist has moved past this word (a later word exists).
+    const completed = i < yWords.length - 1;
+
+    if (yw !== undefined && completed) {
+      let bad = yw.length !== tw.length;
+      if (!bad) {
+        for (let c = 0; c < tw.length; c++) {
+          if (tw[c] !== yw[c]) {
+            bad = true;
+            break;
+          }
+        }
+      }
+      if (bad) {
+        for (let c = 0; c < tw.length; c++) failed.add(offset + c);
+      }
+    }
+
+    offset += tw.length + (i < tWords.length - 1 ? 1 : 0);
+  }
+
+  return failed;
+}
+
 export function calculateKeyStats(target: string, typed: string) {
   const keyErrors: Record<string, number> = {};
   const keyTotals: Record<string, number> = {};

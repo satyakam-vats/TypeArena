@@ -5,7 +5,7 @@ import { punctuationWords } from "../../data/punctuationWords";
 import { numberWords } from "../../data/numberWords";
 import { getAllTimeKeyStatsFromStorage } from "../storage/analyticsStorage";
 import { generatePracticeText } from "./practiceTextGen";
-import type { WordSource } from "../../types/typing";
+import type { QuoteLength, TestMode, TestSettings, WordSource } from "../../types/typing";
 
 function cyrb128(str: string): [number, number, number, number] {
   let h1 = 1779033703, h2 = 3144134277, h3 = 1013904223, h4 = 208732341;
@@ -42,39 +42,60 @@ export function createRandomGenerator(seed?: string) {
   return sfc32(a, b, c, d);
 }
 
+const PUNCT_END = [".", ",", "!", "?", ";", ":"];
+const PUNCT_WRAP: Array<[string, string]> = [['"', '"'], ["'", "'"], ["(", ")"]];
+
+function decorateWord(word: string, punctuation: boolean, numbers: boolean, random: () => number): string {
+  if (numbers && random() < 0.12) {
+    return numberWords[Math.floor(random() * numberWords.length)] ?? String(Math.floor(random() * 9999));
+  }
+  let w = word;
+  if (!punctuation) return w;
+  if (random() < 0.22) w = w.charAt(0).toUpperCase() + w.slice(1);
+  if (random() < 0.08) {
+    const [a, b] = PUNCT_WRAP[Math.floor(random() * PUNCT_WRAP.length)]!;
+    w = a + w + b;
+  } else if (random() < 0.28) {
+    w = w + PUNCT_END[Math.floor(random() * PUNCT_END.length)]!;
+  }
+  return w;
+}
+
+function pickWords(
+  pool: string[],
+  wordCount: number,
+  random: () => number,
+  punctuation = false,
+  numbers = false,
+): string {
+  const result: string[] = [];
+  let lastWord = "";
+  for (let i = 0; i < wordCount; i++) {
+    let raw = pool[Math.floor(random() * pool.length)] ?? "the";
+    let guard = 0;
+    while (raw === lastWord && pool.length > 1 && guard++ < 8) {
+      raw = pool[Math.floor(random() * pool.length)] ?? "the";
+    }
+    const word = decorateWord(raw, punctuation, numbers, random);
+    result.push(word);
+    lastWord = raw;
+  }
+  return result.join(" ");
+}
+
 const commonEnglish: WordSource = {
   id: "common-en",
   label: "english",
   createText(wordCount, seed) {
-    const random = createRandomGenerator(seed);
-    const result: string[] = [];
-    let lastWord = "";
-    for (let i = 0; i < wordCount; i++) {
-      let word = commonEnglishWords[Math.floor(random() * commonEnglishWords.length)];
-      while (word === lastWord && commonEnglishWords.length > 1) {
-        word = commonEnglishWords[Math.floor(random() * commonEnglishWords.length)];
-      }
-      result.push(word);
-      lastWord = word;
-    }
-    return result.join(" ");
+    return pickWords(commonEnglishWords, wordCount, createRandomGenerator(seed));
   },
 };
 
 const quotesSource: WordSource = {
   id: "quotes",
   label: "quotes",
-  createText(wordCount, seed) {
-    const random = createRandomGenerator(seed);
-    const result: string[] = [];
-    let currentWords = 0;
-    while (currentWords < wordCount) {
-      const quote = quotes[Math.floor(random() * quotes.length)];
-      const words = quote.split(" ");
-      result.push(...words);
-      currentWords += words.length;
-    }
-    return result.slice(0, wordCount).join(" ");
+  createText(_wordCount, seed) {
+    return createQuoteText("all", seed);
   },
 };
 
@@ -85,9 +106,10 @@ const codeSource: WordSource = {
     const random = createRandomGenerator(seed);
     const result: string[] = [];
     let currentWords = 0;
-    while (currentWords < wordCount) {
-      const snippet = codeSnippets[Math.floor(random() * codeSnippets.length)];
-      const words = snippet.split(" ");
+    let guard = 0;
+    while (currentWords < wordCount && guard++ < 200) {
+      const snippet = codeSnippets[Math.floor(random() * codeSnippets.length)] ?? "const x = 1;";
+      const words = snippet.split(/\s+/).filter(Boolean);
       result.push(...words);
       currentWords += words.length;
     }
@@ -99,18 +121,7 @@ const punctuationSource: WordSource = {
   id: "punctuation",
   label: "punctuation",
   createText(wordCount, seed) {
-    const random = createRandomGenerator(seed);
-    const result: string[] = [];
-    let lastWord = "";
-    for (let i = 0; i < wordCount; i++) {
-      let word = punctuationWords[Math.floor(random() * punctuationWords.length)];
-      while (word === lastWord && punctuationWords.length > 1) {
-        word = punctuationWords[Math.floor(random() * punctuationWords.length)];
-      }
-      result.push(word);
-      lastWord = word;
-    }
-    return result.join(" ");
+    return pickWords(punctuationWords, wordCount, createRandomGenerator(seed));
   },
 };
 
@@ -118,18 +129,7 @@ const numbersSource: WordSource = {
   id: "numbers",
   label: "numbers",
   createText(wordCount, seed) {
-    const random = createRandomGenerator(seed);
-    const result: string[] = [];
-    let lastWord = "";
-    for (let i = 0; i < wordCount; i++) {
-      let word = numberWords[Math.floor(random() * numberWords.length)];
-      while (word === lastWord && numberWords.length > 1) {
-        word = numberWords[Math.floor(random() * numberWords.length)];
-      }
-      result.push(word);
-      lastWord = word;
-    }
-    return result.join(" ");
+    return pickWords(numberWords, wordCount, createRandomGenerator(seed));
   },
 };
 
@@ -142,7 +142,7 @@ const practiceSource: WordSource = {
   },
 };
 
-export const wordSources: Record<WordSource["id"], WordSource> = {
+export const wordSources: Record<string, WordSource> = {
   "common-en": commonEnglish,
   practice: practiceSource,
   quotes: quotesSource,
@@ -151,12 +151,83 @@ export const wordSources: Record<WordSource["id"], WordSource> = {
   numbers: numbersSource,
 };
 
-/** All sources including internal ones like practice. */
 export const wordSourceList: WordSource[] = Object.values(wordSources);
 
-/** Sources shown in test/race controls (practice is only via /practice). */
-export const selectableWordSources: WordSource[] = wordSourceList.filter((s) => s.id !== "practice");
+/** Sources shown in test controls (practice is only via /practice). */
+export const selectableWordSources: WordSource[] = wordSourceList.filter(
+  (s) => s.id !== "practice" && s.id !== "quotes" && s.id !== "punctuation" && s.id !== "numbers",
+);
 
-export function wordCountFor(settingsValue: number, mode: "time" | "words") {
-  return mode === "words" ? settingsValue : Math.max(120, Math.ceil(settingsValue * 3.5));
+export function wordCountFor(settingsValue: number, mode: TestMode) {
+  if (mode === "words") return settingsValue;
+  if (mode === "zen") return 200;
+  if (mode === "quote" || mode === "custom") return 50;
+  // Time mode: generous buffer; streaming appends more as needed.
+  return Math.max(200, Math.ceil(settingsValue * 8));
+}
+
+export function quoteWordCount(q: string) {
+  return q.trim().split(/\s+/).filter(Boolean).length;
+}
+
+export function createQuoteText(length: QuoteLength, seed: string): string {
+  const random = createRandomGenerator(seed);
+  const ranked = quotes.map((q) => ({ q, n: quoteWordCount(q) }));
+  const filtered =
+    length === "short" ? ranked.filter((x) => x.n <= 12) :
+    length === "medium" ? ranked.filter((x) => x.n > 12 && x.n <= 30) :
+    length === "long" ? ranked.filter((x) => x.n > 30) :
+    ranked;
+  const pool = filtered.length > 0 ? filtered : ranked;
+  return pool[Math.floor(random() * pool.length)]!.q;
+}
+
+/** Build target text for the current settings (initial generation). */
+export function createTestText(settings: TestSettings, seed: string): string {
+  if (settings.mode === "custom") {
+    const custom = settings.customText.trim().replace(/\s+/g, " ");
+    return custom || "type your custom text here after pasting it in settings";
+  }
+  if (settings.mode === "quote" || settings.wordSourceId === "quotes") {
+    return createQuoteText(settings.quoteLength || "medium", seed);
+  }
+
+  const count = wordCountFor(settings.value, settings.mode);
+  const sourceId = settings.wordSourceId === "practice" ? "practice" : (settings.wordSourceId || "common-en");
+  const source = wordSources[sourceId] || commonEnglish;
+
+  // Dedicated punct/numbers lists ignore toggles (already specialized).
+  if (sourceId === "punctuation" || sourceId === "numbers" || sourceId === "code" || sourceId === "practice") {
+    return source.createText(count, seed);
+  }
+
+  return pickWords(
+    commonEnglishWords,
+    count,
+    createRandomGenerator(seed),
+    settings.punctuation,
+    settings.numbers,
+  );
+}
+
+/** Append more words for time/zen streaming without resetting the run. */
+export function appendTestWords(settings: TestSettings, seed: string, wordCount = 40): string {
+  if (settings.mode === "quote" || settings.mode === "custom" || settings.mode === "words") return "";
+  const sourceId = settings.wordSourceId === "practice" ? "practice" : (settings.wordSourceId || "common-en");
+  if (sourceId === "code" || sourceId === "practice") {
+    return " " + (wordSources[sourceId] || commonEnglish).createText(wordCount, seed);
+  }
+  if (sourceId === "punctuation") {
+    return " " + pickWords(punctuationWords, wordCount, createRandomGenerator(seed));
+  }
+  if (sourceId === "numbers") {
+    return " " + pickWords(numberWords, wordCount, createRandomGenerator(seed));
+  }
+  return " " + pickWords(
+    commonEnglishWords,
+    wordCount,
+    createRandomGenerator(seed),
+    settings.punctuation,
+    settings.numbers,
+  );
 }

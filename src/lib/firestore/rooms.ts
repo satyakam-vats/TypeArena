@@ -1,9 +1,9 @@
 import type { User } from "firebase/auth";
 import { addDoc, collection, deleteDoc, doc, getDocs, limit, onSnapshot, orderBy, query, runTransaction, serverTimestamp, setDoc, updateDoc, where, writeBatch, type Unsubscribe } from "firebase/firestore";
 import { db } from "../firebase";
-import { wordCountFor, wordSources } from "../typing/wordSources";
+import { createTestText } from "../typing/wordSources";
 import type { RacePlayer, RaceRoom } from "../../types/room";
-import type { RunMetrics, TestSettings } from "../../types/typing";
+import { normalizeSettings, type RunMetrics, type TestSettings } from "../../types/typing";
 
 const codeCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const makeCode = () => Array.from({ length: 6 }, () => codeCharacters[Math.floor(Math.random() * codeCharacters.length)]).join("");
@@ -25,14 +25,26 @@ export async function createRoom(user: User, settings: TestSettings) {
   const firestore = db;
   if (!firestore) throw new Error("Firebase is not configured");
   const seed = crypto.randomUUID();
-  const text = wordSources[settings.wordSourceId].createText(wordCountFor(settings.value, settings.mode), seed);
+  const normalized = normalizeSettings(settings);
+  // Races stay on words/time only for fairness
+  const raceSettings = normalizeSettings({
+    ...normalized,
+    mode: normalized.mode === "time" ? "time" : "words",
+    value: normalized.mode === "time" ? normalized.value : (normalized.value || 25),
+    stopOnError: "off",
+    confidence: "off",
+    difficulty: "normal",
+    blind: false,
+    focusMode: false,
+  });
+  const text = createTestText(raceSettings, seed);
   const room = await addDoc(collection(firestore, "rooms"), {
     roomCode: makeCode(),
     roomType: "race",
     hostId: user.uid,
     status: "waiting",
-    settings: { ...settings, maxPlayers: 8, raceTimeoutMs: settings.mode === "time" ? settings.value * 1000 + 15000 : 180000 },
-    content: { sourceId: settings.wordSourceId, seed, text, version: 1 },
+    settings: { ...raceSettings, maxPlayers: 8, raceTimeoutMs: raceSettings.mode === "time" ? raceSettings.value * 1000 + 15000 : 180000 },
+    content: { sourceId: raceSettings.wordSourceId, seed, text, version: 1 },
     lifecycle: { createdAt: serverTimestamp(), countdownStartedAt: null, raceStartedAt: null, endsAt: null, finishedAt: null },
     metadata: {},
   });

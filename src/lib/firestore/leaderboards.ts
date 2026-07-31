@@ -109,7 +109,7 @@ export async function fetchLeaderboard(
           if (!stats) return;
 
           let wpm = 0;
-          let modeLabel = opts.mode ?? "time";
+          let modeLabel: string = opts.mode ?? "time";
           let valueLabel = opts.value ?? 30;
 
           if (opts.mode && opts.value != null) {

@@ -1,4 +1,4 @@
-import { TestSettings } from "../../types/typing";
+import type { TestSettings } from "../../types/typing";
 
 export type GhostReplay = {
   settingsKey: string;
@@ -12,7 +12,14 @@ const GHOSTS_STORAGE_KEY = "typearena_ghosts_v1";
 const MAX_GHOSTS = 20;
 
 export function getSettingsKey(settings: TestSettings): string {
-  return `${settings.mode}_${settings.value}_${settings.wordSourceId}`;
+  return [
+    settings.mode,
+    settings.value,
+    settings.wordSourceId,
+    settings.punctuation ? "p" : "",
+    settings.numbers ? "n" : "",
+    settings.quoteLength || "",
+  ].join("_");
 }
 
 export function getAllGhosts(): Record<string, GhostReplay> {
@@ -20,8 +27,7 @@ export function getAllGhosts(): Record<string, GhostReplay> {
     const data = localStorage.getItem(GHOSTS_STORAGE_KEY);
     if (!data) return {};
     return JSON.parse(data);
-  } catch (err) {
-    console.error("Failed to parse ghosts from storage", err);
+  } catch {
     return {};
   }
 }
@@ -34,8 +40,7 @@ export function saveGhostReplay(settings: TestSettings, replay: GhostReplay): vo
   const existingGhost = ghosts[key];
   if (!existingGhost || replay.finalWpm > existingGhost.finalWpm) {
     ghosts[key] = replay;
-    
-    // Enforce max 20 ghosts, remove oldest if needed
+
     const keys = Object.keys(ghosts);
     if (keys.length > MAX_GHOSTS) {
       const sortedKeys = keys.sort((a, b) => ghosts[a].completedAt - ghosts[b].completedAt);
@@ -44,19 +49,18 @@ export function saveGhostReplay(settings: TestSettings, replay: GhostReplay): vo
         if (keyToRemove) delete ghosts[keyToRemove];
       }
     }
-    
+
     try {
       localStorage.setItem(GHOSTS_STORAGE_KEY, JSON.stringify(ghosts));
-    } catch (err) {
-      console.error("Failed to save ghost replay", err);
+    } catch {
+      /* ignore quota */
     }
   }
 }
 
 export function getGhostReplay(settings: TestSettings): GhostReplay | null {
   const ghosts = getAllGhosts();
-  const key = getSettingsKey(settings);
-  return ghosts[key] || null;
+  return ghosts[getSettingsKey(settings)] || null;
 }
 
 export function deleteGhost(settingsKey: string): void {
@@ -65,8 +69,8 @@ export function deleteGhost(settingsKey: string): void {
     delete ghosts[settingsKey];
     try {
       localStorage.setItem(GHOSTS_STORAGE_KEY, JSON.stringify(ghosts));
-    } catch (err) {
-      console.error("Failed to delete ghost replay", err);
+    } catch {
+      /* ignore */
     }
   }
 }

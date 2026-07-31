@@ -8,7 +8,7 @@ type HeaderProps = { theme: "light" | "dark"; onToggleTheme: () => void };
 export function Header({ theme, onToggleTheme }: HeaderProps) {
   const { user, enabled, signIn, signOutUser } = useAuth();
   const { enabled: soundEnabled, toggleSound } = useSound();
-  return <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-6 sm:px-8">
+  return <header className="app-header mx-auto flex w-full max-w-6xl items-center justify-between px-5 py-6 sm:px-8">
     <Link to="/" className="flex items-center gap-2 font-mono text-lg font-semibold tracking-tight">
       <span className="grid h-7 w-7 place-items-center rounded-md bg-[var(--ink)] text-[var(--paper)]"><Trophy size={15} /></span>
       typearena
