@@ -13,9 +13,30 @@ import { OnboardingModal, shouldShowOnboarding } from "./features/onboarding/Onb
 
 import { DailyChallengePage } from "./features/daily/DailyChallengePage";
 import { PracticePage } from "./features/practice/PracticePage";
+import { LessonsOverviewPage } from "./features/lessons/LessonsOverviewPage";
+import { LessonPracticePage } from "./features/lessons/LessonPracticePage";
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();
   const [showOnboarding, setShowOnboarding] = useState(shouldShowOnboarding);
-  return <div className="app-frame"><Header theme={theme} onToggleTheme={toggleTheme} /><Routes><Route path="/" element={<SoloTestPage />} /><Route path="/results" element={<ResultsPage />} /><Route path="/race" element={<RaceLandingPage />} /><Route path="/race/:roomId" element={<RoomPage />} /><Route path="/analytics" element={<AnalyticsDashboard />} /><Route path="/practice" element={<PracticePage />} /><Route path="/leaderboard" element={<LeaderboardPage />} /><Route path="/daily" element={<DailyChallengePage />} /><Route path="/profile" element={<ProfilePage />} /><Route path="/profile/:uid" element={<ProfilePage />} /></Routes>{showOnboarding && <OnboardingModal onDismiss={() => setShowOnboarding(false)} />}</div>;
+  return (
+    <div className="app-frame">
+      <Header theme={theme} onToggleTheme={toggleTheme} />
+      <Routes>
+        <Route path="/" element={<SoloTestPage />} />
+        <Route path="/results" element={<ResultsPage />} />
+        <Route path="/race" element={<RaceLandingPage />} />
+        <Route path="/race/:roomId" element={<RoomPage />} />
+        <Route path="/analytics" element={<AnalyticsDashboard />} />
+        <Route path="/practice" element={<PracticePage />} />
+        <Route path="/lessons" element={<LessonsOverviewPage />} />
+        <Route path="/lessons/:lessonId" element={<LessonPracticePage />} />
+        <Route path="/leaderboard" element={<LeaderboardPage />} />
+        <Route path="/daily" element={<DailyChallengePage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/profile/:uid" element={<ProfilePage />} />
+      </Routes>
+      {showOnboarding && <OnboardingModal onDismiss={() => setShowOnboarding(false)} />}
+    </div>
+  );
 }

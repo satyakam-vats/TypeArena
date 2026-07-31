@@ -9,6 +9,7 @@ Live Demo: [https://type-arena.vercel.app](https://type-arena.vercel.app)
 ## Features
 
 ### Solo Tests & Practice
+- **Structured Touch-Typing Lessons**: 15 progressive lessons introducing keys step-by-step across 4 difficulty tiers (Home Row → Top Row → Bottom Row → Numbers & Symbols) with 1-3 star ratings, WPM tracking, and unlocking milestones.
 - **Flexible Test Presets**: Test speed by duration (15, 30, 60, 120s), word count (10, 25, 50, 100 words), or custom length.
 - **Multiple Categories**: Practice using standard words, code snippets, quotes, numbers, punctuation, GitHub repos, or targeted n-grams.
 - **GitHub Code Mode**: Practice typing real-world open-source code snippets (React, TypeScript, Python, Rust, Go) or fetch from GitHub repositories.
