@@ -1,4 +1,5 @@
 import { commonEnglishWords } from "../../data/commonEnglishWords";
+import { wordsForDifficulty } from "../../data/difficultyWords";
 import { quotes } from "../../data/quotes";
 import { codeSnippets } from "../../data/codeSnippets";
 import { punctuationWords } from "../../data/punctuationWords";
@@ -87,10 +88,22 @@ function pickWords(
 const commonEnglish: WordSource = {
   id: "common-en",
   label: "english",
-  createText(wordCount, seed) {
-    return pickWords(commonEnglishWords, wordCount, createRandomGenerator(seed));
+  createText(wordCount, seed, settings) {
+    const pool = wordsForDifficulty(settings?.wordDifficulty ?? "medium");
+    return pickWords(
+      pool,
+      wordCount,
+      createRandomGenerator(seed),
+      settings?.punctuation ?? false,
+      settings?.numbers ?? false,
+    );
   },
 };
+
+/** English pool for the selected word-difficulty tier (falls back to full list). */
+export function englishPoolFor(settings?: TestSettings | null): string[] {
+  return wordsForDifficulty(settings?.wordDifficulty ?? "medium");
+}
 
 const quotesSource: WordSource = {
   id: "quotes",
@@ -223,7 +236,7 @@ export function createTestText(settings: TestSettings, seed: string): string {
   }
 
   return pickWords(
-    commonEnglishWords,
+    englishPoolFor(settings),
     count,
     createRandomGenerator(seed),
     settings.punctuation,
@@ -243,5 +256,5 @@ export function appendTestWords(settings: TestSettings, seed: string, wordCount 
   if (sourceId === "numbers") {
     return " " + pickWords(numberWords, wordCount, createRandomGenerator(seed));
   }
-  return " " + pickWords(commonEnglishWords, wordCount, createRandomGenerator(seed), settings.punctuation, settings.numbers);
+  return " " + pickWords(englishPoolFor(settings), wordCount, createRandomGenerator(seed), settings.punctuation, settings.numbers);
 }

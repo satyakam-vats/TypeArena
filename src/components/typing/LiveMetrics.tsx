@@ -1,4 +1,6 @@
+import { useMemo } from "react";
 import type { RunMetrics } from "../../types/typing";
+import { getAuraInfo } from "../../lib/typing/aura";
 
 type LiveMetricsProps = {
   metrics: Pick<RunMetrics, "wpm" | "accuracy">;
@@ -13,12 +15,21 @@ export function LiveMetrics({
   comboCount = 0,
   comboMultiplier = 1,
 }: LiveMetricsProps) {
+  const aura = useMemo(() => getAuraInfo(comboCount), [comboCount]);
+  // Show badge as soon as SPARK starts (combo ≥ 3) so feedback arrives early.
+  const showCombo = comboCount >= 3 && aura.tier > 0;
+
   return (
-    <div className="metric-strip items-center" aria-live="polite">
-      {comboCount >= 5 && (
-        <div className={`combo-badge ${comboMultiplier >= 5 ? "fever-badge" : ""}`}>
-          <span className="combo-count">{comboCount}x</span>
-          <span className="combo-multiplier">{comboMultiplier >= 5 ? "FEVER 🔥" : `x${comboMultiplier}`}</span>
+    <div className="metric-strip items-center" aria-live="off">
+      {showCombo && (
+        <div
+          className={`combo-badge aura-badge-${aura.tier} ${aura.tier >= 5 ? "fever-badge" : ""}`}
+          title={`Combo ${comboCount} · ${aura.label || "streak"} · x${comboMultiplier}`}
+        >
+          <span className="combo-count">{comboCount}×</span>
+          <span className="combo-multiplier">
+            {aura.tier >= 5 ? "FEVER" : aura.label ? `${aura.label} · x${comboMultiplier}` : `x${comboMultiplier}`}
+          </span>
         </div>
       )}
       <div><span>{label ?? "wpm"}</span><strong>{metrics.wpm}</strong></div>

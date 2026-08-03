@@ -1,12 +1,14 @@
 import { ArrowLeft, RotateCcw, Share2, Download, Play, Square } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { CompletedRun } from "../../types/typing";
 import { normalizeSettings } from "../../types/typing";
 import { KeyboardHeatmap } from "../heatmap/KeyboardHeatmap";
 import { getAllTimeKeyStatsFromStorage } from "../../lib/storage/analyticsStorage";
+import { getAdaptiveDrillRecommendation } from "../../lib/typing/practiceTextGen";
 import { shareShareCard, downloadShareCard } from "../../lib/shareCard";
 import { TypingViewport } from "../../components/typing/TypingViewport";
+import { AdaptiveDrillCard } from "../../components/typing/AdaptiveDrillCard";
 
 function Chart({ run }: { run: CompletedRun }) {
   const samples = run.metrics.samples.length > 1
@@ -28,8 +30,14 @@ function Chart({ run }: { run: CompletedRun }) {
 
 export function ResultsPage() {
   const navigate = useNavigate();
-  const raw = sessionStorage.getItem("typearena-last-run");
-  const run = raw ? JSON.parse(raw) as CompletedRun : null;
+  const run = useMemo(() => {
+    try {
+      const raw = sessionStorage.getItem("typearena-last-run");
+      return raw ? (JSON.parse(raw) as CompletedRun) : null;
+    } catch {
+      return null;
+    }
+  }, []);
 
   const [heatmapMode, setHeatmapMode] = useState<"run" | "alltime">("run");
   const [isSharing, setIsSharing] = useState(false);
@@ -121,6 +129,13 @@ export function ResultsPage() {
     };
   }, [navigate]);
 
+  // Hooks must run before any early return — re-read stats so drills reflect this run.
+  const allTimeKeyStats = useMemo(() => getAllTimeKeyStatsFromStorage(), [run?.id]);
+  const drillRecommendation = useMemo(
+    () => getAdaptiveDrillRecommendation(allTimeKeyStats.keyErrors, allTimeKeyStats.keyTotals, 5),
+    [allTimeKeyStats],
+  );
+
   if (!run) {
     return (
       <main className="center-page">
@@ -135,7 +150,7 @@ export function ResultsPage() {
   const nextTest = () => navigate("/", { state: { repeat: false } });
   const metrics = run.metrics;
 
-  const allTimeStats = heatmapMode === "alltime" ? getAllTimeKeyStatsFromStorage() : null;
+  const allTimeStats = heatmapMode === "alltime" ? allTimeKeyStats : null;
   const heatmapErrors = heatmapMode === "alltime" && allTimeStats ? allTimeStats.keyErrors : (metrics.keyErrors || {});
   const heatmapTotals = heatmapMode === "alltime" && allTimeStats ? allTimeStats.keyTotals : (metrics.keyTotals || {});
 
@@ -154,6 +169,11 @@ export function ResultsPage() {
           {metrics.maxCombo ? <span>max combo <b>{metrics.maxCombo}x</b></span> : null}
         </div>
       </section>
+
+      {drillRecommendation.weakKeys.length > 0 && (
+        <AdaptiveDrillCard recommendation={drillRecommendation} variant="card" className="mb-8" />
+      )}
+
       <Chart run={run} />
       <section className="breakdown-grid" aria-label="Character breakdown">
         <div><span>correct</span><strong>{metrics.correct}</strong></div>

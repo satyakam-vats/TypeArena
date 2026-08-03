@@ -130,7 +130,7 @@ export function useTypingTest(
       if (mode === "time" && elapsed >= settingsRef.current.value * 1000) {
         finish(typedRef.current);
       }
-    }, 80);
+    }, 200);
     return () => window.clearInterval(ticker);
   }, [finish, status]);
 
@@ -207,6 +207,10 @@ export function useTypingTest(
           if (nextCombo > maxComboRef.current) {
             maxComboRef.current = nextCombo;
           }
+          // Celebrate tier-ups: SPARK(3) · WARM(9) · FLOW(18) · BLAZE(30) · FEVER(50)
+          if (nextCombo === 3 || nextCombo === 9 || nextCombo === 18 || nextCombo === 30) {
+            soundManager.playTierUp(nextCombo);
+          }
           if (nextCombo === 50) {
             soundManager.playFeverSound();
           }
@@ -236,7 +240,7 @@ export function useTypingTest(
         accepted.length >= target.length &&
         target.length > 0
       ) {
-        window.setTimeout(() => finish(accepted), 0);
+        finish(accepted);
       }
       return;
     }

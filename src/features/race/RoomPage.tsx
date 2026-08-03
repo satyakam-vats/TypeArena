@@ -26,7 +26,7 @@ export function RoomPage() {
 
   useEffect(() => subscribeRoom(roomId, setRoom), [roomId]);
   useEffect(() => subscribePlayers(roomId, setPlayers), [roomId]);
-  useEffect(() => { const tick = window.setInterval(() => setNow(Date.now()), 100); return () => window.clearInterval(tick); }, []);
+  useEffect(() => { const tick = window.setInterval(() => setNow(Date.now()), 1000); return () => window.clearInterval(tick); }, []);
 
   // Clean leave on unmount / navigation so ghost hosts don't stick in quick-match.
   useEffect(() => {

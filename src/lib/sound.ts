@@ -53,6 +53,19 @@ export class SoundManager {
     this.playTone(baseFreq, 'sine', 0.025, 0.25);
   }
 
+  /** Soft chime when an aura tier unlocks (SPARK / WARM / FLOW / BLAZE). */
+  playTierUp(comboCount: number = 3) {
+    if (!this.isEnabled || this.volume <= 0) return;
+    // Higher tiers → slightly brighter two-note blip
+    const base =
+      comboCount >= 30 ? 660 :
+      comboCount >= 18 ? 587 :
+      comboCount >= 9 ? 523 :
+      440;
+    this.playTone(base, "triangle", 0.07, 0.22);
+    this.playTone(base * 1.5, "sine", 0.1, 0.16);
+  }
+
   playFeverSound() {
     if (!this.isEnabled || this.volume <= 0) return;
     try {

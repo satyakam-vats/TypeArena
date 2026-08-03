@@ -5,15 +5,18 @@ import { LiveMetrics } from "../../components/typing/LiveMetrics";
 import { TestControls } from "../../components/typing/TestControls";
 import { TypingViewport } from "../../components/typing/TypingViewport";
 import { LiveTouchKeyboard } from "../../components/typing/LiveTouchKeyboard";
+import { AdaptiveDrillCard } from "../../components/typing/AdaptiveDrillCard";
 import { useAuth } from "../../context/AuthContext";
 import { saveRun } from "../../lib/firestore/testRuns";
 import { recordRunStats } from "../../lib/firestore/users";
 import { getAllTimeKeyStatsFromStorage, saveRunToLocalStorage } from "../../lib/storage/analyticsStorage";
 import { saveGhostReplay } from "../../lib/storage/ghostStorage";
-import { getWeakKeys } from "../../lib/typing/practiceTextGen";
+import { getAdaptiveDrillRecommendation, getWeakKeys } from "../../lib/typing/practiceTextGen";
 import { appendTestWords, createTestText } from "../../lib/typing/wordSources";
 import { useTypingTest } from "../../hooks/useTypingTest";
 import { normalizeSettings, type CompletedRun, type TestSettings } from "../../types/typing";
+
+const DRILL_BANNER_DISMISS_KEY = "typearena_dismiss_adaptive_drill_v1";
 
 const SETTINGS_KEY = "typearena_test_settings_v1";
 
@@ -67,6 +70,13 @@ export function SoloTestPage({ initialWordSource }: Props) {
   const [targetText, setTargetText] = useState("");
   const [focused, setFocused] = useState(true);
   const [capsLock, setCapsLock] = useState(false);
+  const [drillBannerDismissed, setDrillBannerDismissed] = useState(() => {
+    try {
+      return sessionStorage.getItem(DRILL_BANNER_DISMISS_KEY) === "1";
+    } catch {
+      return false;
+    }
+  });
   const appendCount = useRef(0);
   const appendLock = useRef(false);
   const didInit = useRef(false);
@@ -103,13 +113,20 @@ export function SoloTestPage({ initialWordSource }: Props) {
     appendLock.current = false;
   }, [settings]);
 
-  // Rebuild text when seed/settings change from outside setSettings (nextTest)
-  useEffect(() => {
-    // target already set by setSettings/nextTest; keep in sync if practice
-  }, [testSeed]);
-
+  // Re-read recency-weighted key stats whenever the test seed changes (new/next test).
   const { keyErrors, keyTotals } = useMemo(() => getAllTimeKeyStatsFromStorage(), [testSeed]);
   const weakKeys = useMemo(() => getWeakKeys(keyErrors, keyTotals, 5, 6), [keyErrors, keyTotals]);
+  const drillRecommendation = useMemo(
+    () => getAdaptiveDrillRecommendation(keyErrors, keyTotals, 5),
+    [keyErrors, keyTotals],
+  );
+
+  const dismissDrillBanner = useCallback(() => {
+    setDrillBannerDismissed(true);
+    try {
+      sessionStorage.setItem(DRILL_BANNER_DISMISS_KEY, "1");
+    } catch { /* ignore */ }
+  }, []);
 
   const getRateColorClass = (rate: number) => {
     if (rate < 0.08) return "rate-green";
@@ -266,12 +283,16 @@ export function SoloTestPage({ initialWordSource }: Props) {
       {isPracticeMode && (
         <div className="practice-weak-keys-bar animate-fade-in focus-hide">
           <div className="practice-weak-keys-label">
-            <Target size={12} /> weak keys
+            <Target size={12} /> adaptive drill · weak keys
           </div>
           {weakKeys.length > 0 ? (
             <div className="practice-weak-keys-list">
               {weakKeys.map((wk) => (
-                <div key={wk.key} className="weak-key-chip" title={`${(wk.errorRate * 100).toFixed(1)}% recent error rate`}>
+                <div
+                  key={wk.key}
+                  className="weak-key-chip"
+                  title={`${(wk.errorRate * 100).toFixed(1)}% recent error rate · re-evaluates after each session`}
+                >
                   <span className="weak-key-cap">{wk.key === " " || wk.key === "space" ? "␣" : wk.key.toUpperCase()}</span>
                   <span className={`weak-key-rate-pill ${getRateColorClass(wk.errorRate)}`}>
                     {(wk.errorRate * 100).toFixed(0)}%
@@ -280,10 +301,25 @@ export function SoloTestPage({ initialWordSource }: Props) {
               ))}
             </div>
           ) : (
-            <p className="practice-weak-keys-empty">type a few tests — weak keys appear as error history builds</p>
+            <p className="practice-weak-keys-empty">
+              {drillRecommendation.hasEnoughData
+                ? "no weak keys right now — keep practicing"
+                : "type a few tests — weak keys appear as error history builds"}
+            </p>
           )}
         </div>
       )}
+
+      {!isPracticeMode &&
+        !drillBannerDismissed &&
+        drillRecommendation.weakKeys.length > 0 && (
+          <AdaptiveDrillCard
+            recommendation={drillRecommendation}
+            variant="banner"
+            onDismiss={dismissDrillBanner}
+            className="mb-4 focus-hide animate-fade-in"
+          />
+        )}
 
       <div className="solo-toolbar mb-8 flex items-center justify-center flex-wrap gap-4 focus-hide">
         <TestControls settings={settings} onChange={setSettings} disabled={test.status === "running"} />

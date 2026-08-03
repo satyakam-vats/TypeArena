@@ -1,5 +1,6 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { getCharacterStates, getFailedWordIndices } from "../../lib/typing/metrics";
+import { getAuraInfo, getAuraProgress } from "../../lib/typing/aura";
 import type { CaretStyle, CaretSpeed } from "../../types/typing";
 
 type TypingViewportProps = {
@@ -41,7 +42,28 @@ export function TypingViewport({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const caretElRef = useRef<HTMLSpanElement | null>(null);
   const prevTopRef = useRef<number>(0);
+  const prevTierRef = useRef<number>(0);
   const [translateY, setTranslateY] = useState(0);
+  const [isTierUp, setIsTierUp] = useState(false);
+
+  const aura = useMemo(() => getAuraInfo(comboCount), [comboCount]);
+  const auraProgress = useMemo(() => getAuraProgress(comboCount), [comboCount]);
+
+  useEffect(() => {
+    if (aura.tier > prevTierRef.current && prevTierRef.current > 0) {
+      setIsTierUp(true);
+      const timer = setTimeout(() => setIsTierUp(false), 500);
+      return () => clearTimeout(timer);
+    }
+    prevTierRef.current = aura.tier;
+  }, [aura.tier]);
+
+  // Continuous growth within a tier (0–1) drives CSS custom props for smooth scale-up.
+  const auraStyle = useMemo((): CSSProperties => ({
+    ["--aura-progress" as string]: String(auraProgress),
+    ["--aura-spread" as string]: `${12 + aura.tier * 10 + auraProgress * 14}px`,
+    ["--aura-intensity" as string]: String(0.22 + aura.tier * 0.12 + auraProgress * 0.1),
+  }), [aura.tier, auraProgress]);
 
   // Group target text into word tokens so words never break mid-word across lines
   const wordTokens = useMemo(() => {
@@ -67,7 +89,7 @@ export function TypingViewport({
     const el = activeCharRef.current || (container?.querySelector(".char") as HTMLElement | null);
     const caret = caretElRef.current;
 
-    if (!copyEl || !el || !caret) return;
+    if (!copyEl || !el || !caret || !container) return;
 
     const copyRect = copyEl.getBoundingClientRect();
     const charRect = el.getBoundingClientRect();
@@ -76,6 +98,10 @@ export function TypingViewport({
     const left = charRect.left - copyRect.left;
     const top = charRect.top - copyRect.top;
     const height = charRect.height || 28;
+
+    // Set caret position custom variables on container for local aura halo
+    container.style.setProperty("--caret-left", `${left}px`);
+    container.style.setProperty("--caret-top", `${top}px`);
 
     // Detect line wrap; disable diagonal transition animation when jumping across lines
     const lineChanged = Math.abs(top - prevTopRef.current) > 10;
@@ -107,64 +133,110 @@ export function TypingViewport({
   const showOverlay = !focused && active && replayIndex == null;
 
   return (
-    <div className={`typing-viewport-container ${blind ? "viewport-blind" : ""} ${comboMultiplier >= 5 ? "fever-glow" : ""}`} ref={containerRef}>
-      {capsLock && active && (
-        <div className="caps-lock-warn" role="status">Caps Lock</div>
-      )}
-
-      {showOverlay && (
-        <button type="button" className="focus-overlay" onClick={onRequestFocus}>
-          click here or press any key to focus
-        </button>
+    <div
+      className={`typing-viewport-aura ${aura.className} ${aura.tier >= 5 ? "aura-fever" : ""} ${isTierUp ? "aura-tier-up-pop" : ""}`}
+      style={aura.tier > 0 ? auraStyle : undefined}
+      data-aura-tier={aura.tier}
+    >
+      {/* Background soft ambient halo */}
+      {aura.tier > 0 && (
+        <>
+          <div className="aura-ambient-edge" />
+          {aura.tier >= 3 && <div className="aura-ring" />}
+          {aura.tier >= 5 && <div className="aura-sparks" />}
+        </>
       )}
 
       <div
-        className="typing-copy flex flex-wrap relative"
-        style={{ transform: `translateY(-${translateY}px)` }}
+        className={`typing-viewport-container ${blind ? "viewport-blind" : ""} ${aura.tier >= 5 ? "fever-glow" : ""}`}
+        ref={containerRef}
       >
-        {smoothCaret && (
-          <span
-            ref={caretElRef}
-            className={`smooth-caret caret-${caretStyle} smooth-${caretSpeed || "medium"} ${caretActive ? "active" : "hidden"}`}
-          />
+        {/* Integrated Top Progress Strip & Tier Badge */}
+        {aura.tier > 0 && (
+          <div className="aura-header-strip">
+            <div className="aura-progress-track">
+              <div
+                className="aura-progress-fill"
+                style={{ width: `${Math.min(100, Math.max(0, auraProgress * 100))}%` }}
+              />
+            </div>
+            <div className={`aura-tier-pill aura-pill-tier-${aura.tier} ${isTierUp ? "pill-pop" : ""}`}>
+              <span className="aura-pill-icon">{aura.icon}</span>
+              <span className="aura-pill-label">{aura.label}</span>
+              <span className="aura-pill-mult">x{comboMultiplier}</span>
+              <span className="aura-pill-streak">{comboCount}×</span>
+            </div>
+          </div>
         )}
 
-        {wordTokens.map((wordObj, wordIndex) => (
-          <span key={wordIndex} className="word-group inline-block whitespace-nowrap">
-            {wordObj.text.split("").map((ch, charOffset) => {
-              const globalIndex = wordObj.startIdx + charOffset;
-              const isCurrent = globalIndex === displayTyped.length;
-              const st = states[globalIndex] ?? "pending";
-              const isFailed = failed.has(globalIndex);
-              const isBlind = blind && (st === "correct" || st === "incorrect");
+        {capsLock && active && (
+          <div className="caps-lock-warn" role="status">Caps Lock</div>
+        )}
 
-              let cls = "char";
-              if (st === "correct") cls += " char-correct";
-              if (st === "incorrect") cls += " char-incorrect";
-              if (isFailed) cls += " char-word-fail";
-              if (isBlind) cls += " char-blind";
+        {showOverlay && (
+          <button type="button" className="focus-overlay" onClick={onRequestFocus}>
+            click here or press any key to focus
+          </button>
+        )}
 
-              const useHardCaret = !smoothCaret && isCurrent && caretActive;
-              if (useHardCaret) cls += ` char-caret caret-${caretStyle}`;
+        <div
+          className="typing-copy flex flex-wrap relative"
+          style={{ transform: `translateY(-${translateY}px)` }}
+        >
+          {/* Caret Local Energy Aura Halo */}
+          {aura.tier > 0 && caretActive && (
+            <div
+              className={`caret-ambient-halo aura-halo-tier-${aura.tier}`}
+              style={{
+                transform: `translate3d(calc(var(--caret-left, 0px) - 24px), calc(var(--caret-top, 0px) - 12px), 0)`,
+              }}
+            />
+          )}
 
-              return (
-                <span
-                  key={globalIndex}
-                  ref={isCurrent ? activeCharRef : null}
-                  className={cls}
-                >
-                  {ch === " " ? "\u00A0" : ch}
-                </span>
-              );
-            })}
-          </span>
-        ))}
+          {smoothCaret && (
+            <span
+              ref={caretElRef}
+              className={`smooth-caret caret-${caretStyle} smooth-${caretSpeed || "medium"} ${caretActive ? "active" : "hidden"} ${aura.tier > 0 ? `caret-aura-${aura.tier}` : ""}`}
+            />
+          )}
 
-        {extra.split("").map((ch, i) => (
-          <span key={`extra-${i}`} className="char char-extra">
-            {ch === " " ? "\u00A0" : ch}
-          </span>
-        ))}
+          {wordTokens.map((wordObj, wordIndex) => (
+            <span key={wordIndex} className="word-group inline-block whitespace-nowrap">
+              {wordObj.text.split("").map((ch, charOffset) => {
+                const globalIndex = wordObj.startIdx + charOffset;
+                const isCurrent = globalIndex === displayTyped.length;
+                const st = states[globalIndex] ?? "pending";
+                const isFailed = failed.has(globalIndex);
+                const isBlind = blind && (st === "correct" || st === "incorrect");
+
+                let cls = "char";
+                if (st === "correct") cls += " char-correct";
+                if (st === "incorrect") cls += " char-incorrect";
+                if (isFailed) cls += " char-word-fail";
+                if (isBlind) cls += " char-blind";
+
+                const useHardCaret = !smoothCaret && isCurrent && caretActive;
+                if (useHardCaret) cls += ` char-caret caret-${caretStyle}`;
+
+                return (
+                  <span
+                    key={globalIndex}
+                    ref={isCurrent ? activeCharRef : null}
+                    className={cls}
+                  >
+                    {ch === " " ? "\u00A0" : ch}
+                  </span>
+                );
+              })}
+            </span>
+          ))}
+
+          {extra.split("").map((ch, i) => (
+            <span key={`extra-${i}`} className="char char-extra">
+              {ch === " " ? "\u00A0" : ch}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );

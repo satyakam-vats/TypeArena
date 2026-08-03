@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import { useState, useMemo, useId } from 'react';
 
 type TrendChartProps = {
   data: { label: string; value: number }[];
@@ -20,6 +20,8 @@ export function TrendChart({
   animate = true,
 }: TrendChartProps) {
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
+  const rawGradientId = useId();
+  const gradientId = `areaGradient-${rawGradientId.replace(/:/g, '')}`;
 
   const svgWidth = 800;
   const svgHeight = height;
@@ -74,7 +76,7 @@ export function TrendChart({
         preserveAspectRatio="none"
       >
         <defs>
-          <linearGradient id="areaGradient" x1="0" x2="0" y1="0" y2="1">
+          <linearGradient id={gradientId} x1="0" x2="0" y1="0" y2="1">
             <stop offset="0%" stopColor={color} stopOpacity={fillOpacity} />
             <stop offset="100%" stopColor={color} stopOpacity={0} />
           </linearGradient>
@@ -136,7 +138,7 @@ export function TrendChart({
         {points.length > 1 && (
           <path 
             d={areaPath} 
-            fill="url(#areaGradient)" 
+            fill={`url(#${gradientId})`}
             className={animate ? 'chart-area-animate' : ''}
           />
         )}
@@ -146,7 +148,7 @@ export function TrendChart({
           d={linePath} 
           fill="none" 
           stroke={color} 
-          strokeWidth="2" 
+          strokeWidth="2.5" 
           strokeLinecap="round" 
           strokeLinejoin="round"
           className={animate ? 'chart-path-animate' : ''}
@@ -169,21 +171,21 @@ export function TrendChart({
         ))}
       </svg>
 
-      {/* Tooltip */}
+      {/* Tooltip with edge clamping */}
       {hoveredPoint !== null && (
         <div 
-          className="absolute z-10 pointer-events-none chart-tooltip px-2 py-1 rounded shadow-sm text-xs"
+          className="absolute z-10 pointer-events-none chart-tooltip px-2.5 py-1.5 rounded shadow-md text-xs whitespace-nowrap"
           style={{ 
-            left: `${(points[hoveredPoint].x / svgWidth) * 100}%`,
-            top: `${(points[hoveredPoint].y / svgHeight) * 100}%`,
-            transform: 'translate(-50%, -120%)',
+            left: `${Math.min(92, Math.max(8, (points[hoveredPoint].x / svgWidth) * 100))}%`,
+            top: `${Math.min(85, Math.max(10, (points[hoveredPoint].y / svgHeight) * 100))}%`,
+            transform: 'translate(-50%, -130%)',
             background: 'var(--surface)',
             color: 'var(--ink)',
             border: '1px solid var(--line)',
             fontFamily: '"IBM Plex Mono", monospace'
           }}
         >
-          <div className="font-bold mb-1">{points[hoveredPoint].value}{yLabel}</div>
+          <div className="font-bold mb-0.5">{points[hoveredPoint].value}{yLabel}</div>
           <div style={{ color: 'var(--muted)' }}>{points[hoveredPoint].label}</div>
         </div>
       )}

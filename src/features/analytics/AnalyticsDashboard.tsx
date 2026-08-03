@@ -3,6 +3,9 @@ import { Link } from 'react-router-dom';
 import { useRunHistory } from '../../hooks/useRunHistory';
 import { TrendChart } from '../../components/charts/TrendChart';
 import { useAuth } from '../../context/AuthContext';
+import { getAllTimeKeyStatsFromStorage } from '../../lib/storage/analyticsStorage';
+import { getAdaptiveDrillRecommendation } from '../../lib/typing/practiceTextGen';
+import { AdaptiveDrillCard } from '../../components/typing/AdaptiveDrillCard';
 import type { TestMode } from '../../types/typing';
 
 type FilterOption = 'all' | 'time-15' | 'time-30' | 'time-60' | 'words-10' | 'words-25' | 'words-50';
@@ -22,6 +25,11 @@ export function AnalyticsDashboard() {
     }
     return result;
   }, [runs, filter]);
+
+  const drillRecommendation = useMemo(() => {
+    const stats = getAllTimeKeyStatsFromStorage();
+    return getAdaptiveDrillRecommendation(stats.keyErrors, stats.keyTotals, 5);
+  }, [runs]);
 
   const { wpmData, accData, consData, averages } = useMemo(() => {
     const wpmData = filteredRuns.map((r) => ({
@@ -119,6 +127,10 @@ export function AnalyticsDashboard() {
           </button>
         ))}
       </div>
+
+      {drillRecommendation.weakKeys.length > 0 && (
+        <AdaptiveDrillCard recommendation={drillRecommendation} variant="card" />
+      )}
 
       {/* Charts List */}
       <div className="flex flex-col gap-6 mt-4">

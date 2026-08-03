@@ -21,6 +21,12 @@ const quoteLengths = [
 ];
 
 const availableNgrams = ["th", "ch", "sh", "ion", "str", "qu"] as const;
+const wordDifficultyOptions = [
+  { id: "easy" as const, label: "easy" },
+  { id: "medium" as const, label: "medium" },
+  { id: "hard" as const, label: "hard" },
+  { id: "all" as const, label: "all" },
+];
 
 export function TestControls({ settings, onChange, disabled, compact }: Props) {
   const [showCustomInput, setShowCustomInput] = useState(false);
@@ -63,6 +69,9 @@ export function TestControls({ settings, onChange, disabled, compact }: Props) {
 
   const showLength = settings.mode === "time" || settings.mode === "words";
   const showPunctNum = settings.mode === "time" || settings.mode === "words" || settings.mode === "zen";
+  // Word-pool difficulty only applies to the English word source (not code/quotes/practice).
+  const showWordDifficulty =
+    showPunctNum && (settings.wordSourceId || "common-en") === "common-en";
 
   const toggleNgram = (ngram: string) => {
     const current = settings.selectedNgrams || ["th", "ch", "sh", "ion", "str", "qu"];
@@ -166,6 +175,32 @@ export function TestControls({ settings, onChange, disabled, compact }: Props) {
                 className={settings.quoteLength === q.id ? "control-active" : "control"}
               >
                 {q.label}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* Word difficulty: easy / medium / hard / all (English pool only) */}
+        {showWordDifficulty && (
+          <div className="test-control-capsule" aria-label="Word difficulty">
+            {wordDifficultyOptions.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                disabled={disabled}
+                title={
+                  opt.id === "easy"
+                    ? "Short everyday words (2–4 letters)"
+                    : opt.id === "medium"
+                      ? "Mid-length words (5–7 letters)"
+                      : opt.id === "hard"
+                        ? "Longer vocabulary (8+ letters)"
+                        : "Full English word pool"
+                }
+                onClick={() => onChange({ ...settings, wordDifficulty: opt.id })}
+                className={(settings.wordDifficulty || "medium") === opt.id ? "control-active" : "control"}
+              >
+                {opt.label}
               </button>
             ))}
           </div>

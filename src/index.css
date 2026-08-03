@@ -4,8 +4,8 @@
 @tailwind components;
 @tailwind utilities;
 
-:root { --paper:#f5f1ea; --surface:#ece7de; --ink:#24231f; --muted:#817c73; --line:#d8d1c6; --accent:#096b66; --accent-soft:#d8e9e4; --danger:#b84436; --wrong:#c4574a; }
-:root[data-theme="dark"] { --paper:#191a18; --surface:#242521; --ink:#e9e4da; --muted:#9d9a90; --line:#393a35; --accent:#7fc4b9; --accent-soft:#213a37; --danger:#ed8377; --wrong:#ef877b; }
+:root { --paper:#f5f1ea; --paper-soft:#faf8f4; --surface:#ece7de; --ink:#24231f; --muted:#817c73; --line:#d8d1c6; --accent:#096b66; --accent-soft:#d8e9e4; --danger:#b84436; --wrong:#c4574a; --bg-card:#f5f1ea; }
+:root[data-theme="dark"] { --paper:#191a18; --paper-soft:#1e1f1c; --surface:#242521; --ink:#e9e4da; --muted:#9d9a90; --line:#393a35; --accent:#7fc4b9; --accent-soft:#213a37; --danger:#ed8377; --wrong:#ef877b; --bg-card:#1e1f1c; }
 * { box-sizing:border-box; }
 html { background:var(--paper); color:var(--ink); }
 body { margin:0; min-width:320px; background:var(--paper); color:var(--ink); font-family:"DM Sans",ui-sans-serif,sans-serif; }
@@ -31,7 +31,7 @@ a { color:inherit; text-decoration:none; }
 .advanced-settings-popover { width:min(620px,94vw); background:var(--paper-soft); border:1px solid var(--line); border-radius:12px; padding:16px 20px; box-shadow:0 12px 28px rgba(0,0,0,0.12); display:flex; flex-direction:column; gap:10px; margin-top:6px; animation:fade-in .2s ease-out; }
 .advanced-row { display:flex; align-items:center; justify-content:space-between; gap:12px; font-size:.82rem; }
 .advanced-row-label { color:var(--muted); font-family:"IBM Plex Mono",monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.05em; width:110px; flex-shrink:0; }
-.typing-stage { position:relative; margin:auto 0; }
+.typing-stage { position:relative; margin:auto 0; overflow:visible; }
 /* Fixed ~3-line window; text translates so the caret stays near the top (Monkeytype-style). */
 .typing-viewport-container { position:relative; font-size:clamp(1.25rem,2.25vw,1.8rem); height:calc(1.85em * 3); overflow:hidden; border-radius:4px; }
 .typing-copy { position:relative; color:var(--muted); font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:inherit; font-weight:400; line-height:1.85; letter-spacing:.01em; word-break:break-word; transition:transform .12s cubic-bezier(.2,0,.2,1); will-change:transform; }
@@ -71,8 +71,8 @@ a { color:inherit; text-decoration:none; }
 .replay-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; }
 .ghost-marker { display:inline-block; width:2px; height:1em; background:var(--muted); opacity:.5; vertical-align:text-bottom; margin:0 1px; }
 body.focus-mode .app-header,
-body.focus-mode .focus-hide,
-body.focus-mode .focus-hide-soft { opacity:1; pointer-events:auto; }
+body.focus-mode .focus-hide { opacity:0; pointer-events:none; transition:opacity .25s ease; }
+body.focus-mode .focus-hide-soft { opacity:.15; pointer-events:none; transition:opacity .25s ease; }
 .metric-strip { display:flex; align-items:end; gap:17px; font-family:"IBM Plex Mono",monospace; }
 .metric-strip div { display:flex; gap:5px; align-items:baseline; }.metric-strip span { color:var(--muted); font-size:.68rem; }.metric-strip strong { font-size:.93rem; font-weight:500; color:var(--ink); }
 kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; padding:1px 4px; color:var(--ink); font-family:"IBM Plex Mono",monospace; font-size:.75rem; }
@@ -89,9 +89,9 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
 /* --- Solo / Practice layout (keyboard docked, text scrolls) --- */
 .solo-test-page { position:relative; min-height:calc(100vh - 72px); padding-bottom:1.5rem; }
 .solo-test-page.solo-with-keyboard { padding-bottom:calc(210px + env(safe-area-inset-bottom, 0px)); }
-.solo-typing-stage { flex:1 1 auto; min-height:0; }
+.solo-typing-stage { flex:1 1 auto; min-height:0; overflow:visible; padding: 18px 8px; /* room for aura bloom to spill */ }
 .solo-hints {
-  position:fixed; bottom:1.2rem; right:1.8rem; z-index:25;
+  position:absolute; bottom:1.2rem; right:1.8rem; z-index:25;
   margin:0; display:flex; align-items:center; gap:12px;
   font-family:"IBM Plex Mono",monospace; font-size:.72rem; color:var(--muted);
   opacity:.55; transition:opacity .2s ease; pointer-events:none;
@@ -134,6 +134,44 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
 .rate-orange { color:#f97316; background:rgba(249,115,22,.14); }
 .rate-yellow { color:#eab308; background:rgba(234,179,8,.14); }
 .rate-green { color:#22c55e; background:rgba(34,197,94,.14); }
+
+/* --- Adaptive drill recommendation --- */
+.adaptive-drill {
+  display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;
+  background:var(--surface); border:1px solid var(--line); border-radius:10px;
+}
+.adaptive-drill-banner { padding:8px 12px; margin-bottom:4px; }
+.adaptive-drill-card {
+  padding:14px 16px;
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
+}
+.adaptive-drill-main { display:flex; flex-direction:column; gap:8px; min-width:0; flex:1; }
+.adaptive-drill-heading {
+  display:inline-flex; align-items:center; gap:6px;
+  color:var(--accent); font-family:"IBM Plex Mono",monospace;
+  font-size:.68rem; font-weight:600; letter-spacing:.06em; text-transform:uppercase;
+}
+.adaptive-drill-summary {
+  margin:0; color:var(--ink); font-family:"DM Sans",sans-serif;
+  font-size:.9rem; font-weight:500;
+}
+.adaptive-drill-actions { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+.adaptive-drill-cta {
+  display:inline-flex; align-items:center; gap:6px;
+  padding:7px 12px; border-radius:8px;
+  background:var(--accent); color:var(--paper, #fff);
+  font-family:"IBM Plex Mono",monospace; font-size:.75rem; font-weight:600;
+  text-decoration:none; transition:opacity .15s ease;
+}
+.adaptive-drill-cta:hover { opacity:.9; }
+.adaptive-drill-dismiss {
+  display:inline-grid; place-items:center;
+  width:28px; height:28px; border-radius:6px;
+  border:1px solid var(--line); background:transparent; color:var(--muted);
+  cursor:pointer; transition:color .15s ease, border-color .15s ease;
+}
+.adaptive-drill-dismiss:hover { color:var(--ink); border-color:var(--ink); }
 
 /* ─── Keyboard Heatmap ──────────────────────────────────────────── */
 .keyboard-heatmap-container { margin-top:28px; }
@@ -292,10 +330,227 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
 .onboarding-skip { border:0; background:transparent; color:var(--muted); font-size:.82rem; cursor:pointer; padding:4px 8px; }
 .onboarding-skip:hover { color:var(--ink); }
 
-/* --- Combo Badge & FEVER Glow ----------------------------------- */
-.combo-badge { display:inline-flex; align-items:center; gap:6px; padding:3px 10px; margin-right:8px; border-radius:999px; background:var(--accent-soft); border:1px solid var(--accent); color:var(--accent); font-family:"IBM Plex Mono",monospace; font-size:.78rem; font-weight:600; animation:pulse-scale .2s ease-out; }
-.combo-badge.fever-badge { background:linear-gradient(135deg, rgba(239,68,68,0.2), rgba(245,158,11,0.2)); border-color:#f59e0b; color:#f59e0b; box-shadow:0 0 12px rgba(245,158,11,0.3); animation:fever-pulse .8s infinite alternate; }
-.typing-viewport-container.fever-glow { box-shadow:0 6px 30px rgba(245,158,11,0.2); }
+/* --- Combo Badge ------------------------------------------------- */
+.combo-badge {
+  display:inline-flex; align-items:center; gap:6px; padding:3px 10px; margin-right:8px;
+  border-radius:999px; font-family:"IBM Plex Mono",monospace; font-size:.78rem; font-weight:600;
+  animation:pulse-scale .22s ease-out;
+  transition: background .35s ease, border-color .35s ease, color .35s ease, box-shadow .35s ease;
+}
+.combo-badge.aura-badge-1 { background:color-mix(in srgb, var(--accent) 14%, transparent); border:1px solid color-mix(in srgb, var(--accent) 45%, var(--line)); color:var(--accent); }
+.combo-badge.aura-badge-2 { background:color-mix(in srgb, #22d3ee 16%, transparent); border:1px solid #22d3ee; color:#0891b2; box-shadow:0 0 10px rgba(34,211,238,.2); }
+.combo-badge.aura-badge-3 { background:color-mix(in srgb, #a78bfa 18%, transparent); border:1px solid #a78bfa; color:#7c3aed; box-shadow:0 0 12px rgba(167,139,250,.25); }
+.combo-badge.aura-badge-4 { background:color-mix(in srgb, #f97316 18%, transparent); border:1px solid #f97316; color:#ea580c; box-shadow:0 0 14px rgba(249,115,22,.28); }
+.combo-badge.fever-badge,
+.combo-badge.aura-badge-5 {
+  background:linear-gradient(135deg, rgba(239,68,68,.22), rgba(245,158,11,.22));
+  border:1px solid #f59e0b; color:#f59e0b;
+  box-shadow:0 0 16px rgba(245,158,11,.35);
+  animation:fever-pulse .8s infinite alternate;
+}
+:root[data-theme="dark"] .combo-badge.aura-badge-2 { color:#67e8f9; }
+:root[data-theme="dark"] .combo-badge.aura-badge-3 { color:#c4b5fd; }
+:root[data-theme="dark"] .combo-badge.aura-badge-4 { color:#fdba74; }
+
+/* --- Progressive combo aura (Refined Header & Caret Halo) --------- */
+.typing-viewport-aura {
+  position: relative;
+  isolation: isolate;
+  border-radius: 12px;
+  transition: filter .45s ease, transform .3s ease;
+}
+.typing-viewport-aura.aura-tier-up-pop {
+  animation: aura-tier-pop 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.typing-viewport-aura .typing-viewport-container {
+  position: relative;
+  z-index: 1;
+  border-radius: 12px;
+  transition: box-shadow .45s ease, border-color .45s ease;
+}
+
+/* Integrated Header Strip: Progress Fill + Tier Pill */
+.aura-header-strip {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 14px;
+  pointer-events: none;
+}
+.aura-progress-track {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 12px 12px 0 0;
+  overflow: hidden;
+}
+.aura-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--aura-core, var(--accent)), var(--aura-hot, var(--accent)));
+  box-shadow: 0 0 8px var(--aura-core, var(--accent));
+  transition: width 0.25s ease-out;
+}
+.aura-tier-pill {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  background: color-mix(in srgb, var(--aura-core, var(--accent)) 16%, var(--bg-card, #121214));
+  border: 1px solid color-mix(in srgb, var(--aura-core, var(--accent)) 40%, transparent);
+  color: var(--aura-hot, var(--ink));
+  box-shadow: 0 2px 10px color-mix(in srgb, var(--aura-core, var(--accent)) 25%, transparent);
+  transition: transform 0.2s ease, background 0.35s ease;
+}
+.aura-tier-pill.pill-pop {
+  animation: pill-bounce 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.aura-pill-icon { font-size: 0.85rem; }
+.aura-pill-label { text-transform: uppercase; }
+.aura-pill-mult { opacity: 0.85; padding-left: 3px; }
+.aura-pill-streak { font-weight: 800; opacity: 0.95; padding-left: 2px; }
+
+/* Caret Local Energy Aura Halo (Follows typing cursor position) */
+.caret-ambient-halo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 56px;
+  height: 52px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(14px);
+  opacity: 0.55;
+  background: radial-gradient(circle at center, var(--aura-hot, var(--accent)) 0%, var(--aura-core, var(--accent)) 50%, transparent 75%);
+  transition: transform 0.08s ease-out, opacity 0.3s ease;
+  will-change: transform;
+}
+
+/* Outer Ambient Edge Glow */
+.aura-ambient-edge {
+  position: absolute;
+  inset: -2px;
+  border-radius: 14px;
+  pointer-events: none;
+  z-index: 0;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--aura-core, var(--accent)) 30%, transparent), color-mix(in srgb, var(--aura-hot, var(--accent)) 20%, transparent));
+  filter: blur(12px);
+  opacity: calc(0.3 + var(--aura-intensity, 0.2));
+  transition: opacity 0.4s ease;
+}
+
+/* Soft ring that expands at higher tiers */
+.aura-ring {
+  position: absolute;
+  inset: -4px;
+  border-radius: 14px;
+  pointer-events: none;
+  z-index: 0;
+  border: 1px solid color-mix(in srgb, var(--aura-core, var(--accent)) 35%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--aura-hot, var(--accent)) 12%, transparent),
+    inset 0 0 20px color-mix(in srgb, var(--aura-core, var(--accent)) 10%, transparent);
+  opacity: 0.55;
+  animation: aura-ring-pulse 2s ease-in-out infinite;
+  transition: inset .5s ease, opacity .4s ease, border-color .4s ease;
+}
+
+/* FEVER sparkle layer */
+.aura-sparks {
+  position: absolute;
+  inset: -8px;
+  pointer-events: none;
+  z-index: 0;
+  border-radius: 16px;
+  background:
+    radial-gradient(1.5px 1.5px at 12% 30%, rgba(255,220,120,.9), transparent),
+    radial-gradient(1.5px 1.5px at 78% 22%, rgba(255,180,80,.85), transparent),
+    radial-gradient(1.5px 1.5px at 88% 68%, rgba(255,100,80,.8), transparent),
+    radial-gradient(1.5px 1.5px at 22% 78%, rgba(255,230,150,.75), transparent),
+    radial-gradient(1.5px 1.5px at 55% 12%, rgba(255,160,60,.7), transparent),
+    radial-gradient(1.5px 1.5px at 40% 90%, rgba(255,90,70,.65), transparent);
+  animation: aura-sparkle 1.8s linear infinite;
+  opacity: 0.7;
+  mix-blend-mode: screen;
+}
+
+/* Tier palettes — color shifts as streak levels up */
+.aura-tier-1 {
+  --aura-core: color-mix(in srgb, var(--accent) 80%, #5eead4);
+  --aura-hot: color-mix(in srgb, var(--accent) 60%, #99f6e4);
+}
+.aura-tier-1 .typing-viewport-container {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.aura-tier-2 {
+  --aura-core: #22d3ee;
+  --aura-hot: #67e8f9;
+}
+.aura-tier-2 .typing-viewport-container {
+  box-shadow: 0 0 0 1px color-mix(in srgb, #22d3ee 35%, transparent), 0 6px 20px color-mix(in srgb, #22d3ee 14%, transparent);
+}
+
+.aura-tier-3 {
+  --aura-core: #a78bfa;
+  --aura-hot: #c4b5fd;
+}
+.aura-tier-3 .typing-viewport-container {
+  box-shadow: 0 0 0 1px color-mix(in srgb, #a78bfa 40%, transparent), 0 8px 28px color-mix(in srgb, #a78bfa 18%, transparent);
+}
+
+.aura-tier-4 {
+  --aura-core: #f97316;
+  --aura-hot: #fdba74;
+}
+.aura-tier-4 .typing-viewport-container {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, #f97316 45%, transparent),
+    0 10px 32px color-mix(in srgb, #f97316 22%, transparent);
+}
+
+.aura-tier-5,
+.aura-fever {
+  --aura-core: #f59e0b;
+  --aura-hot: #ef4444;
+}
+
+.typing-viewport-container.fever-glow {
+  box-shadow: 0 8px 36px rgba(245,158,11,.32), 0 0 50px rgba(239,68,68,.18);
+}
+
+/* Caret picks up aura hue so the streak feels “in the fingers” */
+.smooth-caret.caret-aura-1 { background: var(--accent); box-shadow: 0 0 10px color-mix(in srgb, var(--accent) 70%, transparent); }
+.smooth-caret.caret-aura-2 { background: #22d3ee; box-shadow: 0 0 12px rgba(34,211,238,.75); }
+.smooth-caret.caret-aura-3 { background: #a78bfa; box-shadow: 0 0 14px rgba(167,139,250,.75); }
+.smooth-caret.caret-aura-4 { background: #f97316; box-shadow: 0 0 16px rgba(249,115,22,.75); }
+.smooth-caret.caret-aura-5 { background: #fbbf24; box-shadow: 0 0 18px rgba(251,191,36,.85), 0 0 28px rgba(239,68,68,.5); }
+
+@keyframes aura-tier-pop {
+  0% { transform: scale(0.98); }
+  50% { transform: scale(1.015); }
+  100% { transform: scale(1); }
+}
+@keyframes pill-bounce {
+  0% { transform: scale(0.7) translateY(-3px); }
+  60% { transform: scale(1.12) translateY(0); }
+  100% { transform: scale(1) translateY(0); }
+}
 .typing-viewport-container.fever-glow::before {
   content: "";
   position: absolute;
@@ -307,7 +562,39 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
   z-index: 10;
   border-radius: 4px 4px 0 0;
 }
+
+/* Caret picks up aura hue so the streak feels “in the fingers” */
+.smooth-caret.caret-aura-1 { background: var(--accent); box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 50%, transparent); }
+.smooth-caret.caret-aura-2 { background: #22d3ee; box-shadow: 0 0 10px rgba(34,211,238,.55); }
+.smooth-caret.caret-aura-3 { background: #a78bfa; box-shadow: 0 0 12px rgba(167,139,250,.55); }
+.smooth-caret.caret-aura-4 { background: #f97316; box-shadow: 0 0 14px rgba(249,115,22,.55); }
+.smooth-caret.caret-aura-5 { background: #fbbf24; box-shadow: 0 0 16px rgba(251,191,36,.7), 0 0 28px rgba(239,68,68,.35); }
+
 @keyframes fever-line-anim { 0% { background-position: 0% 0%; } 100% { background-position: 200% 0%; } }
 @keyframes fever-pulse { from { transform:scale(1); } to { transform:scale(1.06); } }
 @keyframes pulse-scale { from { transform:scale(0.85); opacity:0; } to { transform:scale(1); opacity:1; } }
+@keyframes aura-breathe {
+  0%, 100% { scale: 1; }
+  50% { scale: 1.07; }
+}
+@keyframes aura-ring-pulse {
+  0%, 100% { opacity: 0.45; scale: 1; }
+  50% { opacity: 0.75; scale: 1.015; }
+}
+@keyframes aura-sparkle {
+  0% { opacity: 0.45; filter: hue-rotate(0deg); }
+  50% { opacity: 0.85; }
+  100% { opacity: 0.45; filter: hue-rotate(25deg); }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .aura-bloom-inner,
+  .aura-ring,
+  .aura-sparks,
+  .combo-badge.fever-badge,
+  .typing-viewport-container.fever-glow::before {
+    animation: none !important;
+  }
+}
 

@@ -6,6 +6,8 @@ export type WordPreset = 10 | 25 | 50 | 100;
 export type StopOnError = "off" | "word" | "letter";
 export type ConfidenceMode = "off" | "on" | "max";
 export type Difficulty = "normal" | "expert" | "master";
+/** Word-list difficulty for English tests (separate from stop-on-error difficulty). */
+export type WordDifficulty = "easy" | "medium" | "hard" | "all";
 export type CaretStyle = "line" | "block" | "underline";
 export type CaretSpeed = "off" | "fast" | "medium" | "slow";
 export type QuoteLength = "short" | "medium" | "long" | "all";
@@ -19,6 +21,8 @@ export type TestSettings = {
   stopOnError: StopOnError;
   confidence: ConfidenceMode;
   difficulty: Difficulty;
+  /** easy / medium / hard English word pools; ignored for code/quotes/etc. */
+  wordDifficulty: WordDifficulty;
   blind: boolean;
   smoothCaret: boolean;
   caretStyle: CaretStyle;
@@ -40,6 +44,7 @@ export const defaultTestSettings: TestSettings = {
   stopOnError: "off",
   confidence: "off",
   difficulty: "normal",
+  wordDifficulty: "medium",
   blind: false,
   smoothCaret: true,
   caretStyle: "line",
@@ -58,6 +63,8 @@ export function normalizeSettings(partial?: Partial<TestSettings> | null): TestS
   if (!validModes.includes(base.mode)) base.mode = "time";
   if (!base.value || base.value < 1) base.value = base.mode === "words" ? 25 : 30;
   if (!base.wordSourceId) base.wordSourceId = "common-en";
+  const validWordDiff: WordDifficulty[] = ["easy", "medium", "hard", "all"];
+  if (!validWordDiff.includes(base.wordDifficulty)) base.wordDifficulty = "medium";
   return base;
 }
 

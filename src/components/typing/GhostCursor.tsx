@@ -15,9 +15,19 @@ export function GhostCursor({ ghostReplay, targetText, elapsedMs, active, typedT
     const samples = ghostReplay.samples;
     if (!samples || samples.length === 0) return 0;
     
-    let i = 0;
-    while (i < samples.length && samples[i].elapsedMs <= elapsedMs) {
-      i++;
+    // Binary search for sample index
+    let low = 0;
+    let high = samples.length - 1;
+    let i = samples.length;
+    
+    while (low <= high) {
+      const mid = (low + high) >> 1;
+      if (samples[mid].elapsedMs > elapsedMs) {
+        i = mid;
+        high = mid - 1;
+      } else {
+        low = mid + 1;
+      }
     }
     
     if (i === 0) return samples[0].charIndex;
