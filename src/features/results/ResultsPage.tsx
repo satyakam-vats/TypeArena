@@ -212,8 +212,8 @@ export function ResultsPage() {
           <button onClick={repeatTest} className="control hover:text-[var(--ink)] flex items-center gap-2 px-4 py-2 border border-[var(--line)] rounded">
             <RotateCcw size={16} /> repeat test <kbd className="text-xs text-[var(--muted)]">esc</kbd>
           </button>
-          <button onClick={nextTest} autoFocus className="primary-button flex items-center gap-2 px-5 py-2">
-            next test <kbd className="text-xs opacity-80">tab + enter</kbd>
+          <button onClick={nextTest} className="primary-button flex items-center gap-2 px-5 py-2">
+            next test <kbd className="text-xs opacity-80">tab</kbd> + <kbd className="text-xs opacity-80">enter</kbd>
           </button>
         </div>
       </div>

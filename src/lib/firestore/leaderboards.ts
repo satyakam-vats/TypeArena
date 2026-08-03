@@ -25,6 +25,10 @@ export type CurrentUserInfo = {
 function toMillis(value: unknown): number {
   if (value == null) return 0;
   if (typeof value === "number") return value;
+  if (typeof value === "string") {
+    const parsed = Date.parse(value);
+    if (!isNaN(parsed)) return parsed;
+  }
   if (typeof value === "object" && value !== null && "toMillis" in value && typeof (value as { toMillis: () => number }).toMillis === "function") {
     return (value as { toMillis: () => number }).toMillis();
   }
@@ -57,7 +61,6 @@ export async function fetchLeaderboard(
   // 1) Firestore runs (actual completed tests)
   if (db) {
     try {
-      // Pull recent runs; filter/sort client-side so we don't need composite indexes for every mode combo.
       let snap;
       try {
         snap = await getDocs(query(collection(db, "testRuns"), orderBy("completedAt", "desc"), limit(300)));
@@ -67,7 +70,7 @@ export async function fetchLeaderboard(
 
       snap.docs.forEach((docSnap) => {
         const d = docSnap.data();
-        const completedAt = toMillis(d.completedAt) || toMillis(d.createdAt);
+        const completedAt = toMillis(d.completedAt) || toMillis(d.createdAt) || Date.now();
         if (cutoff && completedAt < cutoff) return;
 
         const mode = d.settings?.mode as string | undefined;
@@ -78,8 +81,7 @@ export async function fetchLeaderboard(
         const wpm = Number(d.metrics?.wpm ?? 0);
         const accuracy = Number(d.metrics?.accuracy ?? 0);
         if (wpm <= 0) return;
-        // Ignore junk / accidental runs (Monkeytype-style soft quality gate).
-        if (accuracy < 60) return;
+        if (accuracy < 50) return; // Soft quality filter
 
         rawEntries.push({
           id: docSnap.id,
@@ -120,7 +122,6 @@ export async function fetchLeaderboard(
             modeLabel = "best";
             valueLabel = 0;
           } else {
-            // Mode selected but no value: take best across that mode's common presets
             const presets = opts.mode === "time" ? [15, 30, 60, 120] : [10, 25, 50, 100];
             for (const v of presets) {
               const candidate = Number(stats.bestWpmByMode?.[`${opts.mode}_${v}`] ?? 0);
@@ -163,10 +164,11 @@ export async function fetchLeaderboard(
   const defaultUid = currentUser?.uid || "local-user";
 
   localRuns.forEach((r) => {
-    if (cutoff && r.completedAt < cutoff) return;
+    const runTime = r.completedAt || Date.now();
+    if (cutoff && runTime < cutoff) return;
     if (opts.mode && r.settings.mode !== opts.mode) return;
     if (opts.value != null && r.settings.value !== opts.value) return;
-    if (r.metrics.wpm <= 0 || r.metrics.accuracy < 60) return;
+    if (r.metrics.wpm <= 0) return;
 
     rawEntries.push({
       id: r.id,
@@ -178,12 +180,12 @@ export async function fetchLeaderboard(
       consistency: r.metrics.consistency,
       mode: r.settings.mode,
       value: r.settings.value,
-      kind: r.kind,
-      completedAt: r.completedAt,
+      kind: r.kind ?? "solo",
+      completedAt: runTime,
     });
   });
 
-  // Best run per user (not per display name — avoids merging different people named "Anonymous")
+  // Best run per user
   const bestByUser = new Map<string, LeaderboardEntry>();
 
   for (const entry of rawEntries) {
@@ -191,7 +193,6 @@ export async function fetchLeaderboard(
       entry.displayName = entry.displayName.replace(/\s*\(Local\)/g, "").trim() || defaultDisplayName;
     }
 
-    // Attach local scores to the signed-in account
     if (currentUser && (entry.uid === "local-user" || entry.displayName === "You")) {
       entry.uid = currentUser.uid;
       if (currentUser.displayName) entry.displayName = currentUser.displayName;

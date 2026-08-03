@@ -41,6 +41,8 @@ export function useTypingTest(
   targetRef.current = targetText;
   settingsRef.current = settings;
 
+  const totalKeystrokesRef = useRef(0);
+
   const comboMultiplier = useMemo(() => {
     if (comboCount >= 50) return 5;
     if (comboCount >= 30) return 4;
@@ -54,7 +56,13 @@ export function useTypingTest(
     finishingRef.current = true;
     const finalTyped = typed ?? typedRef.current;
     const durationMs = Math.max(1, Date.now() - (startedAt.current ?? Date.now()));
-    const finalMetrics = calculateMetrics(targetRef.current, finalTyped, durationMs, samples.current);
+    const finalMetrics = calculateMetrics(
+      targetRef.current,
+      finalTyped,
+      durationMs,
+      samples.current,
+      totalKeystrokesRef.current
+    );
     finalMetrics.maxCombo = maxComboRef.current;
 
     const completed: CompletedRun = {
@@ -82,6 +90,7 @@ export function useTypingTest(
     setElapsedMs(0);
     setComboCount(0);
     maxComboRef.current = 0;
+    totalKeystrokesRef.current = 0;
     lastKeyTime.current = null;
     samples.current = [];
     ghostSamples.current = [];
@@ -97,7 +106,13 @@ export function useTypingTest(
     const ticker = window.setInterval(() => {
       const elapsed = Date.now() - (startedAt.current ?? Date.now());
       setElapsedMs(elapsed);
-      const point = calculateMetrics(targetRef.current, typedRef.current, Math.max(elapsed, 1000), samples.current);
+      const point = calculateMetrics(
+        targetRef.current,
+        typedRef.current,
+        Math.max(elapsed, 1000),
+        samples.current,
+        totalKeystrokesRef.current
+      );
       const last = samples.current.at(-1);
       if (!last || elapsed - last.elapsedMs >= 900) {
         samples.current = [...samples.current, { elapsedMs: elapsed, wpm: point.wpm, rawWpm: point.rawWpm }];
@@ -155,6 +170,7 @@ export function useTypingTest(
     if (nextValue.length > prev.length) {
       let accepted = prev;
       const added = nextValue.slice(prev.length);
+      totalKeystrokesRef.current += added.length;
 
       for (const ch of added) {
         const idx = accepted.length;
@@ -165,7 +181,7 @@ export function useTypingTest(
           soundManager.playError();
           setComboCount(0);
 
-          if (stop === "letter" || diff === "master") {
+          if (diff === "master") {
             accepted += ch;
             typedRef.current = accepted;
             setTypedText(accepted);
@@ -173,13 +189,14 @@ export function useTypingTest(
             return;
           }
 
+          if (stop === "letter") {
+            continue;
+          }
+
           accepted += ch;
           if (ch === " " && (stop === "word" || diff === "expert")) {
             if (wordHasError(target, accepted, accepted.length - 1)) {
-              typedRef.current = accepted;
-              setTypedText(accepted);
-              if (statusRef.current === "running") finish(accepted);
-              return;
+              continue;
             }
           }
           continue;

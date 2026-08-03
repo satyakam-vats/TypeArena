@@ -49,7 +49,7 @@ export function Header({ theme, onToggleTheme }: HeaderProps) {
         {enabled &&
           (user ? (
             <Link to="/profile" className="user-chip" title="View profile">
-              {user.photoURL ? <img src={user.photoURL} alt="" /> : <span>{user.displayName?.slice(0, 1) ?? "U"}</span>}
+              {user.photoURL ? <img src={user.photoURL} alt="" referrerPolicy="no-referrer" /> : <span>{user.displayName?.slice(0, 1) ?? "U"}</span>}
               <span className="hidden sm:inline">{user.displayName?.split(" ")[0] ?? "profile"}</span>
             </Link>
           ) : (

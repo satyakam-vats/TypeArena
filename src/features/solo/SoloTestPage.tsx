@@ -285,9 +285,9 @@ export function SoloTestPage({ initialWordSource }: Props) {
         </div>
       )}
 
-      <div className="solo-toolbar mb-6 flex items-center justify-between flex-wrap gap-3 focus-hide">
+      <div className="solo-toolbar mb-8 flex items-center justify-center flex-wrap gap-4 focus-hide">
         <TestControls settings={settings} onChange={setSettings} disabled={test.status === "running"} />
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <button
             onClick={() => setShowKeyboard(!showKeyboard)}
             className={`icon-button ${showKeyboard ? "text-[var(--accent)]" : ""}`}
@@ -312,7 +312,7 @@ export function SoloTestPage({ initialWordSource }: Props) {
       <section className="typing-stage solo-typing-stage">
         <div className="mb-3 flex items-center justify-between text-sm text-[var(--muted)] focus-hide-soft">
           <span>{statusLabel}</span>
-          <LiveMetrics metrics={test.metrics} />
+          <LiveMetrics metrics={test.metrics} comboCount={test.comboCount} comboMultiplier={test.comboMultiplier} />
         </div>
         <TypingViewport
           target={targetText}

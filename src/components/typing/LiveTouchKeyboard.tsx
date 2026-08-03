@@ -89,11 +89,6 @@ export function LiveTouchKeyboard({ targetText, typedText, active }: Props) {
 
   return (
     <div className="live-touch-keyboard-container animate-fade-in">
-      {targetFinger && active && (
-        <div className="touch-finger-hint">
-          next finger: <span className="finger-highlight">{targetFinger}</span> (<span className="key-highlight">{nextTargetKey === 'space' ? 'spacebar' : nextTargetKey.toUpperCase()}</span>)
-        </div>
-      )}
 
       <div className="keyboard-layout">
         {KEYBOARD_LAYOUT.map((row, rowIndex) => (

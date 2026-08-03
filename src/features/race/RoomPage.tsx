@@ -134,7 +134,7 @@ export function RoomPage() {
       <div className="mb-7 flex justify-between text-sm text-[var(--muted)]"><span>live race · {activePlayers.length} racers</span><LiveMetrics metrics={test.metrics} /></div>
       <div className="race-progress">{activePlayers.map((player) => <div className="racer-line" key={player.uid}><span>{player.displayName}</span><div><i style={{ width: `${player.progress.percent}%` }} /></div><b>{player.result.finalWpm ?? player.progress.liveWpm} wpm</b></div>)}</div>
       {user && <ReactionBar roomId={roomId} uid={user.uid} displayName={user.displayName ?? "Anonymous"} active={!showLeaderboard} />}
-      <TypingViewport target={room.content.text} typed={test.typedText} active />
+      <TypingViewport target={room.content.text} typed={test.typedText} active smoothCaret />
       <textarea autoFocus value={test.typedText} onChange={(event) => test.updateTypedText(event.target.value)} onPaste={(event) => event.preventDefault()} className="typing-input" aria-label="Race typing input" spellCheck={false} autoCapitalize="off" autoCorrect="off" />
     </section>}
     {showLeaderboard && <section className="leaderboard"><p className="eyebrow"><Flag size={13} /> race results</p><h1>Final standings</h1>{orderedPlayers(activePlayers).map((player, index) => <div className="leaderboard-row" key={player.uid}><span>{index + 1}</span><b>{player.displayName}</b><em>{player.result.finalWpm ?? player.progress.liveWpm} wpm</em><small>{player.result.finishElapsedMs ? `${(player.result.finishElapsedMs / 1000).toFixed(2)}s` : "—"}</small></div>)}<Link className="primary-button" to="/race" onClick={() => { leftRef.current = true; }}><RotateCcw size={16} /> race again</Link></section>}

@@ -4,7 +4,7 @@ import { doc, getDoc, collection, getDocs, query, orderBy, limit } from 'firebas
 import { db } from '../../lib/firebase';
 import { useAuth } from '../../context/AuthContext';
 import { evaluateBadges, type UserStatsInput } from '../../lib/achievements';
-import { Trophy, LogOut } from 'lucide-react';
+import { Trophy, LogOut, Mail, Calendar } from 'lucide-react';
 import { TrendChart } from '../../components/charts/TrendChart';
 
 type UserProfileData = {
@@ -35,12 +35,15 @@ type RecentRun = {
 };
 
 function parseTimestampMs(val: any): number {
-  if (!val) return Date.now();
+  if (!val) return 0;
   if (typeof val === 'number') return val;
+  if (typeof val === 'string') {
+    const parsed = Date.parse(val);
+    if (!isNaN(parsed)) return parsed;
+  }
   if (typeof val === 'object' && typeof val.toMillis === 'function') return val.toMillis();
   if (typeof val === 'object' && typeof val.seconds === 'number') return val.seconds * 1000;
-  const parsed = Date.parse(val);
-  return isNaN(parsed) ? Date.now() : parsed;
+  return 0;
 }
 
 function formatRelativeDate(timestampMs: number): string {
@@ -69,6 +72,7 @@ export function ProfilePage() {
   const [recentRuns, setRecentRuns] = useState<RecentRun[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [avatarFailed, setAvatarFailed] = useState(false);
 
   const isOwnProfile = user && user.uid === targetUid;
 
@@ -137,6 +141,29 @@ export function ProfilePage() {
 
   const unlockedCount = badgesStatus.filter(b => b.unlocked).length;
 
+  const joinedTimeMs = useMemo(() => {
+    const candidates: number[] = [];
+
+    if (isOwnProfile && user?.metadata?.creationTime) {
+      const authTime = Date.parse(user.metadata.creationTime);
+      if (!isNaN(authTime) && authTime > 0) candidates.push(authTime);
+    }
+
+    if (profile?.createdAt) {
+      const docTime = parseTimestampMs(profile.createdAt);
+      if (docTime > 0) candidates.push(docTime);
+    }
+
+    if (recentRuns.length > 0) {
+      for (const r of recentRuns) {
+        const rTime = parseTimestampMs(r.completedAt);
+        if (rTime > 0) candidates.push(rTime);
+      }
+    }
+
+    return candidates.length > 0 ? Math.min(...candidates) : Date.now();
+  }, [isOwnProfile, user?.metadata?.creationTime, profile?.createdAt, recentRuns]);
+
   if (loading) {
     return (
       <div className="profile-container">
@@ -174,23 +201,38 @@ export function ProfilePage() {
     };
   });
 
-  const initial = (profile.displayName || profile.email || '?')[0].toUpperCase();
-  const joinedTimeMs = parseTimestampMs(profile.createdAt);
+  const photoURL = isOwnProfile ? (user?.photoURL || profile.photoURL) : profile.photoURL;
+  const email = isOwnProfile ? (user?.email || profile.email) : profile.email;
+  const displayName = isOwnProfile ? (user?.displayName || profile.displayName) : profile.displayName;
+
+  const initial = (displayName || email || '?')[0].toUpperCase();
+
+  const joinedDateFormatted = new Date(joinedTimeMs).toLocaleDateString(undefined, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
 
   return (
     <div className="profile-container">
       {/* Header */}
       <header className="profile-header">
         <div className="profile-avatar">
-          {profile.photoURL ? (
-            <img src={profile.photoURL} alt="Avatar" />
+          {photoURL && !avatarFailed ? (
+            <img
+              src={photoURL}
+              alt="Avatar"
+              referrerPolicy="no-referrer"
+              crossOrigin="anonymous"
+              onError={() => setAvatarFailed(true)}
+            />
           ) : (
             <div className="profile-avatar-fallback">{initial}</div>
           )}
         </div>
         <div className="profile-info">
           <div className="profile-name-row">
-            <h1 className="profile-name">{profile.displayName || 'Anonymous Typist'}</h1>
+            <h1 className="profile-name">{displayName || 'Anonymous Typist'}</h1>
             {isOwnProfile && (
               <button
                 className="icon-button quiet"
@@ -201,8 +243,17 @@ export function ProfilePage() {
               </button>
             )}
           </div>
-          <p className="profile-joined">
-            joined {formatRelativeDate(joinedTimeMs)}
+
+          {email && (
+            <p className="profile-email text-xs text-[var(--muted)] flex items-center gap-1.5 mt-1 font-mono">
+              <Mail size={13} className="text-[var(--accent)]" />
+              <span>{email}</span>
+            </p>
+          )}
+
+          <p className="profile-joined text-xs text-[var(--muted)] flex items-center gap-1.5 mt-1" title={`Joined on ${joinedDateFormatted}`}>
+            <Calendar size={13} />
+            <span>joined {formatRelativeDate(joinedTimeMs)} ({joinedDateFormatted})</span>
           </p>
         </div>
       </header>

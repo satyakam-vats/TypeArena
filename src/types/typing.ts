@@ -7,6 +7,7 @@ export type StopOnError = "off" | "word" | "letter";
 export type ConfidenceMode = "off" | "on" | "max";
 export type Difficulty = "normal" | "expert" | "master";
 export type CaretStyle = "line" | "block" | "underline";
+export type CaretSpeed = "off" | "fast" | "medium" | "slow";
 export type QuoteLength = "short" | "medium" | "long" | "all";
 
 export type TestSettings = {
@@ -21,6 +22,7 @@ export type TestSettings = {
   blind: boolean;
   smoothCaret: boolean;
   caretStyle: CaretStyle;
+  caretSpeed?: CaretSpeed;
   focusMode: boolean;
   quoteLength: QuoteLength;
   customText: string;

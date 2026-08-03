@@ -129,12 +129,19 @@ export function calculateConsistency(samples: WpmSample[], finalWpm: number): nu
   return Math.max(0, Math.min(100, Math.round((1 - cv) * 100)));
 }
 
-export function calculateMetrics(target: string, typed: string, durationMs: number, samples: WpmSample[]): RunMetrics {
+export function calculateMetrics(
+  target: string,
+  typed: string,
+  durationMs: number,
+  samples: WpmSample[],
+  totalKeystrokes = 0
+): RunMetrics {
   const counts = countCharacters(target, typed);
   const minutes = Math.max(durationMs / 60000, 1 / 60000);
   const grossCharacters = counts.correct + counts.incorrect + counts.extra;
-  const rawWpm = grossCharacters / 5 / minutes;
-  const wpm = Math.max(0, (grossCharacters / 5 - (counts.incorrect + counts.extra) / 5) / minutes);
+  const rawCharacters = Math.max(grossCharacters, totalKeystrokes);
+  const rawWpm = rawCharacters / 5 / minutes;
+  const wpm = Math.max(0, counts.correct / 5 / minutes);
   const accuracy = grossCharacters === 0 ? 100 : (counts.correct / grossCharacters) * 100;
   const roundedWpm = Math.round(wpm);
   const consistency = calculateConsistency(samples, roundedWpm);
@@ -153,6 +160,6 @@ export function calculateMetrics(target: string, typed: string, durationMs: numb
   };
 }
 
-export function liveMetrics(target: string, typed: string, elapsedMs: number) {
-  return calculateMetrics(target, typed, Math.max(elapsedMs, 1000), []);
+export function liveMetrics(target: string, typed: string, elapsedMs: number, totalKeystrokes = 0) {
+  return calculateMetrics(target, typed, Math.max(elapsedMs, 1000), [], totalKeystrokes);
 }

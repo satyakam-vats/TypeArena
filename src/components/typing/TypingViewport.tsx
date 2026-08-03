@@ -1,6 +1,6 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { getCharacterStates, getFailedWordIndices } from "../../lib/typing/metrics";
-import type { CaretStyle } from "../../types/typing";
+import type { CaretStyle, CaretSpeed } from "../../types/typing";
 
 type TypingViewportProps = {
   target: string;
@@ -9,6 +9,7 @@ type TypingViewportProps = {
   blind?: boolean;
   smoothCaret?: boolean;
   caretStyle?: CaretStyle;
+  caretSpeed?: CaretSpeed;
   focused?: boolean;
   capsLock?: boolean;
   onRequestFocus?: () => void;
@@ -24,6 +25,7 @@ export function TypingViewport({
   blind = false,
   smoothCaret = true,
   caretStyle = "line",
+  caretSpeed = "medium",
   focused = true,
   capsLock = false,
   onRequestFocus,
@@ -37,42 +39,69 @@ export function TypingViewport({
   const extra = displayTyped.length > target.length ? displayTyped.slice(target.length) : "";
   const activeCharRef = useRef<HTMLSpanElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const caretElRef = useRef<HTMLSpanElement | null>(null);
+  const prevTopRef = useRef<number>(0);
   const [translateY, setTranslateY] = useState(0);
-  const [caretPos, setCaretPos] = useState({ left: 0, top: 0, height: 28 });
+
+  // Group target text into word tokens so words never break mid-word across lines
+  const wordTokens = useMemo(() => {
+    const words: { startIdx: number; text: string }[] = [];
+    const rawWords = target.split(" ");
+    let currIdx = 0;
+    for (let i = 0; i < rawWords.length; i++) {
+      const w = rawWords[i];
+      const textWithSpace = i < rawWords.length - 1 ? w + " " : w;
+      words.push({ startIdx: currIdx, text: textWithSpace });
+      currIdx += textWithSpace.length;
+    }
+    return words;
+  }, [target]);
 
   useLayoutEffect(() => {
     if (!displayTyped) {
       setTranslateY(0);
     }
-    const el = activeCharRef.current;
-    if (!el) {
-      const first = containerRef.current?.querySelector(".char") as HTMLElement | null;
-      if (first) {
-        setCaretPos({ left: first.offsetLeft, top: first.offsetTop, height: first.offsetHeight || 28 });
-      }
-      return;
+
+    const container = containerRef.current;
+    const copyEl = container?.querySelector(".typing-copy") as HTMLElement | null;
+    const el = activeCharRef.current || (container?.querySelector(".char") as HTMLElement | null);
+    const caret = caretElRef.current;
+
+    if (!copyEl || !el || !caret) return;
+
+    const copyRect = copyEl.getBoundingClientRect();
+    const charRect = el.getBoundingClientRect();
+
+    // Exact sub-pixel coordinates relative to typing-copy container
+    const left = charRect.left - copyRect.left;
+    const top = charRect.top - copyRect.top;
+    const height = charRect.height || 28;
+
+    // Detect line wrap; disable diagonal transition animation when jumping across lines
+    const lineChanged = Math.abs(top - prevTopRef.current) > 10;
+    prevTopRef.current = top;
+
+    if (lineChanged) {
+      caret.classList.add("no-transition");
+    } else {
+      caret.classList.remove("no-transition");
     }
 
-    const charTop = el.offsetTop;
-    const charHeight = el.offsetHeight || 36;
-    const next = charTop <= charHeight * 1.15 ? 0 : Math.max(0, charTop - charHeight * 1.05);
-    setTranslateY(next);
-    setCaretPos({
-      left: el.offsetLeft,
-      top: el.offsetTop,
-      height: el.offsetHeight || 28,
-    });
-  }, [displayTyped, target, replayIndex]);
+    caret.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+    if (caretStyle === "underline") {
+      caret.style.height = "3px";
+    } else {
+      caret.style.height = `${height}px`;
+    }
 
-  useEffect(() => {
-    const id = requestAnimationFrame(() => {
-      const el = activeCharRef.current;
-      if (el) {
-        setCaretPos({ left: el.offsetLeft, top: el.offsetTop, height: el.offsetHeight || 28 });
-      }
-    });
-    return () => cancelAnimationFrame(id);
-  }, [translateY, displayTyped]);
+    // Discrete line-by-line scroll calculations
+    const charHeight = charRect.height || 36;
+    const lineIndex = Math.round(top / charHeight);
+    const targetLine = Math.max(0, lineIndex - 1);
+    const nextTranslate = Math.round(targetLine * charHeight);
+
+    setTranslateY(nextTranslate);
+  }, [displayTyped, target, replayIndex, caretStyle]);
 
   const caretActive = active && focused && replayIndex == null;
   const showOverlay = !focused && active && replayIndex == null;
@@ -83,67 +112,62 @@ export function TypingViewport({
         <div className="caps-lock-warn" role="status">Caps Lock</div>
       )}
 
-      {comboCount >= 5 && active && replayIndex == null && (
-        <div className={`combo-badge ${comboMultiplier >= 5 ? "fever-badge" : ""}`}>
-          <span className="combo-count">{comboCount}x</span>
-          <span className="combo-multiplier">{comboMultiplier >= 5 ? "FEVER 🔥" : `x${comboMultiplier}`}</span>
-        </div>
-      )}
-
       {showOverlay && (
         <button type="button" className="focus-overlay" onClick={onRequestFocus}>
           click here or press any key to focus
         </button>
       )}
+
       <div
-        className="typing-copy"
+        className="typing-copy flex flex-wrap relative"
         style={{ transform: `translateY(-${translateY}px)` }}
-        aria-live="polite"
-        aria-label="Text to type"
       >
-        {Array.from(target).map((character, index) => {
-          const isActive = index === displayTyped.length && active;
-          const state = states[index] ?? "pending";
-          const wordFail = failed.has(index);
-          return (
-            <span
-              key={index}
-              ref={isActive ? activeCharRef : null}
-              className={[
-                "char",
-                blind && state !== "pending" ? "char-blind" : `char-${state}`,
-                wordFail && !blind ? "char-word-fail" : "",
-                isActive && !smoothCaret ? "char-caret" : "",
-                isActive && !smoothCaret ? `caret-${caretStyle}` : "",
-              ].filter(Boolean).join(" ")}
-            >
-              {character}
-            </span>
-          );
-        })}
-        {extra && <span className="char-extra">{extra}</span>}
-        {displayTyped.length >= target.length && active && (
-          <span ref={displayTyped.length >= target.length ? activeCharRef : null} className="char char-pending" />
+        {smoothCaret && (
+          <span
+            ref={caretElRef}
+            className={`smooth-caret caret-${caretStyle} smooth-${caretSpeed || "medium"} ${caretActive ? "active" : "hidden"}`}
+          />
         )}
+
+        {wordTokens.map((wordObj, wordIndex) => (
+          <span key={wordIndex} className="word-group inline-block whitespace-nowrap">
+            {wordObj.text.split("").map((ch, charOffset) => {
+              const globalIndex = wordObj.startIdx + charOffset;
+              const isCurrent = globalIndex === displayTyped.length;
+              const st = states[globalIndex] ?? "pending";
+              const isFailed = failed.has(globalIndex);
+              const isBlind = blind && (st === "correct" || st === "incorrect");
+
+              let cls = "char";
+              if (st === "correct") cls += " char-correct";
+              if (st === "incorrect") cls += " char-incorrect";
+              if (isFailed) cls += " char-word-fail";
+              if (isBlind) cls += " char-blind";
+
+              const useHardCaret = !smoothCaret && isCurrent && caretActive;
+              if (useHardCaret) cls += ` char-caret caret-${caretStyle}`;
+
+              return (
+                <span
+                  key={globalIndex}
+                  ref={isCurrent ? activeCharRef : null}
+                  className={cls}
+                >
+                  {ch === " " ? "\u00A0" : ch}
+                </span>
+              );
+            })}
+          </span>
+        ))}
+
+        {extra.split("").map((ch, i) => (
+          <span key={`extra-${i}`} className="char char-extra">
+            {ch === " " ? "\u00A0" : ch}
+          </span>
+        ))}
       </div>
-      {smoothCaret && caretActive && (
-        <span
-          className={`smooth-caret caret-${caretStyle}`}
-          style={{
-            transform: `translate(${caretPos.left}px, ${caretPos.top - translateY}px)`,
-            height: caretStyle === "underline" ? 3 : caretPos.height * 0.87,
-          }}
-        />
-      )}
-      {replayIndex != null && (
-        <span
-          className="smooth-caret caret-block replay-caret"
-          style={{
-            transform: `translate(${caretPos.left}px, ${caretPos.top - translateY}px)`,
-            height: caretPos.height * 0.87,
-          }}
-        />
-      )}
     </div>
   );
 }
+
+export default TypingViewport;

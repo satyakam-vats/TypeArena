@@ -13,8 +13,7 @@ export function LessonPracticePage() {
   const navigate = useNavigate();
 
   const lesson = useMemo(() => LESSONS.find((l) => l.id === lessonId) ?? LESSONS[0]!, [lessonId]);
-  const progressMap = useMemo(() => getStoredLessonProgress(), []);
-  const isUnlocked = useMemo(() => isLessonUnlocked(lesson.id, progressMap), [lesson.id, progressMap]);
+  const isUnlocked = isLessonUnlocked(lesson.id, getStoredLessonProgress());
 
   const [showResultModal, setShowResultModal] = useState(false);
   const [resultData, setResultData] = useState<{
@@ -144,7 +143,7 @@ export function LessonPracticePage() {
       <section className="typing-stage solo-typing-stage relative">
         <div className="mb-3 flex items-center justify-between text-sm text-[var(--muted)]">
           <span className="font-mono text-xs">Accuracy Requirement: {lesson.minAccuracyToPass}%</span>
-          <LiveMetrics metrics={test.metrics} />
+          <LiveMetrics metrics={test.metrics} comboCount={test.comboCount} comboMultiplier={test.comboMultiplier} />
         </div>
 
         <TypingViewport

@@ -1,17 +1,42 @@
-import { doc, runTransaction, serverTimestamp, setDoc, increment } from "firebase/firestore";
+import { doc, runTransaction, serverTimestamp, setDoc, getDoc } from "firebase/firestore";
 import type { User } from "firebase/auth";
 import { db } from "../firebase";
 import type { CompletedRun } from "../../types/typing";
 
+function parseTimestampMs(val: any): number {
+  if (!val) return 0;
+  if (typeof val === 'number') return val;
+  if (typeof val === 'string') {
+    const parsed = Date.parse(val);
+    if (!isNaN(parsed)) return parsed;
+  }
+  if (typeof val === 'object' && typeof val.toMillis === 'function') return val.toMillis();
+  if (typeof val === 'object' && typeof val.seconds === 'number') return val.seconds * 1000;
+  return 0;
+}
+
 export async function ensureUserProfile(user: User) {
   if (!db) return;
-  await setDoc(doc(db, "users", user.uid), {
+  const userRef = doc(db, "users", user.uid);
+  const snap = await getDoc(userRef);
+
+  const creationTimeMs = user.metadata?.creationTime
+    ? Date.parse(user.metadata.creationTime)
+    : Date.now();
+
+  const payload: Record<string, any> = {
     displayName: user.displayName ?? "Anonymous racer",
     photoURL: user.photoURL ?? null,
     email: user.email ?? null,
-    createdAt: serverTimestamp(),
     updatedAt: serverTimestamp(),
-  }, { merge: true });
+  };
+
+  const existingCreated = snap.data()?.createdAt ? parseTimestampMs(snap.data()?.createdAt) : 0;
+  if (!existingCreated || (creationTimeMs > 0 && creationTimeMs < existingCreated)) {
+    payload.createdAt = creationTimeMs;
+  }
+
+  await setDoc(userRef, payload, { merge: true });
 }
 
 export async function recordRunStats(uid: string, run: CompletedRun) {
@@ -38,16 +63,15 @@ export async function recordRunStats(uid: string, run: CompletedRun) {
     const newAvgAccuracy = currentAvgAccuracy + (run.metrics.accuracy - currentAvgAccuracy) / newCount;
     const newAvgConsistency = currentAvgConsistency + (run.metrics.consistency - currentAvgConsistency) / newCount;
 
-    // Merge key error/total stats
     const existingKeyErrors = data.allTimeKeyErrors ?? {};
     const existingKeyTotals = data.allTimeKeyTotals ?? {};
     const mergedKeyErrors = { ...existingKeyErrors };
     const mergedKeyTotals = { ...existingKeyTotals };
 
-    for (const [key, count] of Object.entries(run.metrics.keyErrors)) {
+    for (const [key, count] of Object.entries(run.metrics.keyErrors || {})) {
       mergedKeyErrors[key] = (mergedKeyErrors[key] || 0) + (count as number);
     }
-    for (const [key, count] of Object.entries(run.metrics.keyTotals)) {
+    for (const [key, count] of Object.entries(run.metrics.keyTotals || {})) {
       mergedKeyTotals[key] = (mergedKeyTotals[key] || 0) + (count as number);
     }
 
@@ -87,7 +111,6 @@ export async function recordRaceResult(uid: string, isWin: boolean) {
   });
 }
 
-// Keep the old API for backwards compatibility
 export async function recordPersonalBest(uid: string, wpm: number) {
   const firestore = db;
   if (!firestore) return;

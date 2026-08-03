@@ -9,29 +9,41 @@ export function LeaderboardPage() {
 
   const [timeframe, setTimeframe] = useState<'all-time' | 'weekly' | 'daily'>('all-time');
   const [mode, setMode] = useState<'all' | 'time' | 'words'>('all');
-  const [timeValue, setTimeValue] = useState<15 | 30 | 60>(30);
-  const [wordsValue, setWordsValue] = useState<10 | 25 | 50>(25);
+  const [timeValue, setTimeValue] = useState<'all' | 15 | 30 | 60 | 120>('all');
+  const [wordsValue, setWordsValue] = useState<'all' | 10 | 25 | 50 | 100>('all');
 
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
     setLoading(true);
+
+    const val = mode === 'time' && timeValue !== 'all'
+      ? (timeValue as number)
+      : mode === 'words' && wordsValue !== 'all'
+      ? (wordsValue as number)
+      : undefined;
+
     fetchLeaderboard(
       {
         mode: mode === 'all' ? undefined : mode,
-        value: mode === 'time' ? timeValue : mode === 'words' ? wordsValue : undefined,
+        value: val,
         timeframe,
         max: 50
       },
       user ? { uid: user.uid, displayName: user.displayName, photoURL: user.photoURL } : null
     ).then(res => {
-      setEntries(res);
-      setLoading(false);
+      if (isMounted) {
+        setEntries(res);
+        setLoading(false);
+      }
     }).catch(err => {
       console.error('Failed to fetch leaderboard:', err);
-      setLoading(false);
+      if (isMounted) setLoading(false);
     });
+
+    return () => { isMounted = false; };
   }, [timeframe, mode, timeValue, wordsValue, user]);
 
   const userRankIndex = entries.findIndex(e => e.uid === (user?.uid || 'local-user'));
@@ -85,13 +97,13 @@ export function LeaderboardPage() {
           </button>
           <button 
             className={`control ${mode === 'time' ? 'control-active' : ''}`}
-            onClick={() => setMode('time')}
+            onClick={() => { setMode('time'); setTimeValue('all'); }}
           >
             time
           </button>
           <button 
             className={`control ${mode === 'words' ? 'control-active' : ''}`}
-            onClick={() => setMode('words')}
+            onClick={() => { setMode('words'); setWordsValue('all'); }}
           >
             words
           </button>
@@ -99,13 +111,13 @@ export function LeaderboardPage() {
           {mode === 'time' && (
             <>
               <div className="control-divider h-6 w-px bg-[var(--line)] mx-2"></div>
-              {[15, 30, 60].map(v => (
+              {(['all', 15, 30, 60, 120] as const).map(v => (
                 <button
                   key={v}
                   className={`control ${timeValue === v ? 'control-active' : ''}`}
                   onClick={() => setTimeValue(v as any)}
                 >
-                  {v}
+                  {v === 'all' ? 'all' : `${v}s`}
                 </button>
               ))}
             </>
@@ -114,7 +126,7 @@ export function LeaderboardPage() {
           {mode === 'words' && (
             <>
               <div className="control-divider h-6 w-px bg-[var(--line)] mx-2"></div>
-              {[10, 25, 50].map(v => (
+              {(['all', 10, 25, 50, 100] as const).map(v => (
                 <button
                   key={v}
                   className={`control ${wordsValue === v ? 'control-active' : ''}`}
@@ -152,13 +164,14 @@ export function LeaderboardPage() {
             ))}
           </div>
         ) : entries.length === 0 ? (
-          <div className="text-center py-12 text-[var(--muted)]">
-            no scores yet — be the first!
+          <div className="text-center py-12 text-[var(--muted)] font-mono">
+            no scores found for this filter — be the first to type!
           </div>
         ) : (
           <div className="flex flex-col gap-2">
             {entries.map((entry, idx) => {
               const isCurrentUser = (user && user.uid === entry.uid) || (!user && entry.uid === 'local-user');
+              const initial = (entry.displayName || '?')[0].toUpperCase();
               return (
                 <div 
                   key={entry.id} 
@@ -169,9 +182,11 @@ export function LeaderboardPage() {
                   </div>
                   <Link to={entry.uid === 'local-user' || (user && entry.uid === user.uid) ? '/profile' : `/profile/${entry.uid}`} className="flex items-center gap-3 overflow-hidden hover:underline">
                     {entry.photoURL ? (
-                      <img src={entry.photoURL} alt={entry.displayName} className="w-6 h-6 rounded-full" />
+                      <img src={entry.photoURL} alt={entry.displayName} referrerPolicy="no-referrer" crossOrigin="anonymous" className="w-6 h-6 rounded-full object-cover" />
                     ) : (
-                      <div className="w-6 h-6 rounded-full bg-[var(--line)] flex-shrink-0"></div>
+                      <div className="w-6 h-6 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] flex items-center justify-center font-mono text-xs flex-shrink-0 font-bold">
+                        {initial}
+                      </div>
                     )}
                     <div className="truncate font-medium text-[var(--ink)]">{entry.displayName}</div>
                   </Link>
@@ -182,7 +197,7 @@ export function LeaderboardPage() {
                     {Math.round(entry.accuracy)}%
                   </div>
                   <div className="font-mono text-right text-[var(--muted)] text-xs bg-[var(--paper)] px-2 py-1 rounded border border-[var(--line)] whitespace-nowrap">
-                    {entry.mode} {entry.value}
+                    {entry.mode} {entry.value > 0 ? entry.value : ''}
                   </div>
                 </div>
               );
@@ -195,9 +210,11 @@ export function LeaderboardPage() {
                   <div className="font-mono flex items-center justify-center w-6 h-6 text-[var(--muted)]">—</div>
                   <Link to="/profile" className="flex items-center gap-3 overflow-hidden hover:underline">
                     {user.photoURL ? (
-                      <img src={user.photoURL} alt={user.displayName || 'You'} className="w-6 h-6 rounded-full" />
+                      <img src={user.photoURL} alt={user.displayName || 'You'} referrerPolicy="no-referrer" crossOrigin="anonymous" className="w-6 h-6 rounded-full object-cover" />
                     ) : (
-                      <div className="w-6 h-6 rounded-full bg-[var(--line)] flex-shrink-0"></div>
+                      <div className="w-6 h-6 rounded-full bg-[var(--accent-soft)] text-[var(--accent)] flex items-center justify-center font-mono text-xs flex-shrink-0 font-bold">
+                        {(user.displayName || 'Y')[0].toUpperCase()}
+                      </div>
                     )}
                     <div className="truncate font-medium text-[var(--ink)]">{user.displayName || 'You'}</div>
                   </Link>
@@ -215,3 +232,5 @@ export function LeaderboardPage() {
     </div>
   );
 }
+
+export default LeaderboardPage;
