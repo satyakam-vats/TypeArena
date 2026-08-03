@@ -22,8 +22,10 @@ a { color:inherit; text-decoration:none; }
 .user-chip:hover { background:var(--line); }
 .user-chip img,.player-row img { height:24px; width:24px; border-radius:50%; object-fit:cover; }
 .test-controls-container { display:flex; flex-direction:column; align-items:center; gap:10px; width:100%; }
-.test-controls-bar { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:10px; }
-.test-control-capsule { display:inline-flex; align-items:center; gap:3px; background:color-mix(in srgb, var(--paper-soft) 88%, var(--line)); border:1px solid var(--line); border-radius:10px; padding:3px 6px; box-shadow:0 1px 3px rgba(0,0,0,0.03); }
+.test-controls-bar { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:8px; }
+.test-control-capsule { display:inline-flex; align-items:center; gap:3px; background:color-mix(in srgb, var(--paper-soft) 88%, var(--line)); border:1px solid var(--line); border-radius:12px; padding:4px 8px; box-shadow:0 1px 4px rgba(0,0,0,0.04); }
+.test-control-divider { width:1px; height:14px; background:var(--line); margin:0 4px; opacity:0.75; }
+.test-control-dot { color:var(--line); font-size:0.75rem; margin:0 2px; }
 .control,.control-active { border:0; border-radius:6px; padding:4px 9px; background:transparent; color:var(--muted); font-family:"IBM Plex Mono",monospace; font-size:.8rem; transition:all .15s ease; cursor:pointer; display:inline-flex; align-items:center; gap:5px; }
 .control:hover { color:var(--ink); }
 .control-active { color:var(--accent); font-weight:500; background:color-mix(in srgb, var(--accent-soft) 60%, transparent); }

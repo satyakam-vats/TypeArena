@@ -82,136 +82,115 @@ export function TestControls({ settings, onChange, disabled, compact }: Props) {
 
   return (
     <div className={`test-controls-container ${compact ? "compact" : ""}`}>
-      {/* Primary Monkeytype-Style 3-Capsule Navigation Bar */}
+      {/* Primary Unified Control Navigation Bar */}
       <div className="test-controls-bar" aria-label="Test settings">
-        
-        {/* Capsule 1: Modifiers (@ punctuation, # numbers) */}
-        {showPunctNum && settings.wordSourceId !== "practice" && settings.wordSourceId !== "code" && settings.wordSourceId !== "github" && settings.wordSourceId !== "ngram" && (
-          <div className="test-control-capsule">
-            <button
-              disabled={disabled}
-              onClick={() => onChange({ ...settings, punctuation: !settings.punctuation })}
-              className={settings.punctuation ? "control-active" : "control"}
-              title="Toggle punctuation"
-            >
-              <AtSign size={13} />
-              <span>punctuation</span>
-            </button>
-            <button
-              disabled={disabled}
-              onClick={() => onChange({ ...settings, numbers: !settings.numbers })}
-              className={settings.numbers ? "control-active" : "control"}
-              title="Toggle numbers"
-            >
-              <Hash size={13} />
-              <span>numbers</span>
-            </button>
-          </div>
-        )}
-
-        {/* Capsule 2: Modes (time, words, quote, zen, custom) */}
         <div className="test-control-capsule">
-          <button disabled={disabled} onClick={() => selectMode("time")} className={settings.mode === "time" ? "control-active" : "control"}>
+          {/* Section 1: Modifiers (@ punctuation, # numbers) */}
+          {showPunctNum && settings.wordSourceId !== "practice" && settings.wordSourceId !== "code" && settings.wordSourceId !== "github" && settings.wordSourceId !== "ngram" && (
+            <>
+              <button
+                type="button"
+                disabled={disabled}
+                onClick={() => onChange({ ...settings, punctuation: !settings.punctuation })}
+                className={settings.punctuation ? "control-active" : "control"}
+                title="Toggle punctuation"
+              >
+                <AtSign size={13} />
+                <span>punctuation</span>
+              </button>
+              <button
+                type="button"
+                disabled={disabled}
+                onClick={() => onChange({ ...settings, numbers: !settings.numbers })}
+                className={settings.numbers ? "control-active" : "control"}
+                title="Toggle numbers"
+              >
+                <Hash size={13} />
+                <span>numbers</span>
+              </button>
+              <span className="test-control-divider" />
+            </>
+          )}
+
+          {/* Section 2: Modes (time, words, quote, zen, custom) */}
+          <button type="button" disabled={disabled} onClick={() => selectMode("time")} className={settings.mode === "time" ? "control-active" : "control"}>
             <Clock size={13} />
             <span>time</span>
           </button>
-          <button disabled={disabled} onClick={() => selectMode("words")} className={settings.mode === "words" ? "control-active" : "control"}>
+          <button type="button" disabled={disabled} onClick={() => selectMode("words")} className={settings.mode === "words" ? "control-active" : "control"}>
             <FileText size={13} />
             <span>words</span>
           </button>
-          <button disabled={disabled} onClick={() => selectMode("quote")} className={settings.mode === "quote" ? "control-active" : "control"}>
+          <button type="button" disabled={disabled} onClick={() => selectMode("quote")} className={settings.mode === "quote" ? "control-active" : "control"}>
             <QuoteIcon size={13} />
             <span>quote</span>
           </button>
-          <button disabled={disabled} onClick={() => selectMode("zen")} className={settings.mode === "zen" ? "control-active" : "control"}>
+          <button type="button" disabled={disabled} onClick={() => selectMode("zen")} className={settings.mode === "zen" ? "control-active" : "control"}>
             <Flame size={13} />
             <span>zen</span>
           </button>
-          <button disabled={disabled} onClick={() => selectMode("custom")} className={settings.mode === "custom" ? "control-active" : "control"}>
+          <button type="button" disabled={disabled} onClick={() => selectMode("custom")} className={settings.mode === "custom" ? "control-active" : "control"}>
             <Wrench size={13} />
             <span>custom</span>
           </button>
-        </div>
 
-        {/* Capsule 3: Dynamic Mode Values (15, 30, 60, 120 or short, medium, long) */}
-        {showLength && (
-          <div className="test-control-capsule">
-            {values.map((val) => (
-              <button
-                key={val}
-                disabled={disabled}
-                onClick={() => { setShowCustomInput(false); onChange({ ...settings, value: val }); }}
-                className={!showCustomInput && settings.value === val ? "control-active" : "control"}
-              >
-                {val}{settings.mode === "time" ? "s" : ""}
-              </button>
-            ))}
-            {showCustomInput ? (
-              <input
-                ref={inputRef}
-                type="number"
-                className="custom-input"
-                value={customValue}
-                onChange={(e) => setCustomValue(e.target.value)}
-                onBlur={applyCustom}
-                onKeyDown={(e) => e.key === "Enter" && applyCustom()}
-                disabled={disabled}
-              />
-            ) : (
-              <button disabled={disabled} onClick={() => { setCustomValue(String(settings.value)); setShowCustomInput(true); }} className={isCustomLen ? "control-active" : "control"}>
-                custom
-              </button>
-            )}
-          </div>
-        )}
+          {/* Section 3: Values / Quote Lengths */}
+          {showLength && (
+            <>
+              <span className="test-control-divider" />
+              {values.map((val) => (
+                <button
+                  key={val}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => { setShowCustomInput(false); onChange({ ...settings, value: val }); }}
+                  className={!showCustomInput && settings.value === val ? "control-active" : "control"}
+                >
+                  {val}{settings.mode === "time" ? "s" : ""}
+                </button>
+              ))}
+              {showCustomInput ? (
+                <input
+                  ref={inputRef}
+                  type="number"
+                  className="custom-input"
+                  value={customValue}
+                  onChange={(e) => setCustomValue(e.target.value)}
+                  onBlur={applyCustom}
+                  onKeyDown={(e) => e.key === "Enter" && applyCustom()}
+                  disabled={disabled}
+                />
+              ) : (
+                <button type="button" disabled={disabled} onClick={() => { setCustomValue(String(settings.value)); setShowCustomInput(true); }} className={isCustomLen ? "control-active" : "control"}>
+                  custom
+                </button>
+              )}
+            </>
+          )}
 
-        {settings.mode === "quote" && (
-          <div className="test-control-capsule">
-            {quoteLengths.map((q) => (
-              <button
-                key={q.id}
-                disabled={disabled}
-                onClick={() => onChange({ ...settings, quoteLength: q.id })}
-                className={settings.quoteLength === q.id ? "control-active" : "control"}
-              >
-                {q.label}
-              </button>
-            ))}
-          </div>
-        )}
+          {settings.mode === "quote" && (
+            <>
+              <span className="test-control-divider" />
+              {quoteLengths.map((q) => (
+                <button
+                  key={q.id}
+                  type="button"
+                  disabled={disabled}
+                  onClick={() => onChange({ ...settings, quoteLength: q.id })}
+                  className={settings.quoteLength === q.id ? "control-active" : "control"}
+                >
+                  {q.label}
+                </button>
+              ))}
+            </>
+          )}
 
-        {/* Word difficulty: easy / medium / hard / all (English pool only) */}
-        {showWordDifficulty && (
-          <div className="test-control-capsule" aria-label="Word difficulty">
-            {wordDifficultyOptions.map((opt) => (
-              <button
-                key={opt.id}
-                type="button"
-                disabled={disabled}
-                title={
-                  opt.id === "easy"
-                    ? "Short everyday words (2–4 letters)"
-                    : opt.id === "medium"
-                      ? "Mid-length words (5–7 letters)"
-                      : opt.id === "hard"
-                        ? "Longer vocabulary (8+ letters)"
-                        : "Full English word pool"
-                }
-                onClick={() => onChange({ ...settings, wordDifficulty: opt.id })}
-                className={(settings.wordDifficulty || "medium") === opt.id ? "control-active" : "control"}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        )}
-
-        {/* Settings Toggle Capsule */}
-        <div className="test-control-capsule">
+          {/* Section 4: Advanced Settings Toggle */}
+          <span className="test-control-divider" />
           <button
             type="button"
             disabled={disabled}
-            className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded transition-all ${showAdvanced ? "control-active" : "control"}`}
+            className={showAdvanced ? "control-active" : "control"}
             onClick={() => setShowAdvanced((v) => !v)}
             title="Advanced behavior settings & caret controls"
           >
@@ -221,13 +200,14 @@ export function TestControls({ settings, onChange, disabled, compact }: Props) {
         </div>
       </div>
 
-      {/* Sub-bar: Language & Content Preset Selection */}
+      {/* Sub-bar: Language & Content Preset Selection + Word Difficulty */}
       {showPunctNum && settings.wordSourceId !== "practice" && (
         <div className="test-source-subbar">
           <Globe size={13} className="text-[var(--accent)]" />
           {selectableWordSources.map((source) => (
             <button
               key={source.id}
+              type="button"
               disabled={disabled}
               onClick={() => onChange({ ...settings, wordSourceId: source.id })}
               className={(settings.wordSourceId || "common-en") === source.id ? "control-active" : "control"}
@@ -235,6 +215,33 @@ export function TestControls({ settings, onChange, disabled, compact }: Props) {
               {source.label}
             </button>
           ))}
+
+          {/* Word difficulty options seamlessly appended to subbar */}
+          {showWordDifficulty && (
+            <>
+              <span className="test-control-dot">•</span>
+              {wordDifficultyOptions.map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  disabled={disabled}
+                  title={
+                    opt.id === "easy"
+                      ? "Short everyday words (2–4 letters)"
+                      : opt.id === "medium"
+                        ? "Mid-length words (5–7 letters)"
+                        : opt.id === "hard"
+                          ? "Longer vocabulary (8+ letters)"
+                          : "Full English word pool"
+                  }
+                  onClick={() => onChange({ ...settings, wordDifficulty: opt.id })}
+                  className={(settings.wordDifficulty || "medium") === opt.id ? "control-active" : "control"}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </>
+          )}
         </div>
       )}
 
