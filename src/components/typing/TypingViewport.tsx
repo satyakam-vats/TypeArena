@@ -151,7 +151,7 @@ export function TypingViewport({
         className={`typing-viewport-container ${blind ? "viewport-blind" : ""} ${aura.tier >= 5 ? "fever-glow" : ""}`}
         ref={containerRef}
       >
-        {/* Integrated Top Progress Strip & Tier Badge */}
+        {/* Integrated Top Progress Track */}
         {aura.tier > 0 && (
           <div className="aura-header-strip">
             <div className="aura-progress-track">
@@ -159,12 +159,6 @@ export function TypingViewport({
                 className="aura-progress-fill"
                 style={{ width: `${Math.min(100, Math.max(0, auraProgress * 100))}%` }}
               />
-            </div>
-            <div className={`aura-tier-pill aura-pill-tier-${aura.tier} ${isTierUp ? "pill-pop" : ""}`}>
-              <span className="aura-pill-icon">{aura.icon}</span>
-              <span className="aura-pill-label">{aura.label}</span>
-              <span className="aura-pill-mult">x{comboMultiplier}</span>
-              <span className="aura-pill-streak">{comboCount}×</span>
             </div>
           </div>
         )}

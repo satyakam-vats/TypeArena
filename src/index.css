@@ -332,11 +332,16 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
 
 /* --- Combo Badge ------------------------------------------------- */
 .combo-badge {
-  display:inline-flex; align-items:center; gap:6px; padding:3px 10px; margin-right:8px;
-  border-radius:999px; font-family:"IBM Plex Mono",monospace; font-size:.78rem; font-weight:600;
+  display:inline-flex; align-items:center; gap:5px; padding:2px 9px; margin-right:8px;
+  border-radius:999px; font-family:"IBM Plex Mono",monospace; font-size:.74rem; font-weight:600;
   animation:pulse-scale .22s ease-out;
   transition: background .35s ease, border-color .35s ease, color .35s ease, box-shadow .35s ease;
 }
+.combo-badge .combo-icon { font-size: 0.82rem; }
+.combo-badge .combo-label { text-transform: uppercase; font-weight: 700; letter-spacing: 0.04em; }
+.combo-badge .combo-mult { opacity: 0.85; font-size: 0.72rem; }
+.combo-badge .combo-count { font-weight: 800; opacity: 0.95; }
+
 .combo-badge.aura-badge-1 { background:color-mix(in srgb, var(--accent) 14%, transparent); border:1px solid color-mix(in srgb, var(--accent) 45%, var(--line)); color:var(--accent); }
 .combo-badge.aura-badge-2 { background:color-mix(in srgb, #22d3ee 16%, transparent); border:1px solid #22d3ee; color:#0891b2; box-shadow:0 0 10px rgba(34,211,238,.2); }
 .combo-badge.aura-badge-3 { background:color-mix(in srgb, #a78bfa 18%, transparent); border:1px solid #a78bfa; color:#7c3aed; box-shadow:0 0 12px rgba(167,139,250,.25); }

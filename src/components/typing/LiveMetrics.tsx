@@ -24,12 +24,12 @@ export function LiveMetrics({
       {showCombo && (
         <div
           className={`combo-badge aura-badge-${aura.tier} ${aura.tier >= 5 ? "fever-badge" : ""}`}
-          title={`Combo ${comboCount} · ${aura.label || "streak"} · x${comboMultiplier}`}
+          title={`Streak: ${comboCount} · Tier: ${aura.label} · Multiplier: x${comboMultiplier}`}
         >
+          <span className="combo-icon">{aura.icon}</span>
+          <span className="combo-label">{aura.label}</span>
+          <span className="combo-mult">x{comboMultiplier}</span>
           <span className="combo-count">{comboCount}×</span>
-          <span className="combo-multiplier">
-            {aura.tier >= 5 ? "FEVER" : aura.label ? `${aura.label} · x${comboMultiplier}` : `x${comboMultiplier}`}
-          </span>
         </div>
       )}
       <div><span>{label ?? "wpm"}</span><strong>{metrics.wpm}</strong></div>
