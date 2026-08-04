@@ -22,13 +22,17 @@ function parseTimestampMs(val: any): number {
   return 0;
 }
 
+function isRaceDone(status: string | undefined) {
+  return status === "finished" || status === "timed_out";
+}
+
 function orderedPlayers(players: RacePlayer[]) {
   return [...players].sort((left, right) => {
-    const leftDone = left.result.status === "finished";
-    const rightDone = right.result.status === "finished";
+    const leftDone = isRaceDone(left.result.status);
+    const rightDone = isRaceDone(right.result.status);
     // Finished racers first by finish time; never re-rank by volatile liveWpm (causes standings blink).
     if (leftDone && rightDone) {
-      return (left.result.finishElapsedMs ?? 0) - (right.result.finishElapsedMs ?? 0);
+      return (left.result.finishElapsedMs ?? Number.MAX_SAFE_INTEGER) - (right.result.finishElapsedMs ?? Number.MAX_SAFE_INTEGER);
     }
     if (leftDone !== rightDone) return leftDone ? -1 : 1;
     // Still racing: stable order by progress percent, then name (not live WPM).
@@ -39,10 +43,29 @@ function orderedPlayers(players: RacePlayer[]) {
 }
 
 function displayWpm(player: RacePlayer) {
-  if (player.result.status === "finished" && player.result.finalWpm != null) {
+  if (isRaceDone(player.result.status) && player.result.finalWpm != null) {
     return player.result.finalWpm;
   }
   return player.progress.liveWpm;
+}
+
+/** Prefer richer snapshots; never drop a player we already showed on standings. */
+function mergeStandings(prev: RacePlayer[], next: RacePlayer[]): RacePlayer[] {
+  const byUid = new Map<string, RacePlayer>();
+  for (const p of prev) byUid.set(p.uid, p);
+  for (const p of next) {
+    const old = byUid.get(p.uid);
+    if (!old) {
+      byUid.set(p.uid, p);
+      continue;
+    }
+    // Keep finished result if the new snapshot is missing it (transient Firestore gap).
+    const oldDone = isRaceDone(old.result.status);
+    const newDone = isRaceDone(p.result.status);
+    if (oldDone && !newDone) continue;
+    byUid.set(p.uid, p);
+  }
+  return orderedPlayers([...byUid.values()]);
 }
 
 function getGuestIdentity(): { uid: string; displayName: string } {
@@ -69,12 +92,28 @@ export function RoomPage() {
   const [now, setNow] = useState(Date.now());
   const [copied, setCopied] = useState(false);
   const leftRef = useRef(false);
+  const roomStatusRef = useRef<string | undefined>(undefined);
+  /** Once standings are shown, keep them — never blank the row for a Firestore blip. */
+  const standingsSealedRef = useRef(false);
+  const frozenStandingsRef = useRef<RacePlayer[]>([]);
+  /** Local finisher row so we still render if our Firestore player doc blips away. */
+  const localResultRef = useRef<RacePlayer | null>(null);
 
   useEffect(() => subscribeRoom(roomId, setRoom), [roomId]);
   useEffect(() => subscribePlayers(roomId, setPlayers), [roomId]);
   useEffect(() => { const tick = window.setInterval(() => setNow(Date.now()), 1000); return () => window.clearInterval(tick); }, []);
 
-  // Clean leave & heartbeat on unmount / navigation so ghost hosts don't stick in quick-match.
+  roomStatusRef.current = room?.status;
+
+  // Reset sealed standings when entering a different room.
+  useEffect(() => {
+    standingsSealedRef.current = false;
+    frozenStandingsRef.current = [];
+    localResultRef.current = null;
+  }, [roomId]);
+
+  // Heartbeat while in room. Auto-leave only from lobby — not mid-race/results
+  // (deleting the player doc was blanking final standings for ~0.5s).
   useEffect(() => {
     if (!activeUser.uid || !roomId) return;
     leftRef.current = false;
@@ -98,7 +137,10 @@ export function RoomPage() {
       window.clearInterval(hbInterval);
       window.removeEventListener("beforeunload", onUnload);
       window.removeEventListener("pagehide", onUnload);
-      if (!leftRef.current && activeUser.uid && roomId) {
+      const status = roomStatusRef.current;
+      // Only auto-leave waiting/countdown so quick-match lobbies free up.
+      // Racing/finished: keep player doc so standings don't flicker or vanish.
+      if (!leftRef.current && activeUser.uid && roomId && (status === "waiting" || status === "countdown" || !status)) {
         leftRef.current = true;
         void leaveRoom(roomId, activeUser.uid);
       }
@@ -123,9 +165,32 @@ export function RoomPage() {
     if (!activeUser.uid) return;
     finishedProgressSentRef.current = true;
     const total = room?.content.text.length ?? run.targetText.length;
+    // Cache local result only — do NOT open standings early (others may still be racing).
+    localResultRef.current = {
+      uid: activeUser.uid,
+      displayName: activeUser.displayName,
+      photoURL: activeUser.photoURL ?? null,
+      role: "player",
+      presence: "joined",
+      progress: {
+        typedChars: total,
+        totalChars: total,
+        percent: 100,
+        liveWpm: run.metrics.wpm,
+        accuracy: run.metrics.accuracy,
+      },
+      result: {
+        status: "finished",
+        finishElapsedMs: run.metrics.durationMs,
+        finalWpm: run.metrics.wpm,
+        rawWpm: run.metrics.rawWpm,
+        accuracy: run.metrics.accuracy,
+        testRunId: run.id,
+      },
+    };
     void updateProgress(roomId, activeUser.uid, total, total, run.metrics);
     void finishRace(roomId, activeUser.uid, run.metrics, run.metrics.durationMs, run.id);
-  }, [room?.content.text.length, roomId, activeUser.uid]);
+  }, [room?.content.text.length, roomId, activeUser.uid, activeUser.displayName, activeUser.photoURL]);
   const test = useTypingTest(
     room?.content.text ?? "",
     normalizeSettings({ ...room?.settings, stopOnError: "letter" }),
@@ -166,13 +231,16 @@ export function RoomPage() {
     void startRace(roomId, activeUser.uid, room.settings.raceTimeoutMs);
   }, [countdownAt, now, room, roomId, activeUser.uid]);
   const isHost = room?.hostId === activeUser.uid;
-  const activePlayers = players.filter((p) => {
+  const activePlayers = useMemo(() => players.filter((p) => {
+    // Always keep finishers on the board — never drop them for presence/heartbeat lag.
+    if (isRaceDone(p.result?.status)) return true;
     if (p.presence === "left") return false;
     const lastActive = parseTimestampMs(p.lastActiveAt) || parseTimestampMs(p.joinedAt) || parseTimestampMs(p.progress?.updatedAt);
     if (lastActive > 0 && now - lastActive > 30000) return false;
     return true;
-  });
-  const allFinished = activePlayers.length > 0 && activePlayers.every((player) => player.result.status === "finished");
+  }), [players, now]);
+
+  const allFinished = activePlayers.length > 0 && activePlayers.every((player) => isRaceDone(player.result.status));
   const timedOut = room?.lifecycle.endsAt ? now >= room.lifecycle.endsAt.toMillis() : false;
   useEffect(() => {
     if (room?.status === "racing" && isHost && activeUser.uid && (allFinished || timedOut)) void endRace(roomId, activeUser.uid);
@@ -183,10 +251,25 @@ export function RoomPage() {
     () => [...activePlayers].sort((a, b) => a.displayName.localeCompare(b.displayName)),
     [activePlayers],
   );
-  const standings = useMemo(() => orderedPlayers(activePlayers), [activePlayers]);
 
-  // Only flip to standings when the race is actually over — not when local user finishes first.
-  const showLeaderboard = !!room && (room.status === "finished" || allFinished);
+  // Seal standings once race is over — empty Firestore snapshots must not clear the UI.
+  const raceOver = !!room && (room.status === "finished" || allFinished);
+  if (raceOver) {
+    standingsSealedRef.current = true;
+    let next = activePlayers;
+    if (localResultRef.current) next = mergeStandings(next, [localResultRef.current]);
+    if (next.length > 0) {
+      frozenStandingsRef.current = mergeStandings(frozenStandingsRef.current, next);
+    }
+  }
+  const showLeaderboard = standingsSealedRef.current || raceOver;
+  const standings = useMemo(() => {
+    if (standingsSealedRef.current && frozenStandingsRef.current.length > 0) {
+      return frozenStandingsRef.current;
+    }
+    return orderedPlayers(activePlayers);
+  }, [activePlayers, showLeaderboard, players]);
+
   const localFinished = test.status === "finished";
   const aloneInPublic = !!room && room.roomType === "public" && room.status === "waiting" && activePlayers.length <= 1;
 
