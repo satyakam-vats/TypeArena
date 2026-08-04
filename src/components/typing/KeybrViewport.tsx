@@ -77,19 +77,12 @@ export function KeybrViewport({
     caret.style.transform = `translate3d(${left}px, ${top}px, 0)`;
     caret.style.height = caretStyle === "underline" ? "3px" : `${height}px`;
 
-    // Cache line pitch to avoid forced reflows
-    if (linePitchRef.current === 48) {
-      const computedLineHeight = parseFloat(window.getComputedStyle(copyEl).lineHeight);
-      if (!isNaN(computedLineHeight) && computedLineHeight > 0) {
-        linePitchRef.current = computedLineHeight;
-      }
-    }
-    const linePitch = linePitchRef.current;
+    const LINE_PITCH = 48;
 
-    // Discrete 2-line window scroll calculation
-    const lineIndex = Math.round(top / linePitch);
+    // Discrete 2-line window scroll calculation (floor with tolerance prevents line jitter)
+    const lineIndex = Math.floor((top + 10) / LINE_PITCH);
     const targetLine = Math.max(0, lineIndex - 1);
-    const nextTranslate = Math.round(targetLine * linePitch);
+    const nextTranslate = targetLine * LINE_PITCH;
 
     // Smooth hardware GPU transform directly on copy element
     copyEl.style.transform = `translate3d(0, -${nextTranslate}px, 0)`;

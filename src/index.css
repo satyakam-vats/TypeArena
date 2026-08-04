@@ -669,7 +669,7 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
   color: var(--muted);
   font-family: "IBM Plex Mono", ui-monospace, monospace;
   font-weight: 400;
-  line-height: 48px;
+  line-height: 48px !important;
   letter-spacing: 0.02em;
   word-break: break-word;
   will-change: transform;
