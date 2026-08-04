@@ -75,6 +75,7 @@ export function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [avatarFailed, setAvatarFailed] = useState(false);
+  const [badgeCategory, setBadgeCategory] = useState<'all' | 'speed' | 'accuracy' | 'stamina' | 'races' | 'consistency'>('all');
 
   const isOwnProfile = user && user.uid === targetUid;
 
@@ -147,6 +148,11 @@ export function ProfilePage() {
   }, [profile?.stats]);
 
   const unlockedCount = badgesStatus.filter(b => b.unlocked).length;
+
+  const filteredBadges = useMemo(() => {
+    if (badgeCategory === 'all') return badgesStatus;
+    return badgesStatus.filter(b => b.badge.category === badgeCategory);
+  }, [badgesStatus, badgeCategory]);
 
   const joinedTimeMs = useMemo(() => {
     const candidates: number[] = [];
@@ -325,20 +331,55 @@ export function ProfilePage() {
 
       {/* Achievements Section */}
       <section className="profile-section">
-        <div className="section-header-row">
+        <div className="section-header-row" style={{ marginBottom: 12 }}>
           <h2 className="section-title" style={{ margin: 0 }}>achievements</h2>
           <span className="badge-counter">
-            {unlockedCount} / {badgesStatus.length}
+            {unlockedCount} / {badgesStatus.length} unlocked
           </span>
         </div>
+
+        {/* Category Tabs */}
+        <div className="badge-category-tabs">
+          {(['all', 'speed', 'accuracy', 'stamina', 'races', 'consistency'] as const).map(cat => (
+            <button
+              key={cat}
+              className={`badge-cat-tab ${badgeCategory === cat ? 'active' : ''}`}
+              onClick={() => setBadgeCategory(cat)}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
         <div className="badges-grid">
-          {badgesStatus.map(({ badge, unlocked }) => (
+          {filteredBadges.map(({ badge, unlocked, progress }) => (
             <div key={badge.id} className={`badge-card ${unlocked ? 'unlocked' : 'locked'}`}>
-              <div className="badge-icon">{badge.icon}</div>
-              <div className="badge-details">
-                <h3 className="badge-title">{badge.title}</h3>
-                <p className="badge-desc">{badge.description}</p>
+              <div className="badge-card-top">
+                <div className="badge-icon-wrapper" title={`${badge.tier.toUpperCase()} Tier`}>
+                  {badge.icon}
+                </div>
+                <div className="badge-details">
+                  <div className="badge-header-row">
+                    <h3 className="badge-title">{badge.title}</h3>
+                    <span className={`badge-tier-tag tier-${badge.tier}`}>
+                      {badge.tier}
+                    </span>
+                  </div>
+                  <p className="badge-desc">{badge.description}</p>
+                </div>
               </div>
+
+              {!unlocked && (
+                <div className="badge-progress-container">
+                  <div className="badge-progress-info">
+                    <span>{progress.current} / {progress.target} {progress.unit || ''}</span>
+                    <span>{progress.percent}%</span>
+                  </div>
+                  <div className="badge-progress-track">
+                    <div className="badge-progress-fill" style={{ width: `${progress.percent}%` }} />
+                  </div>
+                </div>
+              )}
             </div>
           ))}
         </div>
