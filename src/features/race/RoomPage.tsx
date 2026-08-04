@@ -133,10 +133,10 @@ export function RoomPage() {
   const activePlayers = players.filter((p) => {
     if (p.presence === "left") return false;
     const lastActive = parseTimestampMs(p.lastActiveAt) || parseTimestampMs(p.joinedAt) || parseTimestampMs(p.progress?.updatedAt);
-    if (lastActive > 0 && now - lastActive > 15000) return false;
+    if (lastActive > 0 && now - lastActive > 30000) return false;
     return true;
   });
-  const allFinished = activePlayers.length > 0 && activePlayers.every((player) => player.result.status !== "pending");
+  const allFinished = activePlayers.length > 0 && activePlayers.every((player) => player.result.status === "finished");
   const timedOut = room?.lifecycle.endsAt ? now >= room.lifecycle.endsAt.toMillis() : false;
   useEffect(() => {
     if (room?.status === "racing" && isHost && activeUser.uid && (allFinished || timedOut)) void endRace(roomId, activeUser.uid);
