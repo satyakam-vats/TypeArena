@@ -1,5 +1,5 @@
 import { Copy, Crown, Flag, RotateCcw } from "lucide-react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { LiveMetrics } from "../../components/typing/LiveMetrics";
 import { ReactionBar } from "../../components/typing/ReactionBar";
@@ -33,10 +33,25 @@ function orderedPlayers(players: RacePlayer[]) {
   });
 }
 
+function getGuestIdentity(): { uid: string; displayName: string } {
+  let guestId = localStorage.getItem("typearena_guest_id");
+  if (!guestId) {
+    guestId = "guest_" + Math.random().toString(36).substring(2, 8);
+    localStorage.setItem("typearena_guest_id", guestId);
+  }
+  const tag = guestId.slice(-4).toUpperCase();
+  return { uid: guestId, displayName: `Guest-${tag}` };
+}
+
 export function RoomPage() {
   const { roomId = "" } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const activeUser = useMemo(() => {
+    if (user) return { uid: user.uid, displayName: user.displayName ?? "Racer", photoURL: user.photoURL };
+    return { ...getGuestIdentity(), photoURL: null };
+  }, [user]);
+
   const [room, setRoom] = useState<RaceRoom | null>(null);
   const [players, setPlayers] = useState<RacePlayer[]>([]);
   const [now, setNow] = useState(Date.now());
@@ -49,18 +64,18 @@ export function RoomPage() {
 
   // Clean leave & heartbeat on unmount / navigation so ghost hosts don't stick in quick-match.
   useEffect(() => {
-    if (!user || !roomId) return;
+    if (!activeUser.uid || !roomId) return;
     leftRef.current = false;
 
-    void updateHeartbeat(roomId, user.uid);
+    void updateHeartbeat(roomId, activeUser.uid);
     const hbInterval = window.setInterval(() => {
-      if (!leftRef.current) void updateHeartbeat(roomId, user.uid);
+      if (!leftRef.current) void updateHeartbeat(roomId, activeUser.uid);
     }, 4000);
 
     const onUnload = () => {
-      if (!leftRef.current && user && roomId) {
+      if (!leftRef.current && activeUser.uid && roomId) {
         leftRef.current = true;
-        void leaveRoom(roomId, user.uid);
+        void leaveRoom(roomId, activeUser.uid);
       }
     };
 
@@ -71,50 +86,50 @@ export function RoomPage() {
       window.clearInterval(hbInterval);
       window.removeEventListener("beforeunload", onUnload);
       window.removeEventListener("pagehide", onUnload);
-      if (!leftRef.current && user && roomId) {
+      if (!leftRef.current && activeUser.uid && roomId) {
         leftRef.current = true;
-        void leaveRoom(roomId, user.uid);
+        void leaveRoom(roomId, activeUser.uid);
       }
     };
-  }, [roomId, user]);
+  }, [roomId, activeUser.uid]);
 
   const handleLeave = useCallback(async () => {
-    if (user && roomId && !leftRef.current) {
+    if (activeUser.uid && roomId && !leftRef.current) {
       leftRef.current = true;
-      await leaveRoom(roomId, user.uid);
+      await leaveRoom(roomId, activeUser.uid);
     }
     navigate("/race");
-  }, [navigate, roomId, user]);
+  }, [navigate, roomId, activeUser.uid]);
   const raceStartedAt = room?.lifecycle.raceStartedAt?.toMillis();
   const countdownAt = room?.lifecycle.countdownStartedAt?.toMillis();
   const countdown = countdownAt ? Math.max(0, 3 - Math.floor((now - countdownAt) / 1000)) : 3;
   const startTime = room?.status === "racing" && raceStartedAt ? raceStartedAt : undefined;
   const lastProgressRef = useRef<number>(0);
   const onComplete = useCallback((run: CompletedRun) => {
-    if (!user) return;
-    void updateProgress(roomId, user.uid, room?.content.text.length ?? run.targetText.length, room?.content.text.length ?? run.targetText.length, run.metrics);
-    void finishRace(roomId, user.uid, run.metrics, run.metrics.durationMs, run.id);
-  }, [room?.content.text.length, roomId, user]);
+    if (!activeUser.uid) return;
+    void updateProgress(roomId, activeUser.uid, room?.content.text.length ?? run.targetText.length, room?.content.text.length ?? run.targetText.length, run.metrics);
+    void finishRace(roomId, activeUser.uid, run.metrics, run.metrics.durationMs, run.id);
+  }, [room?.content.text.length, roomId, activeUser.uid]);
   const test = useTypingTest(
     room?.content.text ?? "",
-    normalizeSettings(room?.settings),
+    normalizeSettings({ ...room?.settings, stopOnError: "letter" }),
     onComplete,
     room?.content.seed ?? roomId,
     startTime,
   );
   useEffect(() => {
-    if (!room || !user || room.status !== "racing") return;
+    if (!room || !activeUser.uid || room.status !== "racing") return;
     const nowMs = Date.now();
-    if (nowMs - lastProgressRef.current >= 250 || test.status === "finished") {
+    if (nowMs - lastProgressRef.current >= 200 || test.status === "finished") {
       lastProgressRef.current = nowMs;
-      void updateProgress(roomId, user.uid, test.typedText.length, room.content.text.length, test.metrics);
+      void updateProgress(roomId, activeUser.uid, test.typedText.length, room.content.text.length, test.metrics);
     }
-  }, [room, roomId, test.metrics, test.status, test.typedText.length, user]);
+  }, [room, roomId, test.metrics, test.status, test.typedText.length, activeUser.uid]);
   useEffect(() => {
-    if (!room || !user || room.status !== "countdown" || !countdownAt || now - countdownAt < 3000 || room.hostId !== user.uid) return;
-    void startRace(roomId, user.uid, room.settings.raceTimeoutMs);
-  }, [countdownAt, now, room, roomId, user]);
-  const isHost = room?.hostId === user?.uid;
+    if (!room || !activeUser.uid || room.status !== "countdown" || !countdownAt || now - countdownAt < 3000 || room.hostId !== activeUser.uid) return;
+    void startRace(roomId, activeUser.uid, room.settings.raceTimeoutMs);
+  }, [countdownAt, now, room, roomId, activeUser.uid]);
+  const isHost = room?.hostId === activeUser.uid;
   const activePlayers = players.filter((p) => {
     if (p.presence === "left") return false;
     const lastActive = parseTimestampMs(p.lastActiveAt) || parseTimestampMs(p.joinedAt) || parseTimestampMs(p.progress?.updatedAt);
@@ -124,8 +139,8 @@ export function RoomPage() {
   const allFinished = activePlayers.length > 0 && activePlayers.every((player) => player.result.status !== "pending");
   const timedOut = room?.lifecycle.endsAt ? now >= room.lifecycle.endsAt.toMillis() : false;
   useEffect(() => {
-    if (room?.status === "racing" && isHost && user && (allFinished || timedOut)) void endRace(roomId, user.uid);
-  }, [allFinished, isHost, room?.status, roomId, timedOut, user]);
+    if (room?.status === "racing" && isHost && activeUser.uid && (allFinished || timedOut)) void endRace(roomId, activeUser.uid);
+  }, [allFinished, isHost, room?.status, roomId, timedOut, activeUser.uid]);
   if (!room) return <main className="center-page"><p>Loading race room…</p></main>;
   if (room.abandoned && room.status === "finished" && !allFinished && test.status !== "finished") {
     return (
@@ -166,7 +181,7 @@ export function RoomPage() {
         </div>
         {isHost && activePlayers.length >= 1 && (
           <button
-            onClick={() => void startCountdown(roomId, user!.uid)}
+            onClick={() => void startCountdown(roomId, activeUser.uid)}
             className="primary-button"
             disabled={room.roomType === "public" && activePlayers.length < 2}
             title={room.roomType === "public" && activePlayers.length < 2 ? "Need at least 2 racers for quick match" : undefined}
@@ -183,7 +198,7 @@ export function RoomPage() {
     {room.status === "racing" && !showLeaderboard && <section className="race-room">
       <div className="mb-7 flex justify-between text-sm text-[var(--muted)]"><span>live race · {activePlayers.length} racers</span><LiveMetrics metrics={test.metrics} /></div>
       <div className="race-progress">{activePlayers.map((player) => <div className="racer-line" key={player.uid}><span>{player.displayName}</span><div><i style={{ width: `${player.progress.percent}%` }} /></div><b>{player.result.finalWpm ?? player.progress.liveWpm} wpm</b></div>)}</div>
-      {user && <ReactionBar roomId={roomId} uid={user.uid} displayName={user.displayName ?? "Anonymous"} active={!showLeaderboard} />}
+      {activeUser.uid && <ReactionBar roomId={roomId} uid={activeUser.uid} displayName={activeUser.displayName} active={!showLeaderboard} />}
       <TypingViewport target={room.content.text} typed={test.typedText} active smoothCaret />
       <textarea autoFocus value={test.typedText} onChange={(event) => test.updateTypedText(event.target.value)} onPaste={(event) => event.preventDefault()} className="typing-input" aria-label="Race typing input" spellCheck={false} autoCapitalize="off" autoCorrect="off" />
     </section>}
