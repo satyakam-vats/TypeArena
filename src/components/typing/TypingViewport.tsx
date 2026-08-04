@@ -43,7 +43,7 @@ export function TypingViewport({
   const caretElRef = useRef<HTMLSpanElement | null>(null);
   const prevTopRef = useRef<number>(0);
   const prevTierRef = useRef<number>(0);
-  const [translateY, setTranslateY] = useState(0);
+  const linePitchRef = useRef<number>(44);
   const [isTierUp, setIsTierUp] = useState(false);
 
   const aura = useMemo(() => getAuraInfo(comboCount), [comboCount]);
@@ -80,16 +80,16 @@ export function TypingViewport({
   }, [target]);
 
   useLayoutEffect(() => {
-    if (!displayTyped) {
-      setTranslateY(0);
-    }
-
     const container = containerRef.current;
     const copyEl = container?.querySelector(".typing-copy") as HTMLElement | null;
     const el = activeCharRef.current || (container?.querySelector(".char") as HTMLElement | null);
     const caret = caretElRef.current;
 
     if (!copyEl || !el || !caret || !container) return;
+
+    if (!displayTyped) {
+      copyEl.style.transform = `translate3d(0, 0px, 0)`;
+    }
 
     const copyRect = copyEl.getBoundingClientRect();
     const charRect = el.getBoundingClientRect();
@@ -120,9 +120,14 @@ export function TypingViewport({
       caret.style.height = `${height}px`;
     }
 
-    // Discrete line-by-line scroll calculations using computed line pitch (distance between lines)
-    const computedLineHeight = parseFloat(window.getComputedStyle(copyEl).lineHeight);
-    const linePitch = !isNaN(computedLineHeight) && computedLineHeight > 0 ? computedLineHeight : 44;
+    // Cache computed line pitch to eliminate forced reflows on every keypress
+    if (linePitchRef.current === 44) {
+      const computedLineHeight = parseFloat(window.getComputedStyle(copyEl).lineHeight);
+      if (!isNaN(computedLineHeight) && computedLineHeight > 0) {
+        linePitchRef.current = computedLineHeight;
+      }
+    }
+    const linePitch = linePitchRef.current;
 
     // Lock container height to exactly 3 full lines so partial lines never clip at top/bottom
     container.style.height = `${linePitch * 3}px`;
@@ -131,7 +136,8 @@ export function TypingViewport({
     const targetLine = Math.max(0, lineIndex - 1);
     const nextTranslate = Math.round(targetLine * linePitch);
 
-    setTranslateY(nextTranslate);
+    // Apply smooth GPU transform directly to DOM to eliminate React state flicker
+    copyEl.style.transform = `translate3d(0, -${nextTranslate}px, 0)`;
   }, [displayTyped, target, replayIndex, caretStyle]);
 
   const caretActive = active && focused && replayIndex == null;
@@ -178,10 +184,7 @@ export function TypingViewport({
           </button>
         )}
 
-        <div
-          className="typing-copy flex flex-wrap relative"
-          style={{ transform: `translateY(-${translateY}px)` }}
-        >
+        <div className="typing-copy flex flex-wrap relative">
           {/* Caret Local Energy Aura Halo */}
           {aura.tier > 0 && caretActive && (
             <div
