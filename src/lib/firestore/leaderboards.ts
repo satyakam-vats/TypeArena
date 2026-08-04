@@ -1,4 +1,4 @@
-import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
+import { collection, doc, getDoc, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 import { getStoredRuns } from "../storage/analyticsStorage";
 
@@ -202,6 +202,52 @@ export async function fetchLeaderboard(
       completedAt: runTime,
     });
   });
+
+  // Resolve real display names and photos for any "Anonymous" or unpopulated entries from users collection
+  if (db && rawEntries.length > 0) {
+    const database = db;
+    const uidsToResolve = Array.from(
+      new Set(
+        rawEntries
+          .filter(e => e.uid && e.uid !== "anon" && e.uid !== "local-user" && !e.uid.startsWith("guest_") && (e.displayName === "Anonymous" || !e.displayName))
+          .map(e => e.uid)
+      )
+    );
+
+    if (uidsToResolve.length > 0) {
+      try {
+        const userMap = new Map<string, { displayName?: string; photoURL?: string }>();
+        await Promise.all(
+          uidsToResolve.slice(0, 50).map(async (uid) => {
+            try {
+              const uSnap = await getDoc(doc(database, "users", uid));
+              if (uSnap.exists()) {
+                const uData = uSnap.data();
+                if (uData.displayName) {
+                  userMap.set(uid, {
+                    displayName: uData.displayName,
+                    photoURL: uData.photoURL ?? undefined,
+                  });
+                }
+              }
+            } catch {
+              // ignore fetch errors
+            }
+          })
+        );
+
+        rawEntries.forEach(e => {
+          const profile = userMap.get(e.uid);
+          if (profile) {
+            if (profile.displayName) e.displayName = profile.displayName;
+            if (profile.photoURL) e.photoURL = profile.photoURL;
+          }
+        });
+      } catch (err) {
+        console.warn("Failed to enrich leaderboard user names:", err);
+      }
+    }
+  }
 
   // Best run per user
   const bestByUser = new Map<string, LeaderboardEntry>();
