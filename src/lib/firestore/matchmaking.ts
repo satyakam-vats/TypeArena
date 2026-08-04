@@ -21,19 +21,15 @@ export async function findOrCreatePublicRoom(user: User, settings: TestSettings)
 
   const snapshot = await getDocs(q);
 
-  // Prefer rooms that already have other players; skip empty ghost lobbies.
-  const candidates = snapshot.docs.filter((d) => {
-    const data = d.data();
-    if (data.abandoned) return false;
-    if (data.hostId === user.uid) return false; // don't rejoin own abandoned host slot via stale query
-    return true;
-  });
+  for (const roomDoc of snapshot.docs) {
+    const data = roomDoc.data();
+    if (data.abandoned) continue;
 
-  for (const roomDoc of candidates) {
     try {
       const playerCount = await countRoomPlayers(roomDoc.id);
+
       if (playerCount <= 0) {
-        // Ghost room: mark abandoned so it drops out of matchmaking.
+        // Ghost room (no active typists): mark abandoned so it drops out of matchmaking.
         await updateDoc(doc(db, "rooms", roomDoc.id), {
           status: "finished",
           abandoned: true,
@@ -41,6 +37,12 @@ export async function findOrCreatePublicRoom(user: User, settings: TestSettings)
         }).catch(() => undefined);
         continue;
       }
+
+      // If user is host of an existing active waiting public room, return it
+      if (data.hostId === user.uid) {
+        return roomDoc.id;
+      }
+
       if (playerCount >= 8) continue;
 
       await joinRoom(roomDoc.id, user);

@@ -8,13 +8,14 @@ import { normalizeSettings, type RunMetrics, type TestSettings } from "../../typ
 const codeCharacters = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
 const makeCode = () => Array.from({ length: 6 }, () => codeCharacters[Math.floor(Math.random() * codeCharacters.length)]).join("");
 
-function playerPayload(user: User, role: RacePlayer["role"]): Omit<RacePlayer, "joinedAt"> & { joinedAt: ReturnType<typeof serverTimestamp> } {
+function playerPayload(user: User, role: RacePlayer["role"]): Omit<RacePlayer, "joinedAt" | "lastActiveAt"> & { joinedAt: ReturnType<typeof serverTimestamp>; lastActiveAt: ReturnType<typeof serverTimestamp> } {
   return {
     uid: user.uid,
     displayName: user.displayName ?? "Anonymous racer",
     photoURL: user.photoURL ?? null,
     role,
     joinedAt: serverTimestamp(),
+    lastActiveAt: serverTimestamp(),
     presence: "joined",
     progress: { typedChars: 0, totalChars: 0, percent: 0, liveWpm: 0, accuracy: 100, updatedAt: serverTimestamp() },
     result: { status: "pending", finishElapsedMs: null, finalWpm: null, rawWpm: null, accuracy: null, testRunId: null },
@@ -133,12 +134,49 @@ export async function leaveRoom(roomId: string, uid: string): Promise<void> {
   }
 }
 
-/** Count active (non-left) players in a room. */
+export async function updateHeartbeat(roomId: string, uid: string): Promise<void> {
+  const firestore = db;
+  if (!firestore || !roomId || !uid) return;
+  try {
+    await updateDoc(doc(firestore, "rooms", roomId, "players", uid), {
+      lastActiveAt: serverTimestamp(),
+      presence: "joined",
+    });
+  } catch {
+    // Ignore heartbeat failures if player left
+  }
+}
+
+function parseTimestampMs(val: any): number {
+  if (!val) return 0;
+  if (typeof val === "number") return val;
+  if (typeof val === "string") {
+    const parsed = Date.parse(val);
+    if (!isNaN(parsed)) return parsed;
+  }
+  if (typeof val === "object" && typeof val.toMillis === "function") return val.toMillis();
+  if (typeof val === "object" && typeof val.seconds === "number") return val.seconds * 1000;
+  return 0;
+}
+
+/** Count active (non-left & non-stale) players in a room. */
 export async function countRoomPlayers(roomId: string): Promise<number> {
   const firestore = db;
   if (!firestore) return 0;
-  const snap = await getDocs(collection(firestore, "rooms", roomId, "players"));
-  return snap.size;
+  try {
+    const snap = await getDocs(collection(firestore, "rooms", roomId, "players"));
+    const now = Date.now();
+    const active = snap.docs.filter((d) => {
+      const data = d.data() as RacePlayer;
+      if (data.presence === "left") return false;
+      const lastActive = parseTimestampMs(data.lastActiveAt) || parseTimestampMs(data.joinedAt) || parseTimestampMs(data.progress?.updatedAt);
+      if (lastActive > 0 && now - lastActive > 15000) return false;
+      return true;
+    });
+    return active.length;
+  } catch {
+    return 0;
+  }
 }
 
 export function subscribeRoom(roomId: string, callback: (room: RaceRoom | null) => void): Unsubscribe {

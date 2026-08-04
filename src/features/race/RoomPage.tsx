@@ -6,9 +6,21 @@ import { ReactionBar } from "../../components/typing/ReactionBar";
 import { TypingViewport } from "../../components/typing/TypingViewport";
 import { useAuth } from "../../context/AuthContext";
 import { useTypingTest } from "../../hooks/useTypingTest";
-import { endRace, finishRace, leaveRoom, startCountdown, startRace, subscribePlayers, subscribeRoom, updateProgress } from "../../lib/firestore/rooms";
+import { endRace, finishRace, leaveRoom, startCountdown, startRace, subscribePlayers, subscribeRoom, updateHeartbeat, updateProgress } from "../../lib/firestore/rooms";
 import type { RacePlayer, RaceRoom } from "../../types/room";
 import { normalizeSettings, type CompletedRun } from "../../types/typing";
+
+function parseTimestampMs(val: any): number {
+  if (!val) return 0;
+  if (typeof val === "number") return val;
+  if (typeof val === "string") {
+    const parsed = Date.parse(val);
+    if (!isNaN(parsed)) return parsed;
+  }
+  if (typeof val === "object" && typeof val.toMillis === "function") return val.toMillis();
+  if (typeof val === "object" && typeof val.seconds === "number") return val.seconds * 1000;
+  return 0;
+}
 
 function orderedPlayers(players: RacePlayer[]) {
   return [...players].sort((left, right) => {
@@ -35,13 +47,34 @@ export function RoomPage() {
   useEffect(() => subscribePlayers(roomId, setPlayers), [roomId]);
   useEffect(() => { const tick = window.setInterval(() => setNow(Date.now()), 1000); return () => window.clearInterval(tick); }, []);
 
-  // Clean leave on unmount / navigation so ghost hosts don't stick in quick-match.
+  // Clean leave & heartbeat on unmount / navigation so ghost hosts don't stick in quick-match.
   useEffect(() => {
+    if (!user || !roomId) return;
     leftRef.current = false;
+
+    void updateHeartbeat(roomId, user.uid);
+    const hbInterval = window.setInterval(() => {
+      if (!leftRef.current) void updateHeartbeat(roomId, user.uid);
+    }, 4000);
+
+    const onUnload = () => {
+      if (!leftRef.current && user && roomId) {
+        leftRef.current = true;
+        void leaveRoom(roomId, user.uid);
+      }
+    };
+
+    window.addEventListener("beforeunload", onUnload);
+    window.addEventListener("pagehide", onUnload);
+
     return () => {
-      if (leftRef.current || !user || !roomId) return;
-      leftRef.current = true;
-      void leaveRoom(roomId, user.uid);
+      window.clearInterval(hbInterval);
+      window.removeEventListener("beforeunload", onUnload);
+      window.removeEventListener("pagehide", onUnload);
+      if (!leftRef.current && user && roomId) {
+        leftRef.current = true;
+        void leaveRoom(roomId, user.uid);
+      }
     };
   }, [roomId, user]);
 
@@ -77,7 +110,12 @@ export function RoomPage() {
     void startRace(roomId, user.uid, room.settings.raceTimeoutMs);
   }, [countdownAt, now, room, roomId, user]);
   const isHost = room?.hostId === user?.uid;
-  const activePlayers = players.filter((p) => p.presence !== "left");
+  const activePlayers = players.filter((p) => {
+    if (p.presence === "left") return false;
+    const lastActive = parseTimestampMs(p.lastActiveAt) || parseTimestampMs(p.joinedAt) || parseTimestampMs(p.progress?.updatedAt);
+    if (lastActive > 0 && now - lastActive > 15000) return false;
+    return true;
+  });
   const allFinished = activePlayers.length > 0 && activePlayers.every((player) => player.result.status !== "pending");
   const timedOut = room?.lifecycle.endsAt ? now >= room.lifecycle.endsAt.toMillis() : false;
   useEffect(() => {

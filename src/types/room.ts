@@ -19,6 +19,7 @@ export type RacePlayer = {
   photoURL: string | null;
   role: "host" | "player" | "spectator";
   joinedAt?: unknown;
+  lastActiveAt?: unknown;
   presence: "joined" | "ready" | "left";
   progress: { typedChars: number; totalChars: number; percent: number; liveWpm: number; accuracy: number; updatedAt?: unknown };
   result: { status: "pending" | "finished" | "timed_out"; finishedAt?: unknown; finishElapsedMs: number | null; finalWpm: number | null; rawWpm: number | null; accuracy: number | null; testRunId: string | null };
