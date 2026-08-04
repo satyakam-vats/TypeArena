@@ -91,13 +91,17 @@ export function TypingViewport({
       copyEl.style.transform = `translate3d(0, 0px, 0)`;
     }
 
-    const copyRect = copyEl.getBoundingClientRect();
-    const charRect = el.getBoundingClientRect();
+    // Accumulate static DOM offsetTop & offsetLeft (completely immune to CSS transforms & running animations)
+    let curr: HTMLElement | null = el;
+    let left = 0;
+    let top = 0;
+    while (curr && curr !== copyEl) {
+      left += curr.offsetLeft;
+      top += curr.offsetTop;
+      curr = curr.offsetParent as HTMLElement | null;
+    }
 
-    // Exact sub-pixel coordinates relative to typing-copy container
-    const left = charRect.left - copyRect.left;
-    const top = charRect.top - copyRect.top;
-    const height = charRect.height || 28;
+    const height = el.offsetHeight || 28;
 
     // Set caret position custom variables on container for local aura halo
     container.style.setProperty("--caret-left", `${left}px`);
