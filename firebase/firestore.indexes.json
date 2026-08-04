@@ -16,13 +16,6 @@
         { "fieldPath": "settings.value", "order": "ASCENDING" },
         { "fieldPath": "metrics.wpm", "order": "DESCENDING" }
       ]
-    },
-    {
-      "collectionGroup": "testRuns",
-      "queryScope": "COLLECTION",
-      "fields": [
-        { "fieldPath": "completedAt", "order": "DESCENDING" }
-      ]
     }
   ],
   "fieldOverrides": []
