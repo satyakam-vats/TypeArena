@@ -177,6 +177,25 @@ export function RoomPage() {
   useEffect(() => {
     if (room?.status === "racing" && isHost && activeUser.uid && (allFinished || timedOut)) void endRace(roomId, activeUser.uid);
   }, [allFinished, isHost, room?.status, roomId, timedOut, activeUser.uid]);
+
+  // Hooks must stay above any early return (blank screen crash if useMemo ran only after room loaded).
+  const progressPlayers = useMemo(
+    () => [...activePlayers].sort((a, b) => a.displayName.localeCompare(b.displayName)),
+    [activePlayers],
+  );
+  const standings = useMemo(() => orderedPlayers(activePlayers), [activePlayers]);
+
+  // Only flip to standings when the race is actually over — not when local user finishes first.
+  const showLeaderboard = !!room && (room.status === "finished" || allFinished);
+  const localFinished = test.status === "finished";
+  const aloneInPublic = !!room && room.roomType === "public" && room.status === "waiting" && activePlayers.length <= 1;
+
+  const copyLink = async () => {
+    if (!room) return;
+    await navigator.clipboard.writeText(`${window.location.origin}/race/${roomId}`);
+    setCopied(true);
+  };
+
   if (!room) return <main className="center-page"><p>Loading race room…</p></main>;
   if (room.abandoned && room.status === "finished" && !allFinished && test.status !== "finished") {
     return (
@@ -186,20 +205,6 @@ export function RoomPage() {
       </main>
     );
   }
-  // Only flip to standings when the race is actually over — not when local user finishes first
-  // (that swapped the whole page and re-sorted rows on every liveWpm tick → blink).
-  const showLeaderboard = room.status === "finished" || allFinished;
-  const localFinished = test.status === "finished";
-  const copyLink = async () => { await navigator.clipboard.writeText(`${window.location.origin}/race/${roomId}`); setCopied(true); };
-
-  const aloneInPublic = room.roomType === "public" && room.status === "waiting" && activePlayers.length <= 1;
-
-  // Stable order for live progress bars (join order) so rows don't jump as WPM changes.
-  const progressPlayers = useMemo(
-    () => [...activePlayers].sort((a, b) => a.displayName.localeCompare(b.displayName)),
-    [activePlayers],
-  );
-  const standings = useMemo(() => orderedPlayers(activePlayers), [activePlayers]);
 
   return <main className="mx-auto w-full max-w-5xl px-5 pb-12 pt-9 sm:px-8 sm:pt-14">
     <div className="room-topline">
