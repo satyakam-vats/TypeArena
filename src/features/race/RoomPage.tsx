@@ -89,10 +89,12 @@ export function RoomPage() {
   const countdownAt = room?.lifecycle.countdownStartedAt?.toMillis();
   const countdown = countdownAt ? Math.max(0, 3 - Math.floor((now - countdownAt) / 1000)) : 3;
   const startTime = room?.status === "racing" && raceStartedAt ? raceStartedAt : undefined;
+  const lastProgressRef = useRef<number>(0);
   const onComplete = useCallback((run: CompletedRun) => {
     if (!user) return;
+    void updateProgress(roomId, user.uid, room?.content.text.length ?? run.targetText.length, room?.content.text.length ?? run.targetText.length, run.metrics);
     void finishRace(roomId, user.uid, run.metrics, run.metrics.durationMs, run.id);
-  }, [roomId, user]);
+  }, [room?.content.text.length, roomId, user]);
   const test = useTypingTest(
     room?.content.text ?? "",
     normalizeSettings(room?.settings),
@@ -101,9 +103,12 @@ export function RoomPage() {
     startTime,
   );
   useEffect(() => {
-    if (!room || !user || room.status !== "racing" || test.status === "finished") return;
-    const timer = window.setTimeout(() => void updateProgress(roomId, user.uid, test.typedText.length, room.content.text.length, test.metrics), 250);
-    return () => window.clearTimeout(timer);
+    if (!room || !user || room.status !== "racing") return;
+    const nowMs = Date.now();
+    if (nowMs - lastProgressRef.current >= 250 || test.status === "finished") {
+      lastProgressRef.current = nowMs;
+      void updateProgress(roomId, user.uid, test.typedText.length, room.content.text.length, test.metrics);
+    }
   }, [room, roomId, test.metrics, test.status, test.typedText.length, user]);
   useEffect(() => {
     if (!room || !user || room.status !== "countdown" || !countdownAt || now - countdownAt < 3000 || room.hostId !== user.uid) return;
