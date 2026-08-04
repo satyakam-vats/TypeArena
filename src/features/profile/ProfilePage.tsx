@@ -108,16 +108,21 @@ export function ProfilePage() {
         const userData = userDoc.data() as UserProfileData;
         setProfile({ ...userData, uid: targetUid });
 
-        const runsRef = collection(database, 'users', targetUid, 'recentRuns');
-        const q = query(runsRef, orderBy('completedAt', 'desc'), limit(20));
-        const runsSnap = await getDocs(q);
+        // Fetch recent runs separately — if it fails (permissions etc.), still show profile
+        try {
+          const runsRef = collection(database, 'users', targetUid, 'recentRuns');
+          const q = query(runsRef, orderBy('completedAt', 'desc'), limit(20));
+          const runsSnap = await getDocs(q);
 
-        const runs: RecentRun[] = [];
-        runsSnap.forEach((d) => {
-          runs.push({ id: d.id, ...d.data() } as RecentRun);
-        });
-
-        setRecentRuns(runs);
+          const runs: RecentRun[] = [];
+          runsSnap.forEach((d) => {
+            runs.push({ id: d.id, ...d.data() } as RecentRun);
+          });
+          setRecentRuns(runs);
+        } catch (runsErr) {
+          console.warn("Could not fetch recent runs:", runsErr);
+          // Non-fatal — profile still loads
+        }
       } catch (err) {
         console.error("Error fetching profile:", err);
         setError("Failed to load profile");
