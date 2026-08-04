@@ -185,7 +185,8 @@ export function LeaderboardPage() {
         ) : (
           <div className="flex flex-col gap-2">
             {entries.map((entry, idx) => {
-              const isCurrentUser = (user && user.uid === entry.uid) || (!user && entry.uid === 'local-user');
+              const localGuestId = localStorage.getItem("typearena_guest_id");
+              const isCurrentUser = (user && user.uid === entry.uid) || (!user && (entry.uid === 'local-user' || entry.uid === localGuestId));
               const initial = (entry.displayName || '?')[0].toUpperCase();
               return (
                 <div 

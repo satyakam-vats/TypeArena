@@ -149,9 +149,17 @@ export function SoloTestPage({ initialWordSource }: Props) {
     }
     if (user) {
       void Promise.all([
-        saveRun(user.uid, run, user.displayName ?? undefined, user.photoURL),
+        saveRun(user.uid, run, user.displayName ?? undefined, user.photoURL, false),
         recordRunStats(user.uid, run),
       ]);
+    } else {
+      let guestId = localStorage.getItem("typearena_guest_id");
+      if (!guestId) {
+        guestId = "guest_" + Math.random().toString(36).substring(2, 8);
+        localStorage.setItem("typearena_guest_id", guestId);
+      }
+      const guestName = `Guest-${guestId.slice(-4).toUpperCase()}`;
+      void saveRun(guestId, run, guestName, null, true);
     }
     navigate("/results");
   }, [navigate, user]);
