@@ -120,7 +120,8 @@ export function RoomPage() {
   useEffect(() => {
     if (!room || !activeUser.uid || room.status !== "racing") return;
     const nowMs = Date.now();
-    if (nowMs - lastProgressRef.current >= 200 || test.status === "finished") {
+    // ~3–4 updates/sec is enough for progress bars; avoids WPM flicker from Firestore churn.
+    if (nowMs - lastProgressRef.current >= 300 || test.status === "finished") {
       lastProgressRef.current = nowMs;
       void updateProgress(roomId, activeUser.uid, test.typedText.length, room.content.text.length, test.metrics);
     }

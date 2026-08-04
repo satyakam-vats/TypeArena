@@ -31,11 +31,19 @@ export function useTypingTest(
 
   const lastKeyTime = useRef<number | null>(null);
   const maxComboRef = useRef(0);
+  /** EMA of live WPM so the HUD doesn't sawtooth between timer ticks and keystrokes. */
+  const smoothWpmRef = useRef(0);
 
   targetRef.current = targetText;
   settingsRef.current = settings;
 
   const totalKeystrokesRef = useRef(0);
+
+  /** Wall-clock elapsed; always fresh so WPM isn't computed against a stale 200ms tick. */
+  const getElapsedMs = useCallback(() => {
+    if (startedAt.current == null) return 0;
+    return Math.max(1, Date.now() - startedAt.current);
+  }, []);
 
   const comboMultiplier = useMemo(() => {
     if (comboCount >= 50) return 5;
@@ -86,6 +94,7 @@ export function useTypingTest(
     maxComboRef.current = 0;
     totalKeystrokesRef.current = 0;
     lastKeyTime.current = null;
+    smoothWpmRef.current = 0;
     samples.current = [];
     ghostSamples.current = [];
     startedAt.current = null;
@@ -98,12 +107,15 @@ export function useTypingTest(
   useEffect(() => {
     if (status !== "running" || startedAt.current === null) return;
     const ticker = window.setInterval(() => {
-      const elapsed = Date.now() - (startedAt.current ?? Date.now());
+      const elapsed = getElapsedMs();
       setElapsedMs(elapsed);
+      // Use true elapsed (no artificial 1s floor after the first second) so live WPM
+      // doesn't jump when the floor drops off and when the timer advances without keys.
+      const durationForWpm = Math.max(elapsed, 500);
       const point = calculateMetrics(
         targetRef.current,
         typedRef.current,
-        Math.max(elapsed, 1000),
+        durationForWpm,
         samples.current,
         totalKeystrokesRef.current
       );
@@ -126,7 +138,7 @@ export function useTypingTest(
       }
     }, 200);
     return () => window.clearInterval(ticker);
-  }, [finish, status]);
+  }, [finish, getElapsedMs, status]);
 
   useEffect(() => {
     if (raceStartedAt && status === "ready") {
@@ -170,6 +182,10 @@ export function useTypingTest(
       startedAt.current = now;
       setStatus("running");
       statusRef.current = "running";
+      setElapsedMs(1);
+    } else if (statusRef.current === "running" && startedAt.current != null) {
+      // Keep elapsed in sync on every key so live WPM doesn't spike against a frozen clock.
+      setElapsedMs(Math.max(1, now - startedAt.current));
     }
 
     if (nextValue.length > prev.length) {
@@ -258,10 +274,34 @@ export function useTypingTest(
   }, [hardReset]);
 
   const metrics = useMemo(() => {
-    const computed = calculateMetrics(targetText, typedText, Math.max(elapsedMs, 1000), samples.current);
+    // Prefer wall clock when running so keystroke + timer share the same denominator.
+    const liveElapsed =
+      status === "running" && startedAt.current != null
+        ? Math.max(1, Date.now() - startedAt.current)
+        : Math.max(elapsedMs, 1);
+    const durationForWpm = Math.max(liveElapsed, 500);
+    const computed = calculateMetrics(
+      targetText,
+      typedText,
+      durationForWpm,
+      samples.current,
+      totalKeystrokesRef.current
+    );
     computed.maxCombo = maxComboRef.current;
+
+    // Smooth live WPM for UI / race progress; final finish() path uses unsmoothed calculateMetrics.
+    if (status === "running" && typedText.length > 0) {
+      const alpha = liveElapsed < 3000 ? 0.35 : 0.5;
+      if (smoothWpmRef.current <= 0) {
+        smoothWpmRef.current = computed.wpm;
+      } else {
+        smoothWpmRef.current = alpha * computed.wpm + (1 - alpha) * smoothWpmRef.current;
+      }
+      computed.wpm = Math.round(smoothWpmRef.current);
+    }
+
     return computed;
-  }, [elapsedMs, targetText, typedText]);
+  }, [elapsedMs, status, targetText, typedText]);
 
   return {
     typedText,
