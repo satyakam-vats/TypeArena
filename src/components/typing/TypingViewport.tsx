@@ -120,11 +120,16 @@ export function TypingViewport({
       caret.style.height = `${height}px`;
     }
 
-    // Discrete line-by-line scroll calculations
-    const charHeight = charRect.height || 36;
-    const lineIndex = Math.round(top / charHeight);
+    // Discrete line-by-line scroll calculations using computed line pitch (distance between lines)
+    const computedLineHeight = parseFloat(window.getComputedStyle(copyEl).lineHeight);
+    const linePitch = !isNaN(computedLineHeight) && computedLineHeight > 0 ? computedLineHeight : 44;
+
+    // Lock container height to exactly 3 full lines so partial lines never clip at top/bottom
+    container.style.height = `${linePitch * 3}px`;
+
+    const lineIndex = Math.round(top / linePitch);
     const targetLine = Math.max(0, lineIndex - 1);
-    const nextTranslate = Math.round(targetLine * charHeight);
+    const nextTranslate = Math.round(targetLine * linePitch);
 
     setTranslateY(nextTranslate);
   }, [displayTyped, target, replayIndex, caretStyle]);
@@ -226,7 +231,11 @@ export function TypingViewport({
           ))}
 
           {extra.split("").map((ch, i) => (
-            <span key={`extra-${i}`} className="char char-extra">
+            <span
+              key={`extra-${i}`}
+              ref={i === extra.length - 1 ? activeCharRef : null}
+              className="char char-extra"
+            >
               {ch === " " ? "\u00A0" : ch}
             </span>
           ))}

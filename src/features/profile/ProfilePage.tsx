@@ -47,9 +47,11 @@ function parseTimestampMs(val: any): number {
 }
 
 function formatRelativeDate(timestampMs: number): string {
-  const now = Date.now();
-  const diffMs = now - timestampMs;
-  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const dateStart = new Date(timestampMs);
+  dateStart.setHours(0, 0, 0, 0);
+  const diffDays = Math.round((todayStart.getTime() - dateStart.getTime()) / 86400000);
 
   if (diffDays <= 0) return 'today';
   if (diffDays === 1) return 'yesterday';
@@ -197,7 +199,7 @@ export function ProfilePage() {
     const timeMs = parseTimestampMs(run.completedAt);
     return {
       label: new Date(timeMs).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }),
-      value: Math.round(run.wpm)
+      value: Math.round(run.wpm || 0)
     };
   });
 

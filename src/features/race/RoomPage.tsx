@@ -11,7 +11,14 @@ import type { RacePlayer, RaceRoom } from "../../types/room";
 import { normalizeSettings, type CompletedRun } from "../../types/typing";
 
 function orderedPlayers(players: RacePlayer[]) {
-  return [...players].sort((left, right) => (left.result.finishElapsedMs ?? Number.MAX_SAFE_INTEGER) - (right.result.finishElapsedMs ?? Number.MAX_SAFE_INTEGER));
+  return [...players].sort((left, right) => {
+    const timeL = left.result.finishElapsedMs ?? Number.MAX_SAFE_INTEGER;
+    const timeR = right.result.finishElapsedMs ?? Number.MAX_SAFE_INTEGER;
+    if (timeL === timeR) {
+      return right.progress.liveWpm - left.progress.liveWpm;
+    }
+    return timeL - timeR;
+  });
 }
 
 export function RoomPage() {

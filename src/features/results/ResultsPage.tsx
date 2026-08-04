@@ -1,6 +1,6 @@
 import { ArrowLeft, RotateCcw, Share2, Download, Play, Square } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState, memo } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import type { CompletedRun } from "../../types/typing";
 import { normalizeSettings } from "../../types/typing";
 import { KeyboardHeatmap } from "../heatmap/KeyboardHeatmap";
@@ -15,7 +15,7 @@ function Chart({ run }: { run: CompletedRun }) {
     ? run.metrics.samples
     : [{ elapsedMs: 0, wpm: 0, rawWpm: 0 }, { elapsedMs: run.metrics.durationMs, wpm: run.metrics.wpm, rawWpm: run.metrics.rawWpm }];
   const max = Math.max(...samples.map((sample) => sample.rawWpm), 10);
-  const points = samples.map((sample, index) => `${(index / Math.max(samples.length - 1, 1)) * 100},${100 - sample.wpm / max * 82}`).join(" ");
+  const points = samples.map((sample) => `${(sample.elapsedMs / run.metrics.durationMs) * 100},${100 - sample.wpm / max * 82}`).join(" ");
   return (
     <div className="chart-shell">
       <div className="chart-labels"><span>WPM over time</span><span>{Math.round(run.metrics.durationMs / 1000)}s</span></div>
@@ -28,8 +28,12 @@ function Chart({ run }: { run: CompletedRun }) {
   );
 }
 
+const MemoizedTypingViewport = memo(TypingViewport);
+
 export function ResultsPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromPath = (location.state as any)?.from || "/";
   const run = useMemo(() => {
     try {
       const raw = sessionStorage.getItem("typearena-last-run");
@@ -73,6 +77,7 @@ export function ResultsPage() {
     const t0 = performance.now();
     const duration = Math.max(samples[samples.length - 1]!.elapsedMs, 1);
 
+    let lastUpdate = 0;
     const tick = (now: number) => {
       const elapsed = now - t0;
       if (elapsed >= duration) {
@@ -82,13 +87,19 @@ export function ResultsPage() {
       }
       let i = 0;
       while (i < samples.length && samples[i]!.elapsedMs <= elapsed) i++;
-      if (i === 0) setReplayIndex(samples[0]!.charIndex);
-      else if (i >= samples.length) setReplayIndex(samples[samples.length - 1]!.charIndex);
+      let newIndex = 0;
+      if (i === 0) newIndex = samples[0]!.charIndex;
+      else if (i >= samples.length) newIndex = samples[samples.length - 1]!.charIndex;
       else {
         const prev = samples[i - 1]!;
         const next = samples[i]!;
         const ratio = (elapsed - prev.elapsedMs) / Math.max(1, next.elapsedMs - prev.elapsedMs);
-        setReplayIndex(Math.round(prev.charIndex + (next.charIndex - prev.charIndex) * ratio));
+        newIndex = Math.round(prev.charIndex + (next.charIndex - prev.charIndex) * ratio);
+      }
+      
+      if (now - lastUpdate >= 66) {
+        setReplayIndex(newIndex);
+        lastUpdate = now;
       }
       replayRaf.current = requestAnimationFrame(tick);
     };
@@ -104,7 +115,7 @@ export function ResultsPage() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.preventDefault();
-        navigate("/", { state: { repeat: true } });
+        navigate(fromPath, { state: { repeat: true } });
         return;
       }
       if (e.key === "Tab") {
@@ -117,7 +128,7 @@ export function ResultsPage() {
       if (e.key === "Enter" && tabPressed) {
         e.preventDefault();
         tabPressed = false;
-        navigate("/", { state: { repeat: false } });
+        navigate(fromPath, { state: { repeat: false } });
         return;
       }
     };
@@ -127,7 +138,7 @@ export function ResultsPage() {
       window.removeEventListener("keydown", handleKeyDown);
       window.clearTimeout(tabTimer);
     };
-  }, [navigate]);
+  }, [navigate, fromPath]);
 
   // Hooks must run before any early return — re-read stats so drills reflect this run.
   const allTimeKeyStats = useMemo(() => getAllTimeKeyStatsFromStorage(), [run?.id]);
@@ -146,8 +157,8 @@ export function ResultsPage() {
   }
 
   const settings = normalizeSettings(run.settings);
-  const repeatTest = () => navigate("/", { state: { repeat: true } });
-  const nextTest = () => navigate("/", { state: { repeat: false } });
+  const repeatTest = () => navigate(fromPath, { state: { repeat: true } });
+  const nextTest = () => navigate(fromPath, { state: { repeat: false } });
   const metrics = run.metrics;
 
   const allTimeStats = heatmapMode === "alltime" ? allTimeKeyStats : null;
@@ -158,7 +169,7 @@ export function ResultsPage() {
 
   return (
     <main className="mx-auto w-full max-w-4xl px-5 pb-12 pt-12 sm:px-8 sm:pt-20">
-      <Link to="/" className="back-link"><ArrowLeft size={16} /> back to test</Link>
+      <Link to={fromPath} className="back-link"><ArrowLeft size={16} /> back to test</Link>
       <section className="result-hero">
         <p>test complete · {modeLabel}</p>
         <div className="result-main"><strong>{metrics.wpm}</strong><span>wpm</span></div>
@@ -195,7 +206,7 @@ export function ResultsPage() {
             </button>
           </div>
           {(replaying || replayIndex != null) && (
-            <TypingViewport
+            <MemoizedTypingViewport
               target={run.targetText}
               typed={run.typedText}
               active

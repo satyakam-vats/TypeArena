@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, Navigate } from "react-router-dom";
+import { useAuth } from "./context/AuthContext";
 import { Header } from "./components/layout/Header";
 import { useTheme } from "./hooks/useTheme";
 import { RaceLandingPage } from "./features/race/RaceLandingPage";
@@ -15,6 +16,14 @@ import { DailyChallengePage } from "./features/daily/DailyChallengePage";
 import { PracticePage } from "./features/practice/PracticePage";
 import { LessonsOverviewPage } from "./features/lessons/LessonsOverviewPage";
 import { LessonPracticePage } from "./features/lessons/LessonPracticePage";
+
+function ProtectedRoute({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
+  return <>{children}</>;
+}
 
 export default function App() {
   const { theme, toggleTheme } = useTheme();

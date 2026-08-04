@@ -3,6 +3,7 @@ import { Trophy } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { fetchLeaderboard, type LeaderboardEntry } from '../../lib/firestore/leaderboards';
+import { getStoredRuns } from '../../lib/storage/analyticsStorage';
 
 export function LeaderboardPage() {
   const { user } = useAuth();
@@ -48,6 +49,20 @@ export function LeaderboardPage() {
 
   const userRankIndex = entries.findIndex(e => e.uid === (user?.uid || 'local-user'));
   const isUserInTop = userRankIndex !== -1;
+
+  let userBestRun = null;
+  if (!isUserInTop) {
+    const localRuns = getStoredRuns();
+    for (const r of localRuns) {
+      if (mode !== 'all' && r.settings.mode !== mode) continue;
+      if (mode === 'time' && timeValue !== 'all' && r.settings.value !== timeValue) continue;
+      if (mode === 'words' && wordsValue !== 'all' && r.settings.value !== wordsValue) continue;
+      
+      if (!userBestRun || r.metrics.wpm > userBestRun.metrics.wpm || (r.metrics.wpm === userBestRun.metrics.wpm && r.metrics.accuracy > userBestRun.metrics.accuracy)) {
+        userBestRun = r;
+      }
+    }
+  }
 
   const getRankMedal = (rank: number) => {
     if (rank === 1) return '🥇';
@@ -218,8 +233,8 @@ export function LeaderboardPage() {
                     )}
                     <div className="truncate font-medium text-[var(--ink)]">{user.displayName || 'You'}</div>
                   </Link>
-                  <div className="font-mono text-right text-[var(--accent)] font-bold">-</div>
-                  <div className="font-mono text-right text-[var(--muted)]">-</div>
+                  <div className="font-mono text-right text-[var(--accent)] font-bold">{userBestRun ? Math.round(userBestRun.metrics.wpm) : '-'}</div>
+                  <div className="font-mono text-right text-[var(--muted)]">{userBestRun ? `${Math.round(userBestRun.metrics.accuracy)}%` : '-'}</div>
                   <div className="font-mono text-right text-[var(--muted)] text-xs bg-[var(--paper)] px-2 py-1 rounded border border-[var(--line)] whitespace-nowrap">
                     your rank
                   </div>

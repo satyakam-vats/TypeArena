@@ -4,14 +4,8 @@ import { calculateMetrics } from "../lib/typing/metrics";
 import { soundManager } from "../lib/sound";
 
 function wordHasError(target: string, typed: string, spaceIdx: number): boolean {
-  let start = spaceIdx - 1;
-  while (start >= 0 && typed[start] !== " ") {
-    start--;
-  }
-  start++;
-  const wordTyped = typed.slice(start, spaceIdx);
-  const wordTarget = target.slice(start, spaceIdx);
-  return wordTyped !== wordTarget;
+  const wordStart = typed.lastIndexOf(' ', typed.length - 2) + 1;
+  return typed.substring(wordStart, spaceIdx) !== target.substring(wordStart, spaceIdx);
 }
 
 export function useTypingTest(
@@ -145,6 +139,13 @@ export function useTypingTest(
   const updateTypedText = useCallback((nextValue: string) => {
     if (statusRef.current === "finished" || finishingRef.current) return;
 
+    if (statusRef.current === 'running' && settingsRef.current.mode === 'time' && startedAt.current) {
+      if (Date.now() - startedAt.current >= settingsRef.current.value * 1000) {
+        finish(typedRef.current);
+        return;
+      }
+    }
+
     const conf = settingsRef.current.confidence;
     const stop = settingsRef.current.stopOnError;
     const diff = settingsRef.current.difficulty;
@@ -152,6 +153,10 @@ export function useTypingTest(
     const target = targetRef.current;
     const prev = typedRef.current;
     const now = Date.now();
+
+    if (nextValue.length < prev.length) {
+      totalKeystrokesRef.current += prev.length - nextValue.length;
+    }
 
     if ((conf === "on" || conf === "max") && nextValue.length < prev.length) {
       return;
@@ -224,9 +229,6 @@ export function useTypingTest(
 
         if (ch === " " && (stop === "word" || diff === "expert")) {
           if (wordHasError(target, accepted, accepted.length - 1)) {
-            typedRef.current = accepted;
-            setTypedText(accepted);
-            if (statusRef.current === "running") finish(accepted);
             return;
           }
         }
@@ -238,7 +240,8 @@ export function useTypingTest(
       if (
         (mode === "words" || mode === "quote" || mode === "custom") &&
         accepted.length >= target.length &&
-        target.length > 0
+        target.length > 0 &&
+        accepted[target.length - 1] === target[target.length - 1]
       ) {
         finish(accepted);
       }

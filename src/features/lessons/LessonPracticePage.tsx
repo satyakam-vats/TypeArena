@@ -162,6 +162,10 @@ export function LessonPracticePage() {
           rows={1}
           aria-label="Lesson typing input"
           className="sr-only"
+          spellCheck={false}
+          autoCapitalize="off"
+          autoCorrect="off"
+          onPaste={(e) => e.preventDefault()}
         />
       </section>
 

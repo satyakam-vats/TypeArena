@@ -63,8 +63,25 @@ export function normalizeSettings(partial?: Partial<TestSettings> | null): TestS
   if (!validModes.includes(base.mode)) base.mode = "time";
   if (!base.value || base.value < 1) base.value = base.mode === "words" ? 25 : 30;
   if (!base.wordSourceId) base.wordSourceId = "common-en";
+  
   const validWordDiff: WordDifficulty[] = ["easy", "medium", "hard", "all"];
   if (!validWordDiff.includes(base.wordDifficulty)) base.wordDifficulty = "medium";
+  
+  const validStopOnError: StopOnError[] = ["off", "word", "letter"];
+  if (!validStopOnError.includes(base.stopOnError)) base.stopOnError = "off";
+  
+  const validConfidence: ConfidenceMode[] = ["off", "on", "max"];
+  if (!validConfidence.includes(base.confidence)) base.confidence = "off";
+  
+  const validDifficulty: Difficulty[] = ["normal", "expert", "master"];
+  if (!validDifficulty.includes(base.difficulty)) base.difficulty = "normal";
+  
+  const validCaretStyle: CaretStyle[] = ["line", "block", "underline"];
+  if (!validCaretStyle.includes(base.caretStyle)) base.caretStyle = "line";
+  
+  const validQuoteLength: QuoteLength[] = ["short", "medium", "long", "all"];
+  if (!validQuoteLength.includes(base.quoteLength)) base.quoteLength = "medium";
+
   return base;
 }
 

@@ -1,4 +1,4 @@
-import { collection, getDocs, limit, orderBy, query } from "firebase/firestore";
+import { collection, getDocs, limit, orderBy, query, where } from "firebase/firestore";
 import { db } from "../firebase";
 import { getStoredRuns } from "../storage/analyticsStorage";
 
@@ -62,10 +62,28 @@ export async function fetchLeaderboard(
   if (db) {
     try {
       let snap;
-      try {
-        snap = await getDocs(query(collection(db, "testRuns"), orderBy("completedAt", "desc"), limit(300)));
-      } catch {
-        snap = await getDocs(query(collection(db, "testRuns"), limit(300)));
+      if (opts.mode) {
+        try {
+          const constraints = [
+            where("settings.mode", "==", opts.mode),
+            ...(opts.value != null ? [where("settings.value", "==", opts.value)] : []),
+            orderBy("metrics.wpm", "desc"),
+            limit(50)
+          ];
+          snap = await getDocs(query(collection(db, "testRuns"), ...constraints));
+        } catch (e) {
+          try {
+            snap = await getDocs(query(collection(db, "testRuns"), orderBy("completedAt", "desc"), limit(300)));
+          } catch {
+            snap = await getDocs(query(collection(db, "testRuns"), limit(300)));
+          }
+        }
+      } else {
+        try {
+          snap = await getDocs(query(collection(db, "testRuns"), orderBy("completedAt", "desc"), limit(300)));
+        } catch {
+          snap = await getDocs(query(collection(db, "testRuns"), limit(300)));
+        }
       }
 
       snap.docs.forEach((docSnap) => {

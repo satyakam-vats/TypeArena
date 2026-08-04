@@ -5,7 +5,8 @@ const RUNS_KEY = "typearena_run_history_v1";
 export function saveRunToLocalStorage(run: CompletedRun): void {
   try {
     const existing = getStoredRuns();
-    const updated = [run, ...existing].slice(0, 200); // keep last 200 runs
+    const lite = { ...run, ghostSamples: undefined, targetText: run.targetText.slice(0, 100), typedText: run.typedText.slice(0, 100) };
+    const updated = [lite, ...existing].slice(0, 50); // keep last 50 runs
     localStorage.setItem(RUNS_KEY, JSON.stringify(updated));
   } catch (err) {
     console.error("Failed to save run to localStorage", err);

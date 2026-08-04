@@ -59,7 +59,7 @@ export function DailyChallengePage() {
     recordPractice();
     setAttemptCount(c => c + 1); // trigger re-eval of stats
 
-    navigate("/results");
+    navigate("/results", { state: { from: '/daily' } });
   }, [navigate, user]);
 
   const test = useTypingTest(targetText, dailySettings, onComplete);
