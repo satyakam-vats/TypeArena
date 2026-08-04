@@ -232,16 +232,19 @@ export function RoomPage() {
     void startRace(roomId, activeUser.uid, room.settings.raceTimeoutMs);
   }, [countdownAt, now, room, roomId, activeUser.uid]);
   const isHost = room?.hostId === activeUser.uid;
-  const activePlayers = useMemo(() => players.filter((p) => {
-    // Always keep finishers on the board — never drop them for presence/heartbeat lag.
-    if (isRaceDone(p.result?.status)) return true;
-    if (p.presence === "left") return false;
-    // During an active race, keep all joined racers on the board so slow racers aren't cut off when faster racers finish.
-    if (room?.status === "racing") return true;
-    const lastActive = parseTimestampMs(p.lastActiveAt) || parseTimestampMs(p.joinedAt) || parseTimestampMs(p.progress?.updatedAt);
-    if (lastActive > 0 && now - lastActive > 30000) return false;
-    return true;
-  }), [players, now, room?.status]);
+  const activePlayers = useMemo(() => {
+    const list = players.filter((p) => {
+      // Always keep finishers on the board — never drop them for presence/heartbeat lag.
+      if (isRaceDone(p.result?.status)) return true;
+      if (p.presence === "left") return false;
+      // During an active race, keep all joined racers on the board.
+      if (room?.status === "racing") return true;
+      const lastActive = parseTimestampMs(p.lastActiveAt) || parseTimestampMs(p.joinedAt) || parseTimestampMs(p.progress?.updatedAt);
+      if (lastActive > 0 && now - lastActive > 60000) return false;
+      return true;
+    });
+    return list.sort((a, b) => a.displayName.localeCompare(b.displayName));
+  }, [players, now, room?.status]);
 
   const allFinished = activePlayers.length > 0 && activePlayers.every((player) => isRaceDone(player.result.status));
   const timedOut = room?.lifecycle.endsAt ? now >= room.lifecycle.endsAt.toMillis() : false;
