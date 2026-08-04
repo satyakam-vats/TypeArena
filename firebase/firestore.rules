@@ -8,7 +8,9 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
-      allow read, create, update: if isOwner(uid);
+      // Anyone signed in can read user profiles (for leaderboard, profile pages)
+      allow read: if signedIn();
+      allow create, update: if isOwner(uid);
       allow delete: if false;
       match /recentRuns/{runId} {
         allow read, write: if isOwner(uid);
@@ -16,8 +18,9 @@ service cloud.firestore {
     }
 
     match /testRuns/{runId} {
+      // Anyone signed in can read all test runs (global leaderboard)
+      allow read: if signedIn();
       allow create: if signedIn() && request.resource.data.ownerId == request.auth.uid;
-      allow read: if signedIn() && resource.data.ownerId == request.auth.uid;
       allow update, delete: if false;
     }
 

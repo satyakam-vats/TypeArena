@@ -1,4 +1,29 @@
 {
-  "indexes": [],
+  "indexes": [
+    {
+      "collectionGroup": "testRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "settings.mode", "order": "ASCENDING" },
+        { "fieldPath": "metrics.wpm", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "testRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "settings.mode", "order": "ASCENDING" },
+        { "fieldPath": "settings.value", "order": "ASCENDING" },
+        { "fieldPath": "metrics.wpm", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "testRuns",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "completedAt", "order": "DESCENDING" }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }
