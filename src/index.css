@@ -319,6 +319,18 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
 .skeleton-line.w-40 { width:160px; }
 .skeleton-line.w-24 { width:96px; }
 
+/* Fixed-width WPM so digit changes don't reflow the progress row */
+.racer-wpm {
+  min-width: 4.5rem;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.leaderboard-row em,
+.leaderboard-row small {
+  font-variant-numeric: tabular-nums;
+}
+
 /* ─── Responsive Overrides ─────────────────────────────────────── */
 @media (max-width:640px) {
   .typing-copy { font-size:1.13rem; line-height:1.9; }

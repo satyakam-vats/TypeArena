@@ -279,7 +279,8 @@ export function useTypingTest(
       status === "running" && startedAt.current != null
         ? Math.max(1, Date.now() - startedAt.current)
         : Math.max(elapsedMs, 1);
-    const durationForWpm = Math.max(liveElapsed, 500);
+    // Longer floor early on so cumulative WPM isn't insane in the first seconds.
+    const durationForWpm = Math.max(liveElapsed, liveElapsed < 2000 ? 2000 : 1000);
     const computed = calculateMetrics(
       targetText,
       typedText,
@@ -289,14 +290,15 @@ export function useTypingTest(
     );
     computed.maxCombo = maxComboRef.current;
 
-    // Smooth live WPM for UI / race progress; final finish() path uses unsmoothed calculateMetrics.
+    // Heavy EMA for live HUD / race publish; finish() still uses raw calculateMetrics.
     if (status === "running" && typedText.length > 0) {
-      const alpha = liveElapsed < 3000 ? 0.35 : 0.5;
+      const alpha = liveElapsed < 4000 ? 0.18 : 0.28;
       if (smoothWpmRef.current <= 0) {
         smoothWpmRef.current = computed.wpm;
       } else {
         smoothWpmRef.current = alpha * computed.wpm + (1 - alpha) * smoothWpmRef.current;
       }
+      // Quantize to 1 wpm after smoothing so UI doesn't flicker 71↔72 every frame.
       computed.wpm = Math.round(smoothWpmRef.current);
     }
 

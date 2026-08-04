@@ -24,13 +24,25 @@ function parseTimestampMs(val: any): number {
 
 function orderedPlayers(players: RacePlayer[]) {
   return [...players].sort((left, right) => {
-    const timeL = left.result.finishElapsedMs ?? Number.MAX_SAFE_INTEGER;
-    const timeR = right.result.finishElapsedMs ?? Number.MAX_SAFE_INTEGER;
-    if (timeL === timeR) {
-      return right.progress.liveWpm - left.progress.liveWpm;
+    const leftDone = left.result.status === "finished";
+    const rightDone = right.result.status === "finished";
+    // Finished racers first by finish time; never re-rank by volatile liveWpm (causes standings blink).
+    if (leftDone && rightDone) {
+      return (left.result.finishElapsedMs ?? 0) - (right.result.finishElapsedMs ?? 0);
     }
-    return timeL - timeR;
+    if (leftDone !== rightDone) return leftDone ? -1 : 1;
+    // Still racing: stable order by progress percent, then name (not live WPM).
+    const pct = (right.progress.percent ?? 0) - (left.progress.percent ?? 0);
+    if (pct !== 0) return pct;
+    return left.displayName.localeCompare(right.displayName);
   });
+}
+
+function displayWpm(player: RacePlayer) {
+  if (player.result.status === "finished" && player.result.finalWpm != null) {
+    return player.result.finalWpm;
+  }
+  return player.progress.liveWpm;
 }
 
 function getGuestIdentity(): { uid: string; displayName: string } {
@@ -105,9 +117,13 @@ export function RoomPage() {
   const countdown = countdownAt ? Math.max(0, 3 - Math.floor((now - countdownAt) / 1000)) : 3;
   const startTime = room?.status === "racing" && raceStartedAt ? raceStartedAt : undefined;
   const lastProgressRef = useRef<number>(0);
+  const lastSentRef = useRef({ chars: -1, wpm: -1, acc: -1 });
+  const finishedProgressSentRef = useRef(false);
   const onComplete = useCallback((run: CompletedRun) => {
     if (!activeUser.uid) return;
-    void updateProgress(roomId, activeUser.uid, room?.content.text.length ?? run.targetText.length, room?.content.text.length ?? run.targetText.length, run.metrics);
+    finishedProgressSentRef.current = true;
+    const total = room?.content.text.length ?? run.targetText.length;
+    void updateProgress(roomId, activeUser.uid, total, total, run.metrics);
     void finishRace(roomId, activeUser.uid, run.metrics, run.metrics.durationMs, run.id);
   }, [room?.content.text.length, roomId, activeUser.uid]);
   const test = useTypingTest(
@@ -117,14 +133,33 @@ export function RoomPage() {
     room?.content.seed ?? roomId,
     startTime,
   );
+
+  // Reset finish guard when a new race/content loads.
+  useEffect(() => {
+    finishedProgressSentRef.current = false;
+    lastSentRef.current = { chars: -1, wpm: -1, acc: -1 };
+    lastProgressRef.current = 0;
+  }, [room?.content.seed, roomId, startTime]);
+
   useEffect(() => {
     if (!room || !activeUser.uid || room.status !== "racing") return;
+    // Critical: once finished, never spam progress again on every Firestore room snapshot
+    // (that was re-rendering everyone's race UI and making bars/WPM thrash).
+    if (test.status === "finished" || finishedProgressSentRef.current) return;
+
     const nowMs = Date.now();
-    // ~3–4 updates/sec is enough for progress bars; avoids WPM flicker from Firestore churn.
-    if (nowMs - lastProgressRef.current >= 300 || test.status === "finished") {
-      lastProgressRef.current = nowMs;
-      void updateProgress(roomId, activeUser.uid, test.typedText.length, room.content.text.length, test.metrics);
-    }
+    if (nowMs - lastProgressRef.current < 400) return;
+
+    const chars = test.typedText.length;
+    const wpm = test.metrics.wpm;
+    const acc = Math.round(test.metrics.accuracy);
+    const prev = lastSentRef.current;
+    // Only write when something meaningful changed (cuts liveWpm jitter on peers).
+    if (chars === prev.chars && Math.abs(wpm - prev.wpm) < 2 && acc === prev.acc) return;
+
+    lastProgressRef.current = nowMs;
+    lastSentRef.current = { chars, wpm, acc };
+    void updateProgress(roomId, activeUser.uid, chars, room.content.text.length, test.metrics);
   }, [room, roomId, test.metrics, test.status, test.typedText.length, activeUser.uid]);
   useEffect(() => {
     if (!room || !activeUser.uid || room.status !== "countdown" || !countdownAt || now - countdownAt < 3000 || room.hostId !== activeUser.uid) return;
@@ -151,10 +186,20 @@ export function RoomPage() {
       </main>
     );
   }
-  const showLeaderboard = room.status === "finished" || allFinished || test.status === "finished";
+  // Only flip to standings when the race is actually over — not when local user finishes first
+  // (that swapped the whole page and re-sorted rows on every liveWpm tick → blink).
+  const showLeaderboard = room.status === "finished" || allFinished;
+  const localFinished = test.status === "finished";
   const copyLink = async () => { await navigator.clipboard.writeText(`${window.location.origin}/race/${roomId}`); setCopied(true); };
 
   const aloneInPublic = room.roomType === "public" && room.status === "waiting" && activePlayers.length <= 1;
+
+  // Stable order for live progress bars (join order) so rows don't jump as WPM changes.
+  const progressPlayers = useMemo(
+    () => [...activePlayers].sort((a, b) => a.displayName.localeCompare(b.displayName)),
+    [activePlayers],
+  );
+  const standings = useMemo(() => orderedPlayers(activePlayers), [activePlayers]);
 
   return <main className="mx-auto w-full max-w-5xl px-5 pb-12 pt-9 sm:px-8 sm:pt-14">
     <div className="room-topline">
@@ -197,12 +242,47 @@ export function RoomPage() {
     )}
     {room.status === "countdown" && <section className="countdown-screen"><span>race begins in</span><strong>{countdown || "go"}</strong></section>}
     {room.status === "racing" && !showLeaderboard && <section className="race-room">
-      <div className="mb-7 flex justify-between text-sm text-[var(--muted)]"><span>live race · {activePlayers.length} racers</span><LiveMetrics metrics={test.metrics} /></div>
-      <div className="race-progress">{activePlayers.map((player) => <div className="racer-line" key={player.uid}><span>{player.displayName}</span><div><i style={{ width: `${player.progress.percent}%` }} /></div><b>{player.result.finalWpm ?? player.progress.liveWpm} wpm</b></div>)}</div>
-      {activeUser.uid && <ReactionBar roomId={roomId} uid={activeUser.uid} displayName={activeUser.displayName} active={!showLeaderboard} />}
-      <TypingViewport target={room.content.text} typed={test.typedText} active smoothCaret />
-      <textarea autoFocus value={test.typedText} onChange={(event) => test.updateTypedText(event.target.value)} onPaste={(event) => event.preventDefault()} className="typing-input" aria-label="Race typing input" spellCheck={false} autoCapitalize="off" autoCorrect="off" />
+      <div className="mb-7 flex justify-between text-sm text-[var(--muted)]">
+        <span>
+          {localFinished
+            ? "finished — waiting for other racers…"
+            : `live race · ${activePlayers.length} racers`}
+        </span>
+        <LiveMetrics metrics={test.metrics} />
+      </div>
+      <div className="race-progress">
+        {progressPlayers.map((player) => (
+          <div className="racer-line" key={player.uid}>
+            <span>{player.displayName}</span>
+            <div><i style={{ width: `${player.progress.percent}%` }} /></div>
+            <b className="racer-wpm">{displayWpm(player)} wpm</b>
+          </div>
+        ))}
+      </div>
+      {activeUser.uid && <ReactionBar roomId={roomId} uid={activeUser.uid} displayName={activeUser.displayName} active={!localFinished} />}
+      {!localFinished ? (
+        <>
+          <TypingViewport target={room.content.text} typed={test.typedText} active smoothCaret />
+          <textarea autoFocus value={test.typedText} onChange={(event) => test.updateTypedText(event.target.value)} onPaste={(event) => event.preventDefault()} className="typing-input" aria-label="Race typing input" spellCheck={false} autoCapitalize="off" autoCorrect="off" />
+        </>
+      ) : (
+        <p className="mt-6 text-sm text-[var(--muted)]">You finished. Standings unlock when everyone is done.</p>
+      )}
     </section>}
-    {showLeaderboard && <section className="leaderboard"><p className="eyebrow"><Flag size={13} /> race results</p><h1>Final standings</h1>{orderedPlayers(activePlayers).map((player, index) => <div className="leaderboard-row" key={player.uid}><span>{index + 1}</span><b>{player.displayName}</b><em>{player.result.finalWpm ?? player.progress.liveWpm} wpm</em><small>{player.result.finishElapsedMs ? `${(player.result.finishElapsedMs / 1000).toFixed(2)}s` : "—"}</small></div>)}<Link className="primary-button" to="/race" onClick={() => { leftRef.current = true; }}><RotateCcw size={16} /> race again</Link></section>}
+    {showLeaderboard && (
+      <section className="leaderboard">
+        <p className="eyebrow"><Flag size={13} /> race results</p>
+        <h1>Final standings</h1>
+        {standings.map((player, index) => (
+          <div className="leaderboard-row" key={player.uid}>
+            <span>{index + 1}</span>
+            <b>{player.displayName}</b>
+            <em>{displayWpm(player)} wpm</em>
+            <small>{player.result.finishElapsedMs ? `${(player.result.finishElapsedMs / 1000).toFixed(2)}s` : "—"}</small>
+          </div>
+        ))}
+        <Link className="primary-button" to="/race" onClick={() => { leftRef.current = true; }}><RotateCcw size={16} /> race again</Link>
+      </section>
+    )}
   </main>;
 }

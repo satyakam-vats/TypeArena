@@ -43,7 +43,8 @@ export function TypingViewport({
   const caretElRef = useRef<HTMLSpanElement | null>(null);
   const prevTopRef = useRef<number>(0);
   const prevTierRef = useRef<number>(0);
-  const linePitchRef = useRef<number>(44);
+  const linePitchRef = useRef<number>(0);
+  const scrollLineRef = useRef<number>(0);
   const lastValidTopRef = useRef<number>(0);
   const lastValidLeftRef = useRef<number>(0);
   const [isTierUp, setIsTierUp] = useState(false);
@@ -91,8 +92,13 @@ export function TypingViewport({
     if (!displayTyped) {
       lastValidTopRef.current = 0;
       lastValidLeftRef.current = 0;
+      scrollLineRef.current = 0;
       copyEl.style.transform = `translate3d(0, 0px, 0)`;
     }
+
+    // Measure layout position with transform temporarily cleared so offsetTop isn't
+    // mixed with a previous scroll translate (that combo caused 2nd-line thrashing).
+    copyEl.style.transform = "none";
 
     const el = activeCharRef.current;
     if (el) {
@@ -104,6 +110,13 @@ export function TypingViewport({
         t += curr.offsetTop;
         curr = curr.offsetParent as HTMLElement | null;
       }
+      // If offsetParent jumped past copyEl (positioned ancestor), fall back to rect math.
+      if (curr !== copyEl) {
+        const copyRect = copyEl.getBoundingClientRect();
+        const elRect = el.getBoundingClientRect();
+        l = elRect.left - copyRect.left;
+        t = elRect.top - copyRect.top;
+      }
       lastValidLeftRef.current = l;
       lastValidTopRef.current = t;
     }
@@ -112,12 +125,40 @@ export function TypingViewport({
     const top = lastValidTopRef.current;
     const height = el?.offsetHeight || 28;
 
-    // Set caret position custom variables on container for local aura halo
+    // Line pitch from computed style (em-based CSS), measured once layout is real.
+    if (linePitchRef.current <= 0) {
+      const computedLineHeight = parseFloat(window.getComputedStyle(copyEl).lineHeight);
+      const fontSize = parseFloat(window.getComputedStyle(copyEl).fontSize);
+      if (!isNaN(computedLineHeight) && computedLineHeight > 0) {
+        linePitchRef.current = computedLineHeight;
+      } else if (!isNaN(fontSize) && fontSize > 0) {
+        linePitchRef.current = fontSize * 1.85;
+      } else {
+        linePitchRef.current = height > 0 ? height * 1.15 : 44;
+      }
+    }
+    const linePitch = linePitchRef.current;
+
+    // Hysteresis so sub-pixel top wobble near line boundaries doesn't flip scroll
+    // (classic 2nd-line up/down after a few seconds of typing).
+    const rawLine = Math.max(0, Math.floor((top + linePitch * 0.15) / linePitch));
+    let scrollLine = scrollLineRef.current;
+    if (rawLine >= scrollLine + 1) {
+      scrollLine = rawLine;
+    } else if (rawLine <= scrollLine - 1 && top < scrollLine * linePitch - linePitch * 0.35) {
+      scrollLine = rawLine;
+    }
+    scrollLineRef.current = scrollLine;
+
+    // Keep caret on the middle row once we've scrolled past the first line.
+    const targetLine = Math.max(0, scrollLine - 1);
+    const nextTranslate = Math.round(targetLine * linePitch);
+
+    // Halo + caret live inside .typing-copy (which scrolls), so use content-space coords.
     container.style.setProperty("--caret-left", `${left}px`);
     container.style.setProperty("--caret-top", `${top}px`);
 
-    // Detect line wrap; disable diagonal transition animation when jumping across lines
-    const lineChanged = Math.abs(top - prevTopRef.current) > 10;
+    const lineChanged = Math.abs(top - prevTopRef.current) > linePitch * 0.4;
     prevTopRef.current = top;
 
     if (lineChanged) {
@@ -133,25 +174,23 @@ export function TypingViewport({
       caret.style.height = `${height}px`;
     }
 
-    // Cache computed line pitch to eliminate forced reflows on every keypress
-    if (linePitchRef.current === 44) {
-      const computedLineHeight = parseFloat(window.getComputedStyle(copyEl).lineHeight);
-      if (!isNaN(computedLineHeight) && computedLineHeight > 0) {
-        linePitchRef.current = computedLineHeight;
-      }
+    // Only write height when it actually changes (avoids layout thrash every key).
+    const lockedHeight = `${Math.round(linePitch * 3)}px`;
+    if (container.style.height !== lockedHeight) {
+      container.style.height = lockedHeight;
     }
-    const linePitch = linePitchRef.current;
 
-    // Lock container height to exactly 3 full lines so partial lines never clip at top/bottom
-    container.style.height = `${linePitch * 3}px`;
-
-    const lineIndex = Math.round(top / linePitch);
-    const targetLine = Math.max(0, lineIndex - 1);
-    const nextTranslate = Math.round(targetLine * linePitch);
-
-    // Apply smooth GPU transform directly to DOM to eliminate React state flicker
     copyEl.style.transform = `translate3d(0, -${nextTranslate}px, 0)`;
   }, [displayTyped, target, replayIndex, caretStyle]);
+
+  // New passage → remeasure line pitch / scroll lock.
+  useEffect(() => {
+    linePitchRef.current = 0;
+    scrollLineRef.current = 0;
+    lastValidTopRef.current = 0;
+    lastValidLeftRef.current = 0;
+    prevTopRef.current = 0;
+  }, [target]);
 
   const caretActive = active && focused && replayIndex == null;
   const showOverlay = !focused && active && replayIndex == null;
