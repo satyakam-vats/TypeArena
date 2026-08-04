@@ -44,6 +44,8 @@ export function TypingViewport({
   const prevTopRef = useRef<number>(0);
   const prevTierRef = useRef<number>(0);
   const linePitchRef = useRef<number>(44);
+  const lastValidTopRef = useRef<number>(0);
+  const lastValidLeftRef = useRef<number>(0);
   const [isTierUp, setIsTierUp] = useState(false);
 
   const aura = useMemo(() => getAuraInfo(comboCount), [comboCount]);
@@ -82,26 +84,33 @@ export function TypingViewport({
   useLayoutEffect(() => {
     const container = containerRef.current;
     const copyEl = container?.querySelector(".typing-copy") as HTMLElement | null;
-    const el = activeCharRef.current || (container?.querySelector(".char") as HTMLElement | null);
     const caret = caretElRef.current;
 
-    if (!copyEl || !el || !caret || !container) return;
+    if (!copyEl || !caret || !container) return;
 
     if (!displayTyped) {
+      lastValidTopRef.current = 0;
+      lastValidLeftRef.current = 0;
       copyEl.style.transform = `translate3d(0, 0px, 0)`;
     }
 
-    // Accumulate static DOM offsetTop & offsetLeft (completely immune to CSS transforms & running animations)
-    let curr: HTMLElement | null = el;
-    let left = 0;
-    let top = 0;
-    while (curr && curr !== copyEl) {
-      left += curr.offsetLeft;
-      top += curr.offsetTop;
-      curr = curr.offsetParent as HTMLElement | null;
+    const el = activeCharRef.current;
+    if (el) {
+      let curr: HTMLElement | null = el;
+      let l = 0;
+      let t = 0;
+      while (curr && curr !== copyEl) {
+        l += curr.offsetLeft;
+        t += curr.offsetTop;
+        curr = curr.offsetParent as HTMLElement | null;
+      }
+      lastValidLeftRef.current = l;
+      lastValidTopRef.current = t;
     }
 
-    const height = el.offsetHeight || 28;
+    const left = lastValidLeftRef.current;
+    const top = lastValidTopRef.current;
+    const height = el?.offsetHeight || 28;
 
     // Set caret position custom variables on container for local aura halo
     container.style.setProperty("--caret-left", `${left}px`);
@@ -146,6 +155,7 @@ export function TypingViewport({
 
   const caretActive = active && focused && replayIndex == null;
   const showOverlay = !focused && active && replayIndex == null;
+  const activeCharIndex = Math.min(target.length - 1, displayTyped.length);
 
   return (
     <div
@@ -210,7 +220,7 @@ export function TypingViewport({
             <span key={wordIndex} className="word-group inline-block whitespace-nowrap">
               {wordObj.text.split("").map((ch, charOffset) => {
                 const globalIndex = wordObj.startIdx + charOffset;
-                const isCurrent = globalIndex === displayTyped.length;
+                const isCurrent = globalIndex === activeCharIndex && extra.length === 0;
                 const st = states[globalIndex] ?? "pending";
                 const isFailed = failed.has(globalIndex);
                 const isBlind = blind && (st === "correct" || st === "incorrect");
