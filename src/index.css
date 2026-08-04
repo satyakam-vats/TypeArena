@@ -644,3 +644,240 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
   }
 }
 
+/* ==========================================================================
+   KEYBR MULTIPLAYER STYLES (Fixed-Height & Zero-Flicker Layout)
+   ========================================================================== */
+.keybr-viewport-wrapper {
+  margin: 20px 0;
+  width: 100%;
+}
+
+.keybr-viewport-container {
+  position: relative;
+  height: 120px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: var(--paper-soft);
+  border: 1px solid var(--line);
+  padding: 16px 20px;
+  font-size: clamp(1.25rem, 2.25vw, 1.65rem);
+  box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.keybr-copy {
+  position: relative;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+  font-weight: 400;
+  line-height: 48px;
+  letter-spacing: 0.02em;
+  word-break: break-word;
+  will-change: transform;
+}
+
+.keybr-word-group {
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.keybr-char {
+  position: relative;
+  white-space: pre-wrap;
+  color: var(--muted);
+}
+
+.keybr-correct {
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.keybr-incorrect {
+  color: var(--wrong);
+  background: color-mix(in srgb, var(--wrong) 15%, transparent);
+  border-radius: 2px;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+}
+
+.keybr-caret {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+  z-index: 3;
+  pointer-events: none;
+  transition: transform 0.08s ease;
+  will-change: transform;
+}
+
+.keybr-caret.caret-block {
+  width: 0.55em;
+  opacity: 0.35;
+}
+
+.keybr-caret.caret-underline {
+  height: 3px !important;
+  top: auto;
+  bottom: 4px;
+  width: 0.6em;
+}
+
+/* Keybr Racetrack Lanes */
+.keybr-racetrack {
+  margin-bottom: 24px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.keybr-racetrack-header {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--paper-soft);
+  border-bottom: 1px solid var(--line);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.keybr-racetrack-lanes {
+  display: flex;
+  flex-direction: column;
+}
+
+.keybr-lane {
+  display: grid;
+  grid-template-columns: minmax(130px, 190px) 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  transition: background 0.15s ease;
+}
+
+.keybr-lane:last-child {
+  border-bottom: none;
+}
+
+.keybr-lane-me {
+  background: color-mix(in srgb, var(--accent-soft) 40%, var(--paper));
+}
+
+.keybr-lane-player {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.keybr-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  display: grid;
+  place-items: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.keybr-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.keybr-player-info {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow: hidden;
+}
+
+.keybr-player-name {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.keybr-you-badge {
+  color: var(--accent);
+  font-size: 0.72rem;
+  font-weight: 500;
+}
+
+.keybr-crown {
+  color: #f59e0b;
+  flex-shrink: 0;
+}
+
+.keybr-lane-track {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.keybr-track-bg {
+  flex: 1;
+  height: 10px;
+  background: var(--surface);
+  border-radius: 99px;
+  overflow: hidden;
+  position: relative;
+}
+
+.keybr-track-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 99px;
+  transition: width 0.25s cubic-bezier(0.2, 0, 0.2, 1);
+}
+
+.keybr-track-fill.finished {
+  background: #10b981;
+}
+
+.keybr-lane-stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.76rem;
+  min-width: 110px;
+  justify-content: flex-end;
+}
+
+.keybr-wpm-pill {
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--paper-soft);
+  border: 1px solid var(--line);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.keybr-percent-label {
+  color: var(--muted);
+  width: 32px;
+  text-align: right;
+}
+
+.keybr-check-icon {
+  color: #10b981;
+}
+
+

@@ -1,9 +1,10 @@
 import { Copy, Crown, Flag, RotateCcw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { KeybrRaceTrack } from "../../components/typing/KeybrRaceTrack";
+import { KeybrViewport } from "../../components/typing/KeybrViewport";
 import { LiveMetrics } from "../../components/typing/LiveMetrics";
 import { ReactionBar } from "../../components/typing/ReactionBar";
-import { TypingViewport } from "../../components/typing/TypingViewport";
 import { useAuth } from "../../context/AuthContext";
 import { useTypingTest } from "../../hooks/useTypingTest";
 import { endRace, finishRace, leaveRoom, startCountdown, startRace, subscribePlayers, subscribeRoom, updateHeartbeat, updateProgress } from "../../lib/firestore/rooms";
@@ -329,34 +330,59 @@ export function RoomPage() {
       </section>
     )}
     {room.status === "countdown" && <section className="countdown-screen"><span>race begins in</span><strong>{countdown || "go"}</strong></section>}
-    {room.status === "racing" && !showLeaderboard && <section className="race-room">
-      <div className="mb-7 flex justify-between text-sm text-[var(--muted)]">
-        <span>
-          {localFinished
-            ? "finished — waiting for other racers…"
-            : `live race · ${activePlayers.length} racers`}
-        </span>
-        <LiveMetrics metrics={test.metrics} />
-      </div>
-      <div className="race-progress">
-        {progressPlayers.map((player) => (
-          <div className="racer-line" key={player.uid}>
-            <span>{player.displayName}</span>
-            <div><i style={{ width: `${player.progress.percent}%` }} /></div>
-            <b className="racer-wpm">{displayWpm(player)} wpm</b>
+    {room.status === "racing" && !showLeaderboard && (
+      <section className="race-room">
+        <div className="mb-5 flex items-center justify-between text-sm text-[var(--muted)]">
+          <span className="font-mono">
+            {localFinished
+              ? "🏁 Finished — waiting for other racers…"
+              : `Live Race · ${activePlayers.length} racers`}
+          </span>
+          <LiveMetrics metrics={test.metrics} />
+        </div>
+
+        <KeybrRaceTrack
+          players={progressPlayers}
+          hostId={room.hostId ?? undefined}
+          currentUid={activeUser.uid}
+        />
+
+        {activeUser.uid && (
+          <ReactionBar
+            roomId={roomId}
+            uid={activeUser.uid}
+            displayName={activeUser.displayName}
+            active={!localFinished}
+          />
+        )}
+
+        {!localFinished ? (
+          <>
+            <KeybrViewport
+              target={room.content.text}
+              typed={test.typedText}
+              active
+              caretStyle="line"
+            />
+            <textarea
+              autoFocus
+              value={test.typedText}
+              onChange={(event) => test.updateTypedText(event.target.value)}
+              onPaste={(event) => event.preventDefault()}
+              className="typing-input"
+              aria-label="Race typing input"
+              spellCheck={false}
+              autoCapitalize="off"
+              autoCorrect="off"
+            />
+          </>
+        ) : (
+          <div className="mt-6 p-4 rounded-lg bg-[var(--paper-soft)] border border-[var(--line)] text-center text-sm text-[var(--muted)] font-mono">
+            🎉 You finished! Waiting for all racers to complete to display final standings.
           </div>
-        ))}
-      </div>
-      {activeUser.uid && <ReactionBar roomId={roomId} uid={activeUser.uid} displayName={activeUser.displayName} active={!localFinished} />}
-      {!localFinished ? (
-        <>
-          <TypingViewport target={room.content.text} typed={test.typedText} active smoothCaret />
-          <textarea autoFocus value={test.typedText} onChange={(event) => test.updateTypedText(event.target.value)} onPaste={(event) => event.preventDefault()} className="typing-input" aria-label="Race typing input" spellCheck={false} autoCapitalize="off" autoCorrect="off" />
-        </>
-      ) : (
-        <p className="mt-6 text-sm text-[var(--muted)]">You finished. Standings unlock when everyone is done.</p>
-      )}
-    </section>}
+        )}
+      </section>
+    )}
     {showLeaderboard && (
       <section className="leaderboard">
         <p className="eyebrow"><Flag size={13} /> race results</p>
