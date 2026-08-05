@@ -30,28 +30,37 @@ export type GeminiCoachResult = {
   skillLevel: "beginner" | "intermediate" | "advanced" | "expert";
 };
 
+/* Models to try in order of preference (free tier availability varies by region). */
+const MODELS = [
+  "gemini-2.0-flash-lite",
+  "gemini-2.0-flash",
+  "gemini-1.5-flash",
+];
+
 export async function generateGeminiAnalysis(run: CompletedRun): Promise<GeminiCoachResult | null> {
   const apiKey = getGeminiApiKey();
   if (!apiKey) return null;
 
   try {
-    const { wpm, rawWpm, accuracy, consistency, durationMs, samples, keyErrors, keyTotals, maxCombo } = run.metrics;
-    
+    const { wpm, rawWpm, accuracy, consistency, durationMs, samples, maxCombo } = run.metrics;
+    const keyErrors = run.metrics.keyErrors || {};
+    const keyTotals = run.metrics.keyTotals || {};
+
     const weakKeysArr = Object.entries(keyErrors)
       .map(([key, errCount]) => {
-        const total = keyTotals[key] || errCount;
-        return { key, errCount, rate: errCount / total };
+        const total = keyTotals[key] || errCount || 1;
+        return { key, errCount: errCount as number, rate: (errCount as number) / total };
       })
       .sort((a, b) => b.rate - a.rate || b.errCount - a.errCount)
       .slice(0, 5)
       .map((k) => `${k.key} (${k.errCount} errors)`);
-      
-    const weakKeysString = weakKeysArr.length > 0 ? weakKeysArr.join(", ") : "None";
 
-    const samplesStr = samples
+    const weakKeysString = weakKeysArr.length > 0 ? weakKeysArr.join(", ") : "None detected — perfect accuracy this run";
+
+    const samplesStr = (samples || [])
       .slice(-10)
       .map((s) => `[${Math.round(s.elapsedMs / 1000)}s: ${Math.round(s.wpm)}wpm]`)
-      .join(", ");
+      .join(", ") || "No samples";
 
     const prompt = `You are an expert typing coach for TypeArena, a premium typing test app. Analyze this completed typing run and provide actionable feedback.
 
@@ -65,52 +74,81 @@ Data from the run:
 - Weak Keys: ${weakKeysString}
 - Recent WPM samples: ${samplesStr}
 
-Analyze the user's typing technique, speed, and accuracy based on these metrics.
-Generate a JSON object with this exact structure (do NOT use markdown formatting or code blocks around the JSON, just return raw valid JSON):
+Respond with ONLY a valid JSON object (no markdown, no code fences, no extra text). Use this exact structure:
 
 {
-  "summary": "2-3 sentence personalized analysis",
-  "diagnosis": "What specific technique issues were detected",
-  "actionPlan": ["Step 1", "Step 2", "Step 3"],
-  "drillText": "A 25-30 word practice text focusing heavily on the weak keys identified. Do not just list the keys, write actual sentences containing them.",
-  "encouragement": "A motivational one-liner",
-  "skillLevel": "beginner" | "intermediate" | "advanced" | "expert"
+  "summary": "2-3 sentence personalized analysis of this specific test performance",
+  "diagnosis": "What specific technique issues were detected based on the data",
+  "actionPlan": ["Specific actionable step 1", "Specific actionable step 2", "Specific actionable step 3"],
+  "drillText": "Write a 25-30 word practice passage using common English words. If weak keys were found, include words that use those keys heavily. Write natural sentences, not random words.",
+  "encouragement": "A brief motivational message",
+  "skillLevel": "one of: beginner, intermediate, advanced, expert"
 }`;
 
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        contents: [
-          {
-            parts: [{ text: prompt }]
-          }
-        ],
-        generationConfig: {
-          response_mime_type: "application/json",
+    // Try each model until one works
+    let lastError = "";
+    for (const model of MODELS) {
+      try {
+        const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: prompt }] }],
+          }),
+        });
+
+        if (!response.ok) {
+          lastError = `${model}: HTTP ${response.status}`;
+          console.warn(`Gemini model ${model} failed:`, response.status);
+          continue; // try next model
         }
-      }),
-    });
 
-    if (!response.ok) {
-      console.error("Gemini API Error:", response.status, await response.text());
-      return null;
+        const data = await response.json();
+        const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
+
+        if (!content) {
+          lastError = `${model}: empty response`;
+          console.warn(`Gemini model ${model}: no content in response`);
+          continue;
+        }
+
+        // Strip markdown code fences if present
+        const cleanContent = content
+          .replace(/^```(?:json)?\s*/i, "")
+          .replace(/\s*```\s*$/i, "")
+          .trim();
+
+        const parsed = JSON.parse(cleanContent) as GeminiCoachResult;
+
+        // Validate required fields
+        if (!parsed.summary || !parsed.actionPlan) {
+          lastError = `${model}: invalid JSON structure`;
+          console.warn(`Gemini model ${model}: parsed but missing required fields`);
+          continue;
+        }
+
+        // Normalize skillLevel
+        const validLevels = ["beginner", "intermediate", "advanced", "expert"];
+        if (!validLevels.includes(parsed.skillLevel)) {
+          parsed.skillLevel = wpm >= 100 ? "expert" : wpm >= 70 ? "advanced" : wpm >= 40 ? "intermediate" : "beginner";
+        }
+
+        // Ensure actionPlan is an array
+        if (!Array.isArray(parsed.actionPlan)) {
+          parsed.actionPlan = [String(parsed.actionPlan)];
+        }
+
+        return parsed;
+      } catch (modelErr) {
+        lastError = `${model}: ${modelErr}`;
+        console.warn(`Gemini model ${model} error:`, modelErr);
+        continue;
+      }
     }
 
-    const data = await response.json();
-    const content = data.candidates?.[0]?.content?.parts?.[0]?.text;
-    
-    if (!content) {
-      console.error("No content from Gemini");
-      return null;
-    }
-
-    const cleanContent = content.replace(/^```json\s*/i, "").replace(/\s*```$/i, "").trim();
-    const parsed = JSON.parse(cleanContent) as GeminiCoachResult;
-    
-    return parsed;
+    console.error("All Gemini models failed. Last error:", lastError);
+    return null;
   } catch (error) {
     console.error("Error generating Gemini analysis:", error);
     return null;
