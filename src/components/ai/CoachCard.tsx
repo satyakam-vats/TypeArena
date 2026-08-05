@@ -112,24 +112,21 @@ function ApiKeyModal({ onClose, onSaved }: { onClose: () => void; onSaved: () =>
     setTesting(true);
     setStatus("idle");
     try {
+      // Use the lightweight models list endpoint to validate the key —
+      // it's a simple GET and doesn't depend on specific model availability.
       const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key.trim()}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: "Say 'ok' in one word." }] }],
-          }),
-        },
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${key.trim()}`,
       );
       if (resp.ok) {
         setGeminiApiKey(key.trim());
         setStatus("success");
         setTimeout(() => { onSaved(); onClose(); }, 600);
       } else {
+        console.warn("Gemini key test failed:", resp.status, await resp.text().catch(() => ""));
         setStatus("error");
       }
-    } catch {
+    } catch (err) {
+      console.warn("Gemini key test error:", err);
       setStatus("error");
     } finally {
       setTesting(false);
