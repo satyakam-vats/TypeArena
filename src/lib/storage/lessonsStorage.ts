@@ -7,7 +7,39 @@ export function getStoredLessonProgress(): Record<string, UserLessonProgress> {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return {};
-    return JSON.parse(raw);
+
+    let progress = JSON.parse(raw);
+
+    // Migration: old lesson-1, lesson-2... -> beginner-1a, beginner-1b...
+    const oldToNew: Record<string, string> = {
+      "lesson-1": "beginner-1a",
+      "lesson-2": "beginner-1b",
+      "lesson-3": "beginner-2a",
+      "lesson-4": "beginner-2b",
+      "lesson-5": "beginner-3",
+      "lesson-6": "beginner-4",
+      "lesson-7": "beginner-5",
+      "lesson-8": "beginner-6",
+      "lesson-9": "beginner-7",
+      "lesson-10": "advanced-1",
+      "lesson-11": "advanced-2",
+      "lesson-12": "advanced-3",
+      "lesson-13": "advanced-4",
+      "lesson-14": "advanced-5",
+      "lesson-15": "advanced-6",
+      // note: original had lesson-15 as grand master, now mapped to advanced-6
+    };
+
+    // Migrate any old keys
+    const migrated: Record<string, UserLessonProgress> = {};
+    for (const [oldId, val] of Object.entries(progress)) {
+      const newId = oldToNew[oldId] || oldId;
+      if (val && typeof val === "object" && val !== null) {
+        migrated[newId] = val as UserLessonProgress;
+      }
+    }
+
+    return migrated;
   } catch (e) {
     console.error("Failed to load lesson progress from storage", e);
     return {};

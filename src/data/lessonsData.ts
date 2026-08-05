@@ -1,203 +1,436 @@
 import type { Lesson, LessonCategory } from "../types/lessons";
 
+/**
+ * Typing curriculum adapted from the free lesson progression on learntyping.org
+ * (Beginner 1a–7 and Advanced 1–7). Practice drills follow the same key-introduction
+ * order; content is formatted for TypeArena's lesson practice UI.
+ */
 export const LESSON_CATEGORIES: LessonCategory[] = [
   {
-    tier: "home_row",
-    title: "Home Row Mastery",
-    description: "Master your index, middle, ring, and pinky fingers on the baseline keys (A S D F - J K L ;).",
-    badge: "🏠 Baseline",
+    tier: "beginner",
+    title: "Beginner Lessons",
+    description:
+      "Build touch-typing from the home row outward — letters, capitals, punctuation, and common combinations. Work through each lesson carefully before moving on.",
+    badge: "🌱 Beginner",
   },
   {
-    tier: "top_row",
-    title: "Top Row Expansion",
-    description: "Reach upward to master Q W E R T - Y U I O P without losing your home position.",
-    badge: "⬆️ Top Row",
-  },
-  {
-    tier: "bottom_row",
-    title: "Bottom Row Precision",
-    description: "Reach downward to master Z X C V B - N M , . / with finger precision.",
-    badge: "⬇️ Bottom Row",
-  },
-  {
-    tier: "numbers_symbols",
-    title: "Numbers & Symbols",
-    description: "Extend your reach to the top number row and common programming symbols.",
-    badge: "🔢 Numbers & Symbols",
+    tier: "advanced",
+    title: "Advanced Lessons",
+    description:
+      "Speed, shift mastery, hand-focused drills, symbols, and the number row. Designed for typists who already know the full alphabet.",
+    badge: "⚡ Advanced",
   },
 ];
 
 export const LESSONS: Lesson[] = [
-  // --- TIER 1: HOME ROW (1-4) ---
   {
-    id: "lesson-1",
-    tier: "home_row",
-    title: "Lesson 1: Index Fingers (F & J)",
-    subtitle: "Locate the tactile bumps on F and J",
-    targetKeys: ["f", "j", "space"],
-    fingerGuideHint: "Left index finger on F, right index finger on J. Feel the small raised bump on each key.",
-    text: "fff jjj ff jj fff jjj fj fj ff jj ffff jjjj fjfj fff jjj fj ff jj ffff jjjj fj fj",
+    id: "beginner-1a",
+    tier: "beginner",
+    title: "Beginner 1a: Home Row Keys",
+    subtitle: "Home row keys: A S D F J K L ;",
+    targetKeys: [
+      "a",
+      "s",
+      "d",
+      "f",
+      "j",
+      "k",
+      "l",
+      ";",
+      "space"
+    ],
+    fingerGuideHint: "Rest left fingers on A S D F and right fingers on J K L ;. Thumbs on spacebar. Feel the bumps on F and J.",
+    text: "ffff dddd ssss aaaa ffff dddd ssss aaaa ffff dddd ssss aaaa ff dd ss aa ff dd ss aa ff d ff d ff s ff s ff a ff a fdsa fdsa fdsa fdsa fdsa fdsa fdsa fdsa asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf fads dafs safd dsaf fasd adfs sdaf afds fdsa jjj kkk lll ;;; jjj kkk lll ;;; jjj kkk lll ;;;jj kk ll ;; jj kk ll ;; jj kk ll ;; jj kk ll ;; jj k jj l jj ; j k l ; j k l ; jjj kkk ll ;;",
     minAccuracyToPass: 85,
-    starThresholds: { oneStar: 12, twoStars: 22, threeStars: 35 },
+    starThresholds: {
+      oneStar: 14,
+      twoStars: 24,
+      threeStars: 36
+    }
   },
   {
-    id: "lesson-2",
-    tier: "home_row",
-    title: "Lesson 2: Middle Fingers (D & K)",
-    subtitle: "Extend control to D and K",
-    targetKeys: ["d", "k", "f", "j", "space"],
-    fingerGuideHint: "Left middle finger on D, right middle finger on K.",
-    text: "ddd kkk dk dk fdf jkj df jk fkd jdf ddf kkj dfjk dfjk fddk kffd dk dk",
+    id: "beginner-1b",
+    tier: "beginner",
+    title: "Beginner 1b: E, U, I & R",
+    subtitle: "Vowels E, U, I and letter R",
+    targetKeys: [
+      "e",
+      "u",
+      "i",
+      "r",
+      "a",
+      "s",
+      "d",
+      "f",
+      "j",
+      "k",
+      "l",
+      "space"
+    ],
+    fingerGuideHint: "Reach up to E (left middle), R (left index), U (right index), I (right middle). Return to home row after each key.",
+    text: "deed frrf deer reed red deed frrf deer reed red deed frrf deer reed red free freed fred feed fed free freed fred feed fed free freed fred feed fed reef reef ref ref refer refer defer defer referred deferred refereed juuj juuj juju juju kiik kiik kiki kiki juki juki kiju kiju jiku jiku juik juik ijku jj uu kk ii jj uu kk ii jk jk ui ui jk jk ui ui jk ui jk ui ijku ujik ukij ujik ikij ikiu",
+    minAccuracyToPass: 86,
+    starThresholds: {
+      oneStar: 16,
+      twoStars: 26,
+      threeStars: 38
+    }
+  },
+  {
+    id: "beginner-2a",
+    tier: "beginner",
+    title: "Beginner 2a: G & H",
+    subtitle: "Key letters G and H",
+    targetKeys: [
+      "g",
+      "h",
+      "a",
+      "s",
+      "d",
+      "f",
+      "j",
+      "k",
+      "l",
+      "space"
+    ],
+    fingerGuideHint: "Left index reaches right to G; right index reaches left to H. Always return to F and J.",
+    text: "fg fg fg fgf fgt fg ft ft ft dfg dfgt dft dft frt frt frt frtg frtg frtg fgt fgt fgt dfrt dfrt dfrt dfrt dert dert dert dert jhj jhj jhj jhj jujhj jujhj jujhj jujhj hijk hujk hijk hujk jhjkik jhjkik jhjkik kikjuj kikjuj kikjuj jujkik jujkik jhik jhik jhik jihk jihk jihi jihi jihi kih kih kih huhi huhi fg jh fg jh ft jh fgt fgt fgt ght ght ght th th th",
+    minAccuracyToPass: 86,
+    starThresholds: {
+      oneStar: 18,
+      twoStars: 28,
+      threeStars: 40
+    }
+  },
+  {
+    id: "beginner-2b",
+    tier: "beginner",
+    title: "Beginner 2b: W, T, O & Y",
+    subtitle: "Letters W, T, O, Y (plus S, L)",
+    targetKeys: [
+      "w",
+      "t",
+      "o",
+      "y",
+      "s",
+      "l",
+      "space"
+    ],
+    fingerGuideHint: "Left ring to W, left index up to T, right ring to O, right index up-left to Y.",
+    text: "fff ddd sss www fff ddd sss www fff ddd sss www fds fds fdsw fdsw frf ded sws frf ded sws frf ded sws fdd fss ree rww rww rew rew rews rews dew dews ffds ffds ffdsw fdsw fds fdsw wsdf wsdf sdf fdsdf fdsdf ffss ffss ffsf ff ssf ff ssf fdsdf fdsdf frf ded sws juj juj jujyj jujyj jyj jhj jhj jhjyj jhjyj jujhj jujhj ujh ujh jklol jklol jklol lol lol lol lol jujhj klol jujhj klol kol kol",
+    minAccuracyToPass: 87,
+    starThresholds: {
+      oneStar: 20,
+      twoStars: 30,
+      threeStars: 42
+    }
+  },
+  {
+    id: "beginner-3",
+    tier: "beginner",
+    title: "Beginner 3: V, B, N & M",
+    subtitle: "Bottom row: V, B, N, M",
+    targetKeys: [
+      "v",
+      "b",
+      "n",
+      "m",
+      "space"
+    ],
+    fingerGuideHint: "Left index down to V and further to B; right index down to N and M. Keep other fingers on home row.",
+    text: "fvf frfvf fbf frfbf rev vet fvf frfvf fbf frfbf rev vet five fiver fib fibber fibre very every five fiver fib fibber fibre very every everyone jmj jujmj jnj jujnj jmj jujmj jnj jujnj jim him kim tim rim trim hem them jim him kim tim rim trim hem them jnj jujnj tin fin din dint tint jnj jujnj tin fin din dint dinted tin tint tinted",
+    minAccuracyToPass: 87,
+    starThresholds: {
+      oneStar: 22,
+      twoStars: 32,
+      threeStars: 44
+    }
+  },
+  {
+    id: "beginner-4",
+    tier: "beginner",
+    title: "Beginner 4: Capitals & C",
+    subtitle: "Capitals with Shift keys + letter C",
+    targetKeys: [
+      "c",
+      "Shift",
+      "space"
+    ],
+    fingerGuideHint: "Use the opposite pinky for Shift when capitalizing. Left middle reaches down to C.",
+    text: "ded dcd ded cdc dedcd dedcd decided deck decks decked check checks cheese chest cheek check checked creek creeks dice diced slice sliced twice nice mince minced Otherwise you might finish with clumsy, unnecessary errors. Look before you cross the street or you might get knocked down. Jimmy Colven drove Henry Dempsy to town to buy some new comic books.",
     minAccuracyToPass: 88,
-    starThresholds: { oneStar: 14, twoStars: 25, threeStars: 38 },
+    starThresholds: {
+      oneStar: 24,
+      twoStars: 34,
+      threeStars: 46
+    }
   },
   {
-    id: "lesson-3",
-    tier: "home_row",
-    title: "Lesson 3: Ring & Pinky Fingers (S L A ;)",
-    subtitle: "Complete the entire home row baseline",
-    targetKeys: ["a", "s", "l", ";", "d", "f", "j", "k", "space"],
-    fingerGuideHint: "Left hand: A (pinky), S (ring). Right hand: L (ring), ; (pinky).",
-    text: "aaa sss lll ;;; asdf jkl; asdf jkl; aass ll;; fall glad flask salad falls aass ll;;",
+    id: "beginner-5",
+    tier: "beginner",
+    title: "Beginner 5: A, P, Q, Z & X",
+    subtitle: "Letters A, P, Q, Z, X",
+    targetKeys: [
+      "a",
+      "p",
+      "q",
+      "z",
+      "x",
+      "space"
+    ],
+    fingerGuideHint: "Pinkies handle Q, A, Z, P, and often X reaches. Stay light on the keys.",
+    text: "faf far fat fatter far farmer faf far fat fatter far farmer frame fame famine fade fan ran tan jan land hand band fan ran tan jan land hand band sand banner pot port pit put pop pup puppy pot port pit put pop pup puppy poppy pappy purr top rope romp trap tramp trumpet purr top rope romp trap tramp trumpet fig rig tig pig got grip grab grasp green fig rig tig pig got grip grab grasp green",
+    minAccuracyToPass: 88,
+    starThresholds: {
+      oneStar: 26,
+      twoStars: 36,
+      threeStars: 48
+    }
+  },
+  {
+    id: "beginner-6",
+    tier: "beginner",
+    title: "Beginner 6: Punctuation",
+    subtitle: "Punctuation: , . ; ? - ( ) \" !",
+    targetKeys: [
+      ",",
+      ".",
+      ";",
+      "?",
+      "-",
+      "(",
+      ")",
+      "\"",
+      "!",
+      "space"
+    ],
+    fingerGuideHint: "Right hand handles most punctuation. Use Shift with the opposite pinky for ? ! \" ( ).",
+    text: "If you practise your typing each day, it will soon become easy. Join for hyphen. First-class. Did you enjoy this typing course? I hope so! \"Hullo,\" said Julia to George. \"Isn't it a really lovely day?\" \"Stop! There's too much noise! It's giving me a headache!\" MONDAY TUESDAY WEDNESDAY THURSDAY FRIDAY SATURDAY SUNDAY Swimming Netball Football Skydiving Drama Rugby Golf",
+    minAccuracyToPass: 89,
+    starThresholds: {
+      oneStar: 28,
+      twoStars: 38,
+      threeStars: 50
+    }
+  },
+  {
+    id: "beginner-7",
+    tier: "beginner",
+    title: "Beginner 7: Common Combinations",
+    subtitle: "Common letter combinations for speed",
+    targetKeys: [
+      "a",
+      "e",
+      "i",
+      "o",
+      "u",
+      "t",
+      "h",
+      "n",
+      "s",
+      "r",
+      "space"
+    ],
+    fingerGuideHint: "Type common digraphs as single smooth motions. Accuracy first, then rhythm.",
+    text: "this list; his list; lists wish dish fish wrist fist kiss kissed missed fist wrist list listed twist twisted twister this is a twister mister; all wall walls fall falls hall halls taller tallest call calls stall stalls all tall stall stalls stalled walls; all tall walls fall; hallowed wh where whether who whose what whole where whether weather",
+    minAccuracyToPass: 89,
+    starThresholds: {
+      oneStar: 30,
+      twoStars: 40,
+      threeStars: 52
+    }
+  },
+  {
+    id: "advanced-1",
+    tier: "advanced",
+    title: "Advanced 1: Letter Combinations",
+    subtitle: "Common letter combinations",
+    targetKeys: [
+      "t",
+      "h",
+      "e",
+      "i",
+      "n",
+      "g",
+      "s",
+      "r",
+      "space"
+    ],
+    fingerGuideHint: "Build automatic combos: th, he, in, er, an, re, on, at, en, nd.",
+    text: "ou you your yours out ou ough rough trough through though cough enough ou ought thought bought brought ou ought thought bought brought nought au augh laugh laughter laughed laughs au aught taught caught taught caught sh she shell shelter shall sheep sh she shell shelter shall shallow sheep shape oi oil toil toiled soil soiled spoil spoiled coin coined coil recoil uncoil foil pop poll polls pole poles pip pill pile piles pillow up pup put pull pulled",
     minAccuracyToPass: 90,
-    starThresholds: { oneStar: 15, twoStars: 28, threeStars: 40 },
+    starThresholds: {
+      oneStar: 23,
+      twoStars: 35,
+      threeStars: 51
+    }
   },
   {
-    id: "lesson-4",
-    tier: "home_row",
-    title: "Lesson 4: Home Row Words",
-    subtitle: "Combine all home row keys into real words",
-    targetKeys: ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "space"],
-    fingerGuideHint: "Reach left index to G, right index to H. Return immediately to F and J.",
-    text: "add all ask dad fall glad glass half hall lash salad slash flash glad fall glass",
+    id: "advanced-2",
+    tier: "advanced",
+    title: "Advanced 2: Shift Keys & Capitals",
+    subtitle: "Left and right Shift keys",
+    targetKeys: [
+      "Shift",
+      "A",
+      "B",
+      "C",
+      "space"
+    ],
+    fingerGuideHint: "Capitalize left-hand letters with right Shift, and right-hand letters with left Shift.",
+    text: "Alexandra Auckland Blenheim Dunedin Christchurch Dannevirke East Taieri Fiordland Frankton Greymouth Queenstown Ravensbourne Rotorua Springhills St Claire Taumarunui Taupo Victoria Valley Waimate Wellington Haast Pass Hokitika Invercargill Jamestown Kaikoura Katikati Kawerau Lawrence Lyttleton Masterton Milton Motueka New Plymouth Nelson Ngaruawahia Oamaru Otorohunga Papatoetoe Palmerston Paraparaumu Upper Hutt",
     minAccuracyToPass: 90,
-    starThresholds: { oneStar: 18, twoStars: 30, threeStars: 45 },
-  },
-
-  // --- TIER 2: TOP ROW (5-8) ---
-  {
-    id: "lesson-5",
-    tier: "top_row",
-    title: "Lesson 5: Top Index & Middle (R U E I)",
-    subtitle: "Reach up from F/J and D/K to R/U and E/I",
-    targetKeys: ["r", "u", "e", "i", "f", "j", "d", "k", "space"],
-    fingerGuideHint: "Left index reaches up to R, right index to U. Left middle reaches up to E, right middle to I.",
-    text: "rrr uuu eee iii frf juj ded kik red rue fire rude pure true rider dried rude",
-    minAccuracyToPass: 90,
-    starThresholds: { oneStar: 15, twoStars: 28, threeStars: 42 },
+    starThresholds: {
+      oneStar: 26,
+      twoStars: 38,
+      threeStars: 54
+    }
   },
   {
-    id: "lesson-6",
-    tier: "top_row",
-    title: "Lesson 6: Top Ring & Pinky (W O Q P)",
-    subtitle: "Reach up from S/L and A/; to W/O and Q/P",
-    targetKeys: ["w", "o", "q", "p", "s", "l", "a", "space"],
-    fingerGuideHint: "Left ring to W, right ring to O. Left pinky to Q, right pinky to P.",
-    text: "www ooo qqq ppp sws lol aqa p;p row pol pop quote wolf pool slope prow quip",
-    minAccuracyToPass: 90,
-    starThresholds: { oneStar: 15, twoStars: 28, threeStars: 42 },
+    id: "advanced-3",
+    tier: "advanced",
+    title: "Advanced 3: Left Hand Focus",
+    subtitle: "Left hand key focus",
+    targetKeys: [
+      "q",
+      "w",
+      "e",
+      "r",
+      "t",
+      "a",
+      "s",
+      "d",
+      "f",
+      "g",
+      "z",
+      "x",
+      "c",
+      "v",
+      "b",
+      "space"
+    ],
+    fingerGuideHint: "Emphasize left-hand reaches while the right hand anchors on home row / Shift.",
+    text: "Alan and Alice and Alma alighted at Auckland Airport after arriving. Sarah's sharp scissors slit Sandra's soft, silky scarf severely. David demanded Doris drive directly down Derek Duff's dark deserted drive. Finally Frank found freedom from Freddy Foster's fierce fist fight. Grandfather Greer grew great giant green gooseberries grandly. Quenton quickly quietened Queenie's quippy quadraphonic quizzshow. Wendy went wild with wonder when Wally washed windows with Window Wipe.",
+    minAccuracyToPass: 91,
+    starThresholds: {
+      oneStar: 29,
+      twoStars: 41,
+      threeStars: 57
+    }
   },
   {
-    id: "lesson-7",
-    tier: "top_row",
-    title: "Lesson 7: Top Row Center (T Y)",
-    subtitle: "Reach index fingers inward to T and Y",
-    targetKeys: ["t", "y", "r", "u", "space"],
-    fingerGuideHint: "Left index reaches up-right to T, right index reaches up-left to Y.",
-    text: "ttt yyy ftf jyj try toy yeti type tray trust party year your retry yesterday",
-    minAccuracyToPass: 90,
-    starThresholds: { oneStar: 18, twoStars: 30, threeStars: 45 },
+    id: "advanced-4",
+    tier: "advanced",
+    title: "Advanced 4: Right Hand Focus",
+    subtitle: "Right hand key focus",
+    targetKeys: [
+      "y",
+      "u",
+      "i",
+      "o",
+      "p",
+      "h",
+      "j",
+      "k",
+      "l",
+      ";",
+      "n",
+      "m",
+      ",",
+      ".",
+      "/",
+      "space"
+    ],
+    fingerGuideHint: "Emphasize right-hand reaches while the left hand anchors on home row / Shift.",
+    text: "How has Humphrey Henderson hacked Hillary Harding's hawthorne hedge? Jennifer Judge jumped joyfully. Jerry Johnson jubilantly joined Jenny jumping. Katy Kitchener's kitten kindly caught Kelly's knotted kite string. Norman needed ninetynine nifty notches nailed neatly nextdoor. Martha Miller made many monthly Missionary mailings. Yesterday your yellow yacht yanked Yvonne's yellow yacht. Uncle undid Una's uniform umbrellas under umpteen upsidedown cartons.",
+    minAccuracyToPass: 91,
+    starThresholds: {
+      oneStar: 32,
+      twoStars: 44,
+      threeStars: 60
+    }
   },
   {
-    id: "lesson-8",
-    tier: "top_row",
-    title: "Lesson 8: Home & Top Row Integration",
-    subtitle: "Combine home row and top row into full sentences",
-    targetKeys: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"],
-    fingerGuideHint: "Maintain soft touch-typing rhythm and return to baseline after every reach.",
-    text: "the quick red fox is fast and proud. we write quality poetry and prose every day.",
+    id: "advanced-5",
+    tier: "advanced",
+    title: "Advanced 5: Alternating Hands",
+    subtitle: "Alternate left and right hand drills",
+    targetKeys: [
+      "a",
+      "s",
+      "d",
+      "f",
+      "j",
+      "k",
+      "l",
+      ";",
+      "space"
+    ],
+    fingerGuideHint: "Alternate hands smoothly. Short words then longer words to build flow.",
+    text: "art tart dart cart rave wave save ear wear rear tear sear dear fear gear bear west rest test fest zest best crest eve ever are ware rare tare dare care barer feed reed deed weed eat seat beat rare fare dare rate date fate gate grate crates fact tact tract ace race trace grace face brace case base star stars art start tasted feast beast beat seat great gaze daze dazed faze fazed craved traced extracted stares terrace garages ravages created creates terrace",
+    minAccuracyToPass: 91,
+    starThresholds: {
+      oneStar: 35,
+      twoStars: 47,
+      threeStars: 63
+    }
+  },
+  {
+    id: "advanced-6",
+    tier: "advanced",
+    title: "Advanced 6: Symbols & Special Chars",
+    subtitle: "Numbers and special characters (& % @ $)",
+    targetKeys: [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "0",
+      "&",
+      "%",
+      "@",
+      "$",
+      "space"
+    ],
+    fingerGuideHint: "Reach to the number row without lifting wrists. Use Shift for symbols above numbers.",
+    text: "Smith & Smith Smith & Brown Black, Brown & Co Ltd J. K. Long & Co Inc. Monday & Friday Turner & Turner Ltd $44 $444 $445 $454 $400 $450 $44.50 $450.45 $44.55 $4.54 $90.00 $90.99 $49.99 $499.99 $450.45 $94.49 $40.49 $90.40 5% 55% 56% 54% 50% 4% 4.5% 3% 3.5% 15% 5.5% 5.4% 3.54% 22 @ 5% 12 @ 15% 12 @ 10% 220 @ 15% 52 @ 5% @ 25% 252 (9) (98) (97) (96) (900) (800) (700) (989) (990) (999) (898) (see next page) (I hope) (every day) (sometimes) (maybe) (hmmm)",
     minAccuracyToPass: 92,
-    starThresholds: { oneStar: 20, twoStars: 35, threeStars: 50 },
-  },
-
-  // --- TIER 3: BOTTOM ROW (9-11) ---
-  {
-    id: "lesson-9",
-    tier: "bottom_row",
-    title: "Lesson 9: Bottom Index & Middle (V M C ,)",
-    subtitle: "Reach down to V, M, C, and comma (,)",
-    targetKeys: ["v", "m", "c", ",", "f", "j", "d", "k", "space"],
-    fingerGuideHint: "Left index reaches down to V, right index to M. Left middle reaches down to C, right middle to comma.",
-    text: "vvv mmm ccc ,,, fvf jmj dcd k,k cave move come calm vice mica comma mic",
-    minAccuracyToPass: 90,
-    starThresholds: { oneStar: 16, twoStars: 28, threeStars: 42 },
+    starThresholds: {
+      oneStar: 38,
+      twoStars: 50,
+      threeStars: 66
+    }
   },
   {
-    id: "lesson-10",
-    tier: "bottom_row",
-    title: "Lesson 10: Bottom Ring & Pinky (X Z . / B N)",
-    subtitle: "Reach down to X, Z, period (.), slash (/), B, and N",
-    targetKeys: ["x", "z", ".", "/", "b", "n", "s", "l", "a", "space"],
-    fingerGuideHint: "Left ring to X, left pinky to Z. Right ring to period, right pinky to slash. Left index reaches down to B, right index to N.",
-    text: "xxx zzz ... /// bbb nnn box zone plan scan size brave noon flex bench bank",
-    minAccuracyToPass: 90,
-    starThresholds: { oneStar: 16, twoStars: 28, threeStars: 44 },
-  },
-  {
-    id: "lesson-11",
-    tier: "bottom_row",
-    title: "Lesson 11: Full Alphabet Proficiency",
-    subtitle: "Practice fluid text using all 26 letters of the alphabet",
-    targetKeys: ["a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"],
-    fingerGuideHint: "Keep wrists floating slightly above the desk and maintain baseline home keys.",
-    text: "pack my box with five dozen liquor jugs. brave clever foxes jump over lazy dogs.",
+    id: "advanced-7",
+    tier: "advanced",
+    title: "Advanced 7: Number Row Mastery",
+    subtitle: "Focus on numbers",
+    targetKeys: [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "0",
+      "space"
+    ],
+    fingerGuideHint: "Map each number to its home-row finger. Return to home keys after every number.",
+    text: "aq1 qa sw2ws de3ed fr4rf gt5tg 1 queen 11 queens 1 apple 11 apples 2 wishes 22 wishes 2 swims 22 swims 3 eddies 33 eddies 3 deeds 33 deeds 4 roses 44 roses 4 fish 44 fish 5 tugs 55 tugs 5 goats 55 goats 6 yams 66 yams 6 hams 66 hams 7 umpires 77 umpires 7 jokes 77 jokes 8 ideas 88 ideas 8 kites 88 kites 9 olives 99 olives 9 lollies 99 lollies 12 wishes 122 wishes 12 seeds 12 2 seeds 13 eggs 133 eggs 13 deeds 133 deeds",
     minAccuracyToPass: 92,
-    starThresholds: { oneStar: 22, twoStars: 38, threeStars: 55 },
-  },
-
-  // --- TIER 4: NUMBERS & SYMBOLS (12-15) ---
-  {
-    id: "lesson-12",
-    tier: "numbers_symbols",
-    title: "Lesson 12: Number Row Left Hand (1 2 3 4 5)",
-    subtitle: "Reach top number keys with left hand fingers",
-    targetKeys: ["1", "2", "3", "4", "5", "space"],
-    fingerGuideHint: "1 (pinky), 2 (ring), 3 (middle), 4 & 5 (index).",
-    text: "111 222 333 444 555 12 34 51 234 54321 135 24 12345 54321 1122334455",
-    minAccuracyToPass: 90,
-    starThresholds: { oneStar: 15, twoStars: 25, threeStars: 40 },
-  },
-  {
-    id: "lesson-13",
-    tier: "numbers_symbols",
-    title: "Lesson 13: Number Row Right Hand (6 7 8 9 0)",
-    subtitle: "Reach top number keys with right hand fingers",
-    targetKeys: ["6", "7", "8", "9", "0", "space"],
-    fingerGuideHint: "6 & 7 (index), 8 (middle), 9 (ring), 0 (pinky).",
-    text: "666 777 888 999 000 67 89 06 7890 09876 680 79 67890 09876 6677889900",
-    minAccuracyToPass: 90,
-    starThresholds: { oneStar: 15, twoStars: 25, threeStars: 40 },
-  },
-  {
-    id: "lesson-14",
-    tier: "numbers_symbols",
-    title: "Lesson 14: Programming Symbols ({ } [ ] ( ) = +)",
-    subtitle: "Master common bracket and operator symbols for coding",
-    targetKeys: ["{", "}", "[", "]", "(", ")", "=", "+", ";", "space"],
-    fingerGuideHint: "Use right hand ring and pinky fingers to reach bracket keys.",
-    text: "fn(x) => { return [1, 2, 3]; } if (a == b) { total = count + 1; } arr[i] = val;",
-    minAccuracyToPass: 90,
-    starThresholds: { oneStar: 15, twoStars: 26, threeStars: 42 },
-  },
-  {
-    id: "lesson-15",
-    tier: "numbers_symbols",
-    title: "Lesson 15: Grand Master Typing Challenge",
-    subtitle: "Comprehensive test across letters, numbers, and symbols",
-    targetKeys: ["a", "b", "c", "1", "2", "3", "!", "@", "#", "$", "%"],
-    fingerGuideHint: "Combine speed, precision, and accuracy across all rows.",
-    text: "const user = { id: 101, WPM: 85, active: true }; console.log('Passed 100%!');",
-    minAccuracyToPass: 94,
-    starThresholds: { oneStar: 25, twoStars: 40, threeStars: 60 },
-  },
+    starThresholds: {
+      oneStar: 41,
+      twoStars: 53,
+      threeStars: 69
+    }
+  }
 ];

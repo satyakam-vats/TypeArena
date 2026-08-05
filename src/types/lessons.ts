@@ -1,4 +1,4 @@
-export type LessonTier = "home_row" | "top_row" | "bottom_row" | "numbers_symbols";
+export type LessonTier = "beginner" | "advanced";
 
 export type LessonCategory = {
   tier: LessonTier;
@@ -17,9 +17,9 @@ export type Lesson = {
   text: string;
   minAccuracyToPass: number; // e.g. 90%
   starThresholds: {
-    oneStar: number;   // WPM e.g. 15
-    twoStars: number;  // WPM e.g. 25
-    threeStars: number;// WPM e.g. 40
+    oneStar: number; // WPM e.g. 15
+    twoStars: number; // WPM e.g. 25
+    threeStars: number; // WPM e.g. 40
   };
 };
 

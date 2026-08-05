@@ -7,8 +7,6 @@ import {
   isLessonUnlocked,
   getTotalStarsEarned,
 } from "../../lib/storage/lessonsStorage";
-import type { LessonTier } from "../../types/lessons";
-
 export function LessonsOverviewPage() {
   const navigate = useNavigate();
   const [progressMap] = useState(() => getStoredLessonProgress());
@@ -35,10 +33,10 @@ export function LessonsOverviewPage() {
               <Trophy size={14} /> Touch Typing Academy
             </div>
             <h1 className="text-2xl sm:text-3xl font-bold text-[var(--ink)] tracking-tight font-sans">
-              Structured Touch-Typing Lessons
+              Beginner & Advanced Lessons
             </h1>
             <p className="mt-2 max-w-xl text-sm text-[var(--muted)] leading-relaxed">
-              Master the keyboard step-by-step from baseline home row to top numbers & symbols. Build muscle memory without looking at your keys.
+              A full curriculum inspired by learntyping.org — home row through punctuation in Beginner, then shift mastery, hand focus, symbols, and numbers in Advanced.
             </p>
           </div>
 
