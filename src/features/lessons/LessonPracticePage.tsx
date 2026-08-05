@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { ArrowLeft, RotateCcw, ArrowRight, Star, Trophy, AlertTriangle, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, RotateCcw, ArrowRight, Star, AlertTriangle, CheckCircle2, ListOrdered, ChevronRight, ChevronLeft } from "lucide-react";
 import { LESSONS } from "../../data/lessonsData";
 import { recordLessonAttempt, isLessonUnlocked, getStoredLessonProgress } from "../../lib/storage/lessonsStorage";
 import { useTypingTest } from "../../hooks/useTypingTest";
@@ -14,6 +14,24 @@ export function LessonPracticePage() {
 
   const lesson = useMemo(() => LESSONS.find((l) => l.id === lessonId) ?? LESSONS[0]!, [lessonId]);
   const isUnlocked = isLessonUnlocked(lesson.id, getStoredLessonProgress());
+
+  const exercises = useMemo(() => {
+    if (lesson.exercises && lesson.exercises.length > 0) {
+      return lesson.exercises;
+    }
+    return [
+      {
+        id: `${lesson.id}-ex1`,
+        title: "Full Exercise",
+        text: lesson.text,
+        targetKeys: lesson.targetKeys,
+        minAccuracyToPass: lesson.minAccuracyToPass,
+      },
+    ];
+  }, [lesson]);
+
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const currentExercise = exercises[currentExerciseIndex] || exercises[0]!;
 
   const [showResultModal, setShowResultModal] = useState(false);
   const [resultData, setResultData] = useState<{
@@ -29,16 +47,17 @@ export function LessonPracticePage() {
     () =>
       normalizeSettings({
         mode: "custom",
-        customText: lesson.text,
+        customText: currentExercise.text,
         wordSourceId: "custom",
         smoothCaret: true,
       }),
-    [lesson.text]
+    [currentExercise.text]
   );
 
   const onComplete = useCallback(
     (run: CompletedRun) => {
       const { wpm, accuracy } = run.metrics;
+      const minAcc = currentExercise.minAccuracyToPass ?? lesson.minAccuracyToPass;
       const { starsEarned, passed } = recordLessonAttempt(lesson, wpm, accuracy);
       setResultData({
         wpm,
@@ -48,14 +67,14 @@ export function LessonPracticePage() {
       });
       setShowResultModal(true);
     },
-    [lesson]
+    [lesson, currentExercise]
   );
 
-  const test = useTypingTest(lesson.text, lessonSettings, onComplete, lesson.id);
+  const test = useTypingTest(currentExercise.text, lessonSettings, onComplete, `${lesson.id}-ex${currentExerciseIndex}`);
 
   useEffect(() => {
     inputRef.current?.focus();
-  }, [lesson.id]);
+  }, [lesson.id, currentExerciseIndex]);
 
   const nextLesson = useMemo(() => {
     const currentIndex = LESSONS.findIndex((l) => l.id === lesson.id);
@@ -65,9 +84,11 @@ export function LessonPracticePage() {
     return null;
   }, [lesson.id]);
 
-  const handleNextLesson = () => {
+  const handleNextExerciseOrLesson = () => {
     setShowResultModal(false);
-    if (nextLesson) {
+    if (currentExerciseIndex < exercises.length - 1) {
+      setCurrentExerciseIndex((prev) => prev + 1);
+    } else if (nextLesson) {
       navigate(`/lessons/${nextLesson.id}`);
     } else {
       navigate("/lessons");
@@ -132,6 +153,53 @@ export function LessonPracticePage() {
           </div>
         </div>
 
+        {/* Exercise Selector / Stepper */}
+        {exercises.length > 1 && (
+          <div className="mt-4 pt-4 border-t border-[var(--line)] flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-xs font-mono text-[var(--ink)] font-semibold">
+              <ListOrdered size={15} className="text-[var(--accent)]" />
+              <span>Exercise {currentExerciseIndex + 1} of {exercises.length}</span>
+            </div>
+
+            <div className="flex items-center gap-1.5 overflow-x-auto max-w-full pb-1">
+              <button
+                type="button"
+                disabled={currentExerciseIndex === 0}
+                onClick={() => setCurrentExerciseIndex((p) => Math.max(0, p - 1))}
+                className="p-1 rounded border border-[var(--line)] text-[var(--muted)] hover:text-[var(--ink)] disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Previous exercise"
+              >
+                <ChevronLeft size={14} />
+              </button>
+
+              {exercises.map((ex, idx) => (
+                <button
+                  key={ex.id}
+                  type="button"
+                  onClick={() => setCurrentExerciseIndex(idx)}
+                  className={`px-2.5 py-1 rounded text-xs font-mono transition-all ${
+                    idx === currentExerciseIndex
+                      ? "bg-[var(--accent)] text-white font-bold"
+                      : "bg-[var(--surface)] text-[var(--muted)] hover:text-[var(--ink)]"
+                  }`}
+                >
+                  Ex {idx + 1}
+                </button>
+              ))}
+
+              <button
+                type="button"
+                disabled={currentExerciseIndex === exercises.length - 1}
+                onClick={() => setCurrentExerciseIndex((p) => Math.min(exercises.length - 1, p + 1))}
+                className="p-1 rounded border border-[var(--line)] text-[var(--muted)] hover:text-[var(--ink)] disabled:opacity-30 disabled:cursor-not-allowed"
+                title="Next exercise"
+              >
+                <ChevronRight size={14} />
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Instructional Finger Guide */}
         <div className="mt-4 rounded-lg bg-[var(--paper-soft)] p-3 border border-[var(--line)]/60 text-xs text-[var(--ink)] flex items-start gap-2">
           <span className="text-base">💡</span>
@@ -147,7 +215,7 @@ export function LessonPracticePage() {
         </div>
 
         <TypingViewport
-          target={lesson.text}
+          target={currentExercise.text}
           typed={test.typedText}
           active={test.status !== "finished"}
           smoothCaret
@@ -176,7 +244,7 @@ export function LessonPracticePage() {
           onClick={handleRetry}
           className="inline-flex items-center gap-2 rounded-lg border border-[var(--line)] bg-[var(--paper)] px-4 py-2 text-xs font-semibold text-[var(--ink)] hover:border-[var(--accent)] transition-all cursor-pointer"
         >
-          <RotateCcw size={14} /> Restart Lesson
+          <RotateCcw size={14} /> Restart Exercise
         </button>
       </div>
 
@@ -195,11 +263,11 @@ export function LessonPracticePage() {
                 </div>
               )}
               <h2 className="text-xl font-bold text-[var(--ink)]">
-                {resultData.passed ? "Lesson Complete!" : "Accuracy Threshold Missed"}
+                {resultData.passed ? "Exercise Complete!" : "Accuracy Threshold Missed"}
               </h2>
               <p className="text-xs text-[var(--muted)] mt-1">
                 {resultData.passed
-                  ? "Great job! Your touch-typing technique is improving."
+                  ? `Exercise ${currentExerciseIndex + 1} of ${exercises.length} completed successfully.`
                   : `You need at least ${lesson.minAccuracyToPass}% accuracy to pass.`}
               </p>
             </div>
@@ -251,10 +319,10 @@ export function LessonPracticePage() {
               {resultData.passed && (
                 <button
                   type="button"
-                  onClick={handleNextLesson}
+                  onClick={handleNextExerciseOrLesson}
                   className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-[var(--accent)] py-2.5 text-xs font-semibold text-white hover:opacity-90 transition-opacity cursor-pointer shadow-xs"
                 >
-                  Next Lesson <ArrowRight size={14} />
+                  {currentExerciseIndex < exercises.length - 1 ? "Next Exercise" : "Next Lesson"} <ArrowRight size={14} />
                 </button>
               )}
             </div>

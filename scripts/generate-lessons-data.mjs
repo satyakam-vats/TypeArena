@@ -46,6 +46,22 @@ const lessons = [];
 let beginnerNum = 0;
 let advancedNum = 0;
 
+const LESSON_SPLIT = {
+  "beginner-1a": 2,
+  "beginner-1b": 2,
+  "beginner-2b": 2,
+  "beginner-3": 2,
+  "beginner-4": 2,
+  "beginner-5": 2,
+  "beginner-7": 2,
+  "advanced-1": 2,
+  "advanced-3": 2,
+  "advanced-4": 2,
+  "advanced-5": 2,
+  "advanced-6": 2,
+  "advanced-7": 2,
+};
+
 for (const item of raw) {
   if (SKIP_CODES.has(item.code)) continue;
   const drills = cleanDrills(item.drills || []);
@@ -62,11 +78,11 @@ for (const item of raw) {
 
   let id;
   let title;
-  if (item.tier === "beginner") {
-    beginnerNum += 1;
-    id = `beginner-${item.code}`;
-    title = `Beginner ${item.code.toUpperCase()}: ${item.subtitle.split(":")[0].trim()}`;
-    // nicer titles from known mapping
+  const splitCount = LESSON_SPLIT[item.code] || 1;
+
+  if (splitCount > 1) {
+    beginnerNum += splitCount;
+    const baseId = item.tier === "beginner" ? `beginner-${item.code}` : `advanced-${item.code}`;
     const titles = {
       "1a": "Beginner 1a: Home Row Keys",
       "1b": "Beginner 1b: E, U, I & R",
@@ -77,12 +93,6 @@ for (const item of raw) {
       "5": "Beginner 5: A, P, Q, Z & X",
       "6": "Beginner 6: Punctuation",
       "7": "Beginner 7: Common Combinations",
-    };
-    title = titles[item.code] || title;
-  } else {
-    advancedNum += 1;
-    id = `advanced-${item.code}`;
-    const titles = {
       "1": "Advanced 1: Letter Combinations",
       "2": "Advanced 2: Shift Keys & Capitals",
       "3": "Advanced 3: Left Hand Focus",
@@ -91,7 +101,41 @@ for (const item of raw) {
       "6": "Advanced 6: Symbols & Special Chars",
       "7": "Advanced 7: Number Row Mastery",
     };
-    title = titles[item.code] || `Advanced ${item.code}: ${item.subtitle}`;
+    const baseTitle = titles[item.code] || `${item.tier === "beginner" ? "Beginner" : "Advanced"} ${item.code.toUpperCase()}`;
+
+    for (let i = 0; i < splitCount; i++) {
+      const start = i * Math.ceil(drills.length / splitCount);
+      const chunk = drills.slice(start, start + Math.ceil(drills.length / splitCount));
+      const subDrills = cleanDrills(chunk);
+      const subText = joinPractice(subDrills, 280);
+      const subId = `${baseId}-${i + 1}`;
+      lessons.push({
+        id: subId,
+        tier: item.tier,
+        title: baseTitle + (i > 0 ? ` (Exercise ${i + 1})` : ""),
+        subtitle: item.subtitle,
+        targetKeys: item.targetKeys,
+        fingerGuideHint: item.fingerGuideHint,
+        text: subText || subText || text,
+        minAccuracyToPass: minAccuracy(item.tier, beginnerNum),
+        starThresholds: starThresholds(item.tier, beginnerNum),
+      });
+    }
+  } else {
+    beginnerNum += 1;
+    id = item.tier === "beginner" ? `beginner-${item.code}` : `advanced-${item.code}`;
+    title = titles[item.code] || `${item.tier === "beginner" ? "Beginner" : "Advanced"} ${item.code.toUpperCase()}: ${item.subtitle.split(":")[0].trim()}`;
+    lessons.push({
+      id,
+      tier: item.tier,
+      title: title,
+      subtitle: item.subtitle,
+      targetKeys: item.targetKeys,
+      fingerGuideHint: item.fingerGuideHint,
+      text: text,
+      minAccuracyToPass: minAccuracy(item.tier, beginnerNum),
+      starThresholds: starThresholds(item.tier, beginnerNum),
+    });
   }
 
   const order = item.tier === "beginner" ? beginnerNum : advancedNum;
