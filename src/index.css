@@ -880,119 +880,704 @@ kbd { border:1px solid var(--line); border-bottom-width:2px; border-radius:4px; 
   color: #10b981;
 }
 
-/* --- AI Coach Card ------------------------------------------------ */
-.coach-card {
-  margin-top: 28px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--paper-soft);
+/* ═══════════════════════════════════════════════════════════════════
+ *  AI Coach Card v2 — Premium Glassmorphic Design
+ * ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Container + Glow Border ── */
+.coach-v2 {
+  position: relative;
+  margin-top: 32px;
+  border-radius: 16px;
   overflow: hidden;
-  animation: fade-in .3s ease-out;
+  background: var(--paper-soft);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--line));
+  animation: coach-fade-in 0.4s ease-out;
 }
-.coach-card-header {
+.coach-v2-glow {
+  position: absolute;
+  inset: -1px;
+  border-radius: 17px;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 40%, #a855f7), var(--accent));
+  background-size: 300% 300%;
+  animation: coach-glow-shift 6s ease infinite;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+@keyframes coach-glow-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes coach-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header ── */
+.coach-v2-header {
+  position: relative;
+  z-index: 1;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
+  padding: 14px 18px;
   border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--accent-soft) 40%, transparent);
+  background: color-mix(in srgb, var(--accent-soft) 30%, transparent);
+  backdrop-filter: blur(8px);
 }
-.coach-card-title {
+.coach-v2-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.coach-v2-logo {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 60%, #a855f7));
+  color: #fff;
+}
+.coach-v2-brand-text {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--ink);
+  letter-spacing: 0.02em;
+}
+.coach-v2-live-dot {
+  display: flex;
+  align-items: center;
+}
+.coach-v2-live-dot > span {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #22c55e;
+  box-shadow: 0 0 6px #22c55e88;
+  animation: coach-pulse 2s ease infinite;
+}
+@keyframes coach-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+.coach-v2-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.coach-v2-settings-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 5px 10px;
+  background: transparent;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  transition: all 0.15s ease;
+}
+.coach-v2-settings-btn:hover {
+  color: var(--ink);
+  background: var(--surface);
+  border-color: var(--accent);
+}
+
+/* ── Tabs ── */
+.coach-v2-tabs {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  padding: 0 18px;
+  gap: 2px;
+  border-bottom: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface) 30%, transparent);
+}
+.coach-v2-tab {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  padding: 10px 14px;
+  background: transparent;
+  color: var(--muted);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.coach-v2-tab:hover {
+  color: var(--ink);
+}
+.coach-v2-tab.is-active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ── Content Area ── */
+.coach-v2-content {
+  position: relative;
+  z-index: 1;
+  padding: 18px;
+  min-height: 120px;
+}
+
+/* ── OVERVIEW TAB ── */
+.coach-v2-summary-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.coach-v2-focus-area {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.coach-v2-focus-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.62rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.coach-v2-focus-value {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.coach-v2-quick-insights {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.coach-v2-quick-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+  transition: all 0.15s ease;
+}
+.coach-v2-quick-card:hover {
+  background: color-mix(in srgb, var(--surface) 80%, transparent);
+  border-color: var(--line);
+}
+.coach-v2-quick-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+.coach-v2-quick-title {
+  margin: 0 0 3px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--ink);
+}
+.coach-v2-quick-detail {
+  margin: 0;
+  font-size: 0.76rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.coach-v2-encouragement {
+  margin-top: 16px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent-soft) 30%, transparent);
+  font-size: 0.8rem;
+  color: var(--accent);
+  text-align: center;
+  font-style: italic;
+}
+
+/* ── AI ANALYSIS TAB ── */
+.coach-v2-connect-prompt {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 20px 10px;
+}
+.coach-v2-connect-icon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  background: linear-gradient(135deg, var(--accent-soft), color-mix(in srgb, var(--accent-soft) 50%, #ede9fe));
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+:root[data-theme="dark"] .coach-v2-connect-icon {
+  background: linear-gradient(135deg, var(--accent-soft), color-mix(in srgb, var(--accent-soft) 50%, #1e1b4b));
+}
+.coach-v2-connect-prompt h4 {
+  margin: 0 0 8px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+.coach-v2-connect-prompt > p {
+  margin: 0 0 6px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.55;
+  max-width: 380px;
+}
+.coach-v2-free-note {
+  font-size: 0.72rem !important;
+  color: var(--accent) !important;
+  margin-bottom: 16px !important;
+}
+.coach-v2-free-note a {
+  text-decoration: underline;
+  font-weight: 500;
+}
+.coach-v2-connect-btn {
   display: flex;
   align-items: center;
   gap: 7px;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #8b5cf6));
+  color: #fff;
   font-family: "IBM Plex Mono", monospace;
-  font-size: .82rem;
-  font-weight: 600;
-  color: var(--accent);
-  letter-spacing: .02em;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.coach-card-focus {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: .68rem;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: .05em;
+.coach-v2-connect-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px color-mix(in srgb, var(--accent) 30%, transparent);
 }
-.coach-insights-list {
+
+/* Loading state */
+.coach-v2-loading {
   display: flex;
   flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 32px 10px;
+  color: var(--accent);
 }
-.coach-insight {
-  border-bottom: 1px solid var(--line);
+.coach-v2-loading p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--muted);
 }
-.coach-insight:last-child {
-  border-bottom: 0;
+@keyframes spin { to { transform: rotate(360deg); } }
+.spin { animation: spin 1s linear infinite; }
+
+/* Error state */
+.coach-v2-error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 24px 10px;
+  color: var(--danger);
 }
-.coach-insight-header {
+.coach-v2-error-state p { margin: 0; font-size: 0.82rem; color: var(--muted); }
+.coach-v2-retry-btn {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 6px 16px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 0.78rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.coach-v2-retry-btn:hover { background: var(--surface); }
+
+/* Gemini result */
+.coach-v2-gemini-result {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.coach-v2-ai-header-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.coach-v2-skill-badge {
+  display: inline-flex;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--badge-color, #3b82f6);
+  background: color-mix(in srgb, var(--badge-color, #3b82f6) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--badge-color, #3b82f6) 25%, transparent);
+}
+.coach-v2-ai-powered {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.62rem;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
+.coach-v2-ai-summary {
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--surface) 40%, transparent);
+  border: 1px solid var(--line);
+}
+.coach-v2-ai-summary p {
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: var(--ink);
+}
+.coach-v2-ai-section h5 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.74rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.coach-v2-ai-section p {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.coach-v2-action-plan {
+  margin: 0;
+  padding-left: 20px;
+  list-style: none;
+  counter-reset: plan;
+}
+.coach-v2-action-plan li {
+  counter-increment: plan;
+  position: relative;
+  padding: 6px 0 6px 8px;
+  font-size: 0.82rem;
+  color: var(--ink);
+  line-height: 1.5;
+}
+.coach-v2-action-plan li::before {
+  content: counter(plan);
+  position: absolute;
+  left: -22px;
+  top: 6px;
+  width: 18px;
+  height: 18px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.62rem;
+  font-weight: 600;
+}
+
+/* Drill box */
+.coach-v2-drill-box {
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--accent) 30%, var(--line));
+  background: color-mix(in srgb, var(--accent-soft) 20%, transparent);
+}
+.coach-v2-drill-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 15%, var(--line));
+}
+.coach-v2-drill-header h5 {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.coach-v2-drill-launch {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  border-radius: 7px;
+  padding: 5px 12px;
+  background: var(--accent);
+  color: #fff;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.12s ease;
+}
+.coach-v2-drill-launch:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+.coach-v2-drill-text {
+  margin: 0;
+  padding: 14px 16px;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.82rem;
+  line-height: 1.7;
+  color: var(--ink);
+  letter-spacing: 0.01em;
+}
+.coach-v2-ai-encouragement {
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--accent-soft) 25%, transparent);
+  font-size: 0.8rem;
+  color: var(--accent);
+  text-align: center;
+  font-style: italic;
+}
+
+/* ── BREAKDOWN TAB ── */
+.coach-v2-insight {
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent);
+}
+.coach-v2-insight:last-child { border-bottom: 0; }
+.coach-v2-insight-header {
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
-  padding: 10px 16px;
+  padding: 11px 2px;
   border: 0;
   background: transparent;
   color: var(--ink);
   font-family: "IBM Plex Mono", monospace;
-  font-size: .8rem;
+  font-size: 0.78rem;
   cursor: pointer;
   text-align: left;
-  transition: background .15s ease;
+  transition: color 0.15s ease;
 }
-.coach-insight-header:hover {
-  background: color-mix(in srgb, var(--surface) 60%, transparent);
-}
-.coach-insight-emoji {
-  font-size: 1rem;
+.coach-v2-insight-header:hover { color: var(--accent); }
+.coach-v2-insight-icon {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background: var(--accent-soft);
+  color: var(--accent);
   flex-shrink: 0;
 }
-.coach-insight-title {
+.coach-v2-insight-title {
   flex: 1;
   font-weight: 500;
 }
-.coach-insight-tag {
-  font-size: .62rem;
+.coach-v2-tag {
+  font-size: 0.58rem;
   color: var(--muted);
   text-transform: uppercase;
-  letter-spacing: .06em;
-  padding: 2px 6px;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
   border-radius: 4px;
-  background: color-mix(in srgb, var(--line) 50%, transparent);
+  background: color-mix(in srgb, var(--line) 40%, transparent);
 }
-.coach-insight-header svg {
+.coach-v2-tag--speed { color: #f59e0b; background: color-mix(in srgb, #f59e0b 10%, transparent); }
+.coach-v2-tag--accuracy { color: #3b82f6; background: color-mix(in srgb, #3b82f6 10%, transparent); }
+.coach-v2-tag--rhythm { color: #8b5cf6; background: color-mix(in srgb, #8b5cf6 10%, transparent); }
+.coach-v2-tag--technique { color: #ec4899; background: color-mix(in srgb, #ec4899 10%, transparent); }
+.coach-v2-tag--endurance { color: #22c55e; background: color-mix(in srgb, #22c55e 10%, transparent); }
+.coach-v2-tag--strength { color: #ef4444; background: color-mix(in srgb, #ef4444 10%, transparent); }
+.coach-v2-tag--improvement { color: #06b6d4; background: color-mix(in srgb, #06b6d4 10%, transparent); }
+
+.coach-v2-insight-header svg:last-child {
   color: var(--muted);
   flex-shrink: 0;
 }
-.coach-insight-body {
-  padding: 0 16px 12px 40px;
-  animation: fade-in .2s ease-out;
+.coach-v2-insight-body {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 2px 0 34px;
+  transition: max-height 0.25s ease, padding 0.25s ease, opacity 0.2s ease;
+  opacity: 0;
 }
-.coach-insight-detail {
+.coach-v2-insight-body.is-visible {
+  max-height: 200px;
+  padding: 0 2px 12px 34px;
+  opacity: 1;
+}
+.coach-v2-detail {
   margin: 0 0 6px;
+  font-size: 0.8rem;
   color: var(--muted);
-  font-size: .82rem;
   line-height: 1.55;
 }
-.coach-insight-action {
+.coach-v2-action {
   margin: 0;
   display: flex;
   align-items: baseline;
-  gap: 6px;
+  gap: 5px;
   color: var(--accent);
   font-family: "IBM Plex Mono", monospace;
-  font-size: .76rem;
+  font-size: 0.73rem;
   line-height: 1.5;
 }
-.coach-insight-action svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-.coach-encouragement {
-  padding: 10px 16px;
-  border-top: 1px solid var(--line);
-  font-size: .8rem;
-  color: var(--muted);
+.coach-v2-action svg { flex-shrink: 0; margin-top: 2px; }
+.coach-v2-empty {
   text-align: center;
-  font-style: italic;
-  background: color-mix(in srgb, var(--accent-soft) 20%, transparent);
+  padding: 24px 10px;
+  color: var(--muted);
+  font-size: 0.82rem;
 }
+
+/* ── API Key Modal ── */
+.coach-v2-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(4px);
+  animation: coach-fade-in 0.2s ease-out;
+}
+.coach-v2-modal {
+  position: relative;
+  width: 90vw;
+  max-width: 420px;
+  border-radius: 16px;
+  padding: 28px 24px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+  animation: coach-modal-in 0.3s ease-out;
+}
+@keyframes coach-modal-in {
+  from { opacity: 0; transform: scale(0.95) translateY(10px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+.coach-v2-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  padding: 4px;
+  border-radius: 6px;
+  transition: color 0.15s ease;
+}
+.coach-v2-modal-close:hover { color: var(--ink); }
+.coach-v2-modal-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  color: var(--accent);
+}
+.coach-v2-modal-header h3 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--ink);
+}
+.coach-v2-modal-desc {
+  margin: 0 0 18px;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.coach-v2-modal-desc a {
+  color: var(--accent);
+  text-decoration: underline;
+  font-weight: 500;
+}
+.coach-v2-modal-input-row {
+  display: flex;
+  gap: 8px;
+}
+.coach-v2-modal-input {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.8rem;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.coach-v2-modal-input:focus { border-color: var(--accent); }
+.coach-v2-modal-test-btn {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 16px;
+  background: var(--accent);
+  color: #fff;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+.coach-v2-modal-test-btn:hover { opacity: 0.9; }
+.coach-v2-modal-test-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.coach-v2-modal-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  font-size: 0.76rem;
+  color: var(--danger);
+}
+.coach-v2-modal-success {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 10px 0 0;
+  font-size: 0.76rem;
+  color: #22c55e;
+}
+.coach-v2-modal-disconnect {
+  border: 0;
+  background: transparent;
+  color: var(--danger);
+  font-size: 0.72rem;
+  margin-top: 14px;
+  padding: 0;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .coach-v2-tabs { padding: 0 12px; }
+  .coach-v2-tab { padding: 8px 10px; font-size: 0.66rem; }
+  .coach-v2-content { padding: 14px; }
+  .coach-v2-header { padding: 12px 14px; }
+  .coach-v2-modal { padding: 22px 18px; }
+}
+

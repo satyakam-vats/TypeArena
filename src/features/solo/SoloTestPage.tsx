@@ -52,6 +52,7 @@ export function SoloTestPage({ initialWordSource }: Props) {
   const searchParams = new URLSearchParams(location.search);
   const sourceParam = searchParams.get("source") || initialWordSource;
   const isPracticeMode = sourceParam === "practice";
+  const isAiDrill = sourceParam === "ai-drill";
 
   const [settings, setSettingsState] = useState<TestSettings>(() => {
     if (isPracticeMode) {
@@ -61,6 +62,13 @@ export function SoloTestPage({ initialWordSource }: Props) {
         mode: "words",
         value: saved.mode === "words" ? saved.value : 50,
         wordSourceId: "practice",
+      });
+    }
+    if (isAiDrill) {
+      return normalizeSettings({
+        ...getSavedSettings(),
+        mode: "custom",
+        wordSourceId: "common-en",
       });
     }
     return getSavedSettings();
@@ -85,8 +93,17 @@ export function SoloTestPage({ initialWordSource }: Props) {
   useEffect(() => {
     if (didInit.current) return;
     didInit.current = true;
+    // If AI drill, use the stored drill text
+    if (isAiDrill) {
+      const drillText = sessionStorage.getItem("typearena_ai_drill");
+      if (drillText) {
+        setTargetText(drillText);
+        sessionStorage.removeItem("typearena_ai_drill");
+        return;
+      }
+    }
     setTargetText(createTestText(settings, testSeed));
-  }, [settings, testSeed]);
+  }, [settings, testSeed, isAiDrill]);
 
   const setSettings = useCallback((newSettings: TestSettings) => {
     const next = normalizeSettings(
