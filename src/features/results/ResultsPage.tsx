@@ -9,6 +9,7 @@ import { getAdaptiveDrillRecommendation } from "../../lib/typing/practiceTextGen
 import { shareShareCard, downloadShareCard } from "../../lib/shareCard";
 import { TypingViewport } from "../../components/typing/TypingViewport";
 import { AdaptiveDrillCard } from "../../components/typing/AdaptiveDrillCard";
+import { CoachCard } from "../../components/ai/CoachCard";
 
 function Chart({ run }: { run: CompletedRun }) {
   const samples = run.metrics.samples.length > 1
@@ -192,6 +193,8 @@ export function ResultsPage() {
         <div><span>extra</span><strong>{metrics.extra}</strong></div>
         <div><span>missed</span><strong>{metrics.missed}</strong></div>
       </section>
+
+      <CoachCard run={run} />
 
       {run.ghostSamples && run.ghostSamples.length > 1 && (
         <section className="replay-section">

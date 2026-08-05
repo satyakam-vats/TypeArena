@@ -41,7 +41,7 @@ export const defaultTestSettings: TestSettings = {
   wordSourceId: "common-en",
   punctuation: false,
   numbers: false,
-  stopOnError: "letter",
+  stopOnError: "off",
   confidence: "off",
   difficulty: "normal",
   wordDifficulty: "medium",
