@@ -26,6 +26,7 @@ import { analyzeRun } from "../../lib/ai/coachEngine";
 import type { CoachInsight } from "../../lib/ai/types";
 import {
   generateGeminiAnalysis,
+  generateFallbackAiAnalysis,
   hasGeminiApiKey,
   getGeminiApiKey,
   setGeminiApiKey,
@@ -202,25 +203,23 @@ export function CoachCard({ run, className }: CoachCardProps) {
   const [geminiError, setGeminiError] = useState(false);
   const geminiRequested = useRef(false);
 
-  // Auto-fetch Gemini analysis when AI tab is opened (if connected)
+  // Auto-fetch AI analysis when AI tab is opened
   useEffect(() => {
     if (activeTab !== "ai-analysis") return;
-    if (!aiConnected) return;
     if (geminiResult || geminiLoading || geminiRequested.current) return;
     geminiRequested.current = true;
     setGeminiLoading(true);
     setGeminiError(false);
     generateGeminiAnalysis(run)
       .then((result) => {
-        if (result) {
-          setGeminiResult(result);
-        } else {
-          setGeminiError(true);
-        }
+        setGeminiResult(result);
       })
-      .catch(() => setGeminiError(true))
+      .catch(() => {
+        // Fallback to local AI engine on any unexpected exception
+        setGeminiResult(generateFallbackAiAnalysis(run));
+      })
       .finally(() => setGeminiLoading(false));
-  }, [activeTab, aiConnected, geminiResult, geminiLoading, run]);
+  }, [activeTab, geminiResult, geminiLoading, run]);
 
   const retryGemini = useCallback(() => {
     geminiRequested.current = false;
@@ -229,13 +228,11 @@ export function CoachCard({ run, className }: CoachCardProps) {
     setGeminiError(false);
     generateGeminiAnalysis(run)
       .then((result) => {
-        if (result) {
-          setGeminiResult(result);
-        } else {
-          setGeminiError(true);
-        }
+        setGeminiResult(result);
       })
-      .catch(() => setGeminiError(true))
+      .catch(() => {
+        setGeminiResult(generateFallbackAiAnalysis(run));
+      })
       .finally(() => setGeminiLoading(false));
   }, [run]);
 
@@ -332,48 +329,19 @@ export function CoachCard({ run, className }: CoachCardProps) {
           {/* ── AI ANALYSIS TAB ── */}
           {activeTab === "ai-analysis" && (
             <div className="coach-v2-ai-tab">
-              {!aiConnected ? (
-                <div className="coach-v2-connect-prompt">
-                  <div className="coach-v2-connect-icon">
-                    <Sparkles size={28} />
-                  </div>
-                  <h4>Unlock AI-Powered Insights</h4>
-                  <p>
-                    Connect Google's Gemini AI for personalized natural-language analysis,
-                    custom practice drills targeting your weak spots, and expert technique diagnosis.
-                  </p>
-                  <p className="coach-v2-free-note">
-                    100% free — no credit card needed. Get your key from{" "}
-                    <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">
-                      Google AI Studio
-                    </a>
-                  </p>
-                  <button
-                    className="coach-v2-connect-btn"
-                    onClick={() => setShowKeyModal(true)}
-                  >
-                    <Key size={14} /> Connect Gemini AI
-                  </button>
-                </div>
-              ) : geminiLoading ? (
+              {geminiLoading ? (
                 <div className="coach-v2-loading">
                   <Loader2 size={24} className="spin" />
-                  <p>Analyzing your performance with Gemini AI...</p>
-                </div>
-              ) : geminiError ? (
-                <div className="coach-v2-error-state">
-                  <AlertCircle size={20} />
-                  <p>Couldn't get AI analysis this time.</p>
-                  <button onClick={retryGemini} className="coach-v2-retry-btn">
-                    Retry
-                  </button>
+                  <p>Analyzing your performance with AI Engine...</p>
                 </div>
               ) : geminiResult ? (
                 <div className="coach-v2-gemini-result">
                   {/* Skill Level + Summary */}
                   <div className="coach-v2-ai-header-row">
                     <SkillBadge level={geminiResult.skillLevel} />
-                    <span className="coach-v2-ai-powered">Powered by Gemini</span>
+                    <span className="coach-v2-ai-powered">
+                      {geminiResult.source === "gemini" ? "Powered by Gemini 2.0 AI" : "Powered by AI Coach Engine"}
+                    </span>
                   </div>
 
                   <div className="coach-v2-ai-summary">
