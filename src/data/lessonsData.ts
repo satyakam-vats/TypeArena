@@ -21,7 +21,7 @@ export const LESSONS: Lesson[] = [
     "tier": "beginner",
     "code": "1a",
     "title": "Beginner Lesson 1(a): Home Row Keys",
-    "subtitle": "Beginner Lesson 1(a): Home Row Keys",
+    "subtitle": "Home row keys: A S D F J K L ;",
     "targetKeys": [
       "a",
       "s",
@@ -34,277 +34,37 @@ export const LESSONS: Lesson[] = [
       "space"
     ],
     "fingerGuideHint": "Rest left fingers on A S D F and right fingers on J K L ;. Thumbs on spacebar. Feel the bumps on F and J.",
-    "text": "Beginner Typing Lesson 1a Learn to type real words & phrases before the end of Beginner Lesson 1 Please click the play button on the avatar host below and watch this important video introduction. Our beginner typing lessons make it easy to learn typing. Here's what one student had to say... Read the WRITTEN INTRODUCTION or scroll to watch the video intro beside the keyboard below. Beginner Typing Lesson 1 has two parts. If you have never done typing before or taken typing lessons or if you are a 2, 3, or 4 finger typist, you must work through EVERY beginner typing lesson , IN ORDER, so that you can lay a GOOD TYPING FOUNDATION for your typing success. Beginner Typing Lessons Intro Home Keys & Correct Finger Position You're about to learn typing . Move the mouse cursor (pointer) over the first blue exercise box (below). Now click the left mouse button and you will see the cursor 'blinking' inside the box. You are ready to start typing. With your fingers over the HOME KEYS , copy the text from ABOVE each exercise box by tapping the same key on your keyboard. ALWAYS USE THE CORRECT FINGER POSITION . We will start with left hand. Begin by tapping the letter F with the index finger (also called the pointer finger) on the left hand. Tap F four times. Then tap the space bar once with your right thumb. Next tap D four times, then S and finally \"A\". Each time you have typed the letters FDSA , press the space bar with your right thumb. Do this whenever you see a space between letters. Keep copying the letters until you reach the end of the line. Now go back and repeat this exercise box (read below for a quick tip on deleting the text you have typed). With the mouse cursor inside a text box, hold down the Control Key and tap (type) the letter A . This will block (highlight) everything inside the text box. The very first letter you type will delete this text making it easy to start again. Always do each exercise box two times. Now press the TAB key to move to the next exercise box. For Video Instructions , scroll to Exercises 1 section below. To move to the next box, press the TAB key or left click inside the box with your mouse. Progress to Lesson 1b Start typing real words Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems Recommended by professionals See the full eBook contents list with special features explained.",
+    "minAccuracyToPass": 85,
+    "starThresholds": {
+      "oneStar": 14,
+      "twoStars": 24,
+      "threeStars": 36
+    },
     "exercises": [
       {
         "id": "beginner-1a-ex1",
-        "title": "Exercise 1",
-        "text": "Beginner Typing Lesson 1a",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Left Hand Home Row (A S D F)",
+        "text": "ffff dddd ssss aaaa ffff dddd ssss aaaa ffff dddd ssss aaaa ff dd ss aa ff dd ss aa ff d ff d ff s ff s ff a ff a fdsa fdsa fdsa fdsa fdsa fdsa fdsa fdsa asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf fads dafs safd dsaf fasd adfs sdaf afds fdsa"
       },
       {
         "id": "beginner-1a-ex2",
-        "title": "Exercise 2",
-        "text": "Learn to type real words & phrases before the end of Beginner Lesson 1",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Right Hand Home Row (J K L ;)",
+        "text": "jjj kkk lll ;;; jjj kkk lll ;;; jjj kkk lll ;;;jj kk ll ;; jj kk ll ;; jj kk ll ;; jj kk ll ;; jj k jj l jj ; j k l ; j k l ; jjj kkk ll ;; jkl; jkl; jkl; jkl; jkl; jkl; jkl; jkl; jkl; jkl; jkl; jkl; ;lkj ;lkj ;lkj ;lkj ;lkj ;lkj ;lkj ;lkj ;lkj ;lkj ;lkj ;lkj ;lkj"
       },
       {
         "id": "beginner-1a-ex3",
-        "title": "Exercise 3",
-        "text": "Please click the play button on the avatar host below and watch this important video introduction.",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-1a-ex4",
-        "title": "Exercise 4",
-        "text": "Our beginner typing lessons make it easy to learn typing. Here's what one student had to say...",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-1a-ex5",
-        "title": "Exercise 5",
-        "text": "Read the WRITTEN INTRODUCTION or scroll to watch the video intro beside the keyboard below.",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-1a-ex6",
-        "title": "Exercise 6",
-        "text": "Beginner Typing Lesson 1 has two parts. If you have never done typing before or taken typing lessons or if you are a 2, 3, or 4 finger typist, you must work through EVERY beginner typing lesson , IN ORDER, so that you can lay a GOOD TYPING FOUNDATION for your typing success.",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-1a-ex7",
-        "title": "Exercise 7",
-        "text": "Beginner Typing Lessons Intro Home Keys & Correct Finger Position",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-1a-ex8",
-        "title": "Exercise 8",
-        "text": "You're about to learn typing . Move the mouse cursor (pointer) over the first blue exercise box (below). Now click the left mouse button and you will see the cursor 'blinking' inside the box. You are ready to start typing. With your fingers over the HOME KEYS , copy the text from ABOVE each exercise box by tapping the same key on your keyboard. ALWAYS USE THE CORRECT FINGER POSITION . We will start with left hand. Begin by tapping the letter F with the index finger (also called the pointer finger) on the left hand. Tap F four times. Then tap the space bar once with your right thumb. Next tap D four times, then S and finally \"A\". Each time you have typed the letters FDSA , press the space bar with your right thumb. Do this whenever you see a space between letters. Keep copying the letters until you reach the end of the line. Now go back and repeat this exercise box (read below for a quick tip on deleting the text you have typed). With the mouse cursor inside a text box, hold down the Control Key and tap (type) the letter A . This will block (highlight) everything inside the text box. The very first letter you type will delete this text making it easy to start again. Always do each exercise box two times. Now press the TAB key to move to the next exercise box.",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-1a-ex9",
-        "title": "Exercise 9",
-        "text": "For Video Instructions , scroll to Exercises 1 section below.",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-1a-ex10",
-        "title": "Exercise 10",
-        "text": "To move to the next box, press the TAB key or left click inside the box with your mouse.",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-1a-ex11",
-        "title": "Exercise 11",
-        "text": "Progress to Lesson 1b",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-1a-ex12",
-        "title": "Exercise 12",
-        "text": "Start typing real words",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-1a-ex13",
-        "title": "Exercise 13",
-        "text": "Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-1a-ex14",
-        "title": "Exercise 14",
-        "text": "Recommended by professionals",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-1a-ex15",
-        "title": "Exercise 15",
-        "text": "See the full eBook contents list with special features explained.",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "space"
-        ],
-        "minAccuracyToPass": 89
+        "title": "Exercise 3: Home Row Words & Sentences",
+        "text": "fad fads lad lads lass alas salad salads dad dads lad lads salads alas ad add ads adds as ask asks la lad lads lass da dad dada dada sa sad salad all fall falls alf alfa alfas fad fads salsa ska skald skalds flak flask flasks 30 minutes a day for 5 days a week will give you steady gains."
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "ffff dddd ssss aaaa ffff dddd ssss aaaa ffff dddd ssss aaaa ff dd ss aa ff dd ss aa ff d ff d ff s ff s ff a ff a fdsa fdsa fdsa fdsa fdsa fdsa fdsa fdsa asdf asdf asdf asdf asdf asdf asdf asdf asdf asdf fads dafs safd dsaf fasd adfs sdaf afds fdsa"
   },
   {
     "id": "beginner-1b",
     "tier": "beginner",
     "code": "1b",
-    "title": "Beginner Lesson 1(b): E, U, I & R",
-    "subtitle": "Beginner Lesson 1(b): E, U, I & R",
+    "title": "Beginner Lesson 1(b): Vowels E, U, I & Letter R",
+    "subtitle": "Reach up to E, U, I and R",
     "targetKeys": [
       "e",
       "u",
@@ -320,442 +80,37 @@ export const LESSONS: Lesson[] = [
       "space"
     ],
     "fingerGuideHint": "Reach up to E (left middle), R (left index), U (right index), I (right middle). Return to home row after each key.",
-    "text": "Beginner Typing Lesson 1b Beginner Typing Lesson 1a Before you start Lesson 1b, be sure to do I am new to computing and have never learned typing so have found it quite difficult to remember where the letters are. I have been searching for a suitable method to learn to type easily as I want to type up my life story. Suddenly I found yours and it's just what I need. I'm progressing slowly but surely so thank you so much. Introducing Words & The Vowels E, U and I Click here for Beginner Typing Lesson 1a Follow the colours and finger numbers in the next chart to practise lines of each pattern or word in the following exercises. Visualise where the letter keys are and use the fingers shown. Using only the four Left hand letter keys, D and F on the Home Key row with E and R on the row above we can feel out the word ‘fred’ which is one of over 30 words that can be formed from only these four letters. Two other examples are, referee and feeder. DO THIS NOW .... Place your fingers over the Home Keys. With the Left hand first (index) finger lightly tap (not press) f r f r f r f r . Now with the second finger lightly tap d e d e d e d e. On the Home Keys tap these fingers on d f d f d f d f then on the row above tap e r e r e r e r. Within these four letters the Left hand can type the common word patterns de ed re er. Feel them out now by lightly touching the keys. These patterns are used in words like de mand re mind ask ed walk er . Dealing with mistakes! Someone famously said, \"the person who never made a mistake never made anything... and the person who never corrected a mistake, well, they never made anything either.\" Check out the three vital tips in this short video on how to overcome typing errors. Before diving into part B of Beginner Typing Lesson 1, we need to have a little talk. Do each exercise two times - twice in a row. Repetition is your best friend. Repetition is your best friend. Did we say that repetition is your best friend. It's true. Repetition... Note: The purpose of the blue arrows is revealed in our eBook, \"Touch Type Like a Pro\". Do each exercise two times - twice in a row. Repetition is your best friend. Repetition is your best friend. Did we say that repetition is your best friend. It's true. Repetition... Note: The purpose of the blue arrows is revealed in our eBook, \"Touch Type Like a Pro\". Keep your eyes on your goal to become a confident touch typist. We know you can do it. Try These Fun Phrases Congratulations You have completed Lesson 1b ​ Progress to Lesson 2a Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems Recommended by professionals See the full eBook contents list with special features explained.",
+    "minAccuracyToPass": 86,
+    "starThresholds": {
+      "oneStar": 16,
+      "twoStars": 26,
+      "threeStars": 38
+    },
     "exercises": [
       {
         "id": "beginner-1b-ex1",
-        "title": "Exercise 1",
-        "text": "Beginner Typing Lesson 1b",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Left Hand Reaches (E & R)",
+        "text": "deed frrf deer reed red deed frrf deer reed red deed frrf deer reed red free freed fred feed fed free freed fred feed fed free freed fred feed fed reef reef ref ref refer refer defer defer referred deferred refereed"
       },
       {
         "id": "beginner-1b-ex2",
-        "title": "Exercise 2",
-        "text": "Beginner Typing Lesson 1a",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Right Hand Reaches (U & I)",
+        "text": "juuj juuj juju juju kiik kiik kiki kiki juki juki kiju kiju jiku jiku juik juik ijku jj uu kk ii jj uu kk ii jk jk ui ui jk jk ui ui jk ui jk ui ijku ujik ukij ujik ikij ikiu"
       },
       {
         "id": "beginner-1b-ex3",
-        "title": "Exercise 3",
-        "text": "Before you start Lesson 1b, be sure to do",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-1b-ex4",
-        "title": "Exercise 4",
-        "text": "I am new to computing and have never learned typing so have found it quite difficult to remember where the letters are. I have been searching for a suitable method to learn to type easily as I want to type up my life story. Suddenly I found yours and it's just what I need. I'm progressing slowly but surely so thank you so much.",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-1b-ex5",
-        "title": "Exercise 5",
-        "text": "Introducing Words & The Vowels E, U and I",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-1b-ex6",
-        "title": "Exercise 6",
-        "text": "Click here for Beginner Typing Lesson 1a",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-1b-ex7",
-        "title": "Exercise 7",
-        "text": "Follow the colours and finger numbers in the next chart to practise lines of each pattern or word in the following exercises. Visualise where the letter keys are and use the fingers shown. Using only the four Left hand letter keys, D and F on the Home Key row with E and R on the row above we can feel out the word ‘fred’ which is one of over 30 words that can be formed from only these four letters. Two other examples are, referee and feeder.",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-1b-ex8",
-        "title": "Exercise 8",
-        "text": "DO THIS NOW .... Place your fingers over the Home Keys. With the Left hand first (index) finger lightly tap (not press) f r f r f r f r . Now with the second finger lightly tap d e d e d e d e. On the Home Keys tap these fingers on d f d f d f d f then on the row above tap e r e r e r e r. Within these four letters the Left hand can type the common word patterns de ed re er. Feel them out now by lightly touching the keys. These patterns are used in words like de mand re mind ask ed walk er .",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-1b-ex9",
-        "title": "Exercise 9",
-        "text": "Dealing with mistakes!",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-1b-ex10",
-        "title": "Exercise 10",
-        "text": "Someone famously said, \"the person who never made a mistake never made anything... and the person who never corrected a mistake, well, they never made anything either.\" Check out the three vital tips in this short video on how to overcome typing errors.",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-1b-ex11",
-        "title": "Exercise 11",
-        "text": "Before diving into part B of Beginner Typing Lesson 1, we need to have a little talk.",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-1b-ex12",
-        "title": "Exercise 12",
-        "text": "Do each exercise two times - twice in a row. Repetition is your best friend. Repetition is your best friend. Did we say that repetition is your best friend. It's true. Repetition... Note: The purpose of the blue arrows is revealed in our eBook, \"Touch Type Like a Pro\".",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-1b-ex13",
-        "title": "Exercise 13",
-        "text": "Do each exercise two times - twice in a row. Repetition is your best friend. Repetition is your best friend. Did we say that repetition is your best friend. It's true. Repetition... Note: The purpose of the blue arrows is revealed in our eBook, \"Touch Type Like a Pro\".",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-1b-ex14",
-        "title": "Exercise 14",
-        "text": "Keep your eyes on your goal to become a confident touch typist. We know you can do it.",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-1b-ex15",
-        "title": "Exercise 15",
-        "text": "Try These Fun Phrases",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-1b-ex16",
-        "title": "Exercise 16",
-        "text": "Congratulations",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-1b-ex17",
-        "title": "Exercise 17",
-        "text": "You have completed Lesson 1b ​",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-1b-ex18",
-        "title": "Exercise 18",
-        "text": "Progress to Lesson 2a",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-1b-ex19",
-        "title": "Exercise 19",
-        "text": "Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-1b-ex20",
-        "title": "Exercise 20",
-        "text": "Recommended by professionals",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-1b-ex21",
-        "title": "Exercise 21",
-        "text": "See the full eBook contents list with special features explained.",
-        "targetKeys": [
-          "e",
-          "u",
-          "i",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 3: Mixed Vowel Words",
+        "text": "fire side ride hide wide dire sire tire wire hire rife life rife life dire side ride hide wide dire sire tire wire hire rife life rife life fire side ride hide wide dire sire tire wire hire rife life rife life"
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "deed frrf deer reed red deed frrf deer reed red deed frrf deer reed red free freed fred feed fed free freed fred feed fed free freed fred feed fed reef reef ref ref refer refer defer defer referred deferred refereed"
   },
   {
     "id": "beginner-2a",
     "tier": "beginner",
     "code": "2a",
-    "title": "Beginner Lesson 2(a): G & H",
-    "subtitle": "Beginner Lesson 2(a): G & H",
+    "title": "Beginner Lesson 2(a): Key Letters G & H",
+    "subtitle": "Center column reaches G and H",
     "targetKeys": [
       "g",
       "h",
@@ -769,202 +124,37 @@ export const LESSONS: Lesson[] = [
       "space"
     ],
     "fingerGuideHint": "Left index reaches right to G; right index reaches left to H. Always return to F and J.",
-    "text": "Beginner Typing Lesson 2a Introducing 3 Key Letters: T G & H \"I have an average typing speed, but I used to type looking at the keyboard. But ever since I have been following your tutorials, I have improved a lot. And my typing speed too, has increased! Thank you so much for your guidelines!\" After some quick drills you will be diving in to more typing practice with real words and phrases. ​Flex your fingers to loosen them. Notice the two keys G and H in the centre of the keyboard. ​Sit so that these are in front of the centre of your body. Use fingers as shown. Keeping your fingers over the two sets of four home keys we just practised - stretch your index fingers across to G & H (left hand for \"G\" and right hand for \"H\") and up to the T (left hand). Type the drills below. Try These Fun Phrases Progress to Lesson 2b Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems Recommended by professionals See the full eBook contents list with special features explained.",
+    "minAccuracyToPass": 86,
+    "starThresholds": {
+      "oneStar": 18,
+      "twoStars": 28,
+      "threeStars": 40
+    },
     "exercises": [
       {
         "id": "beginner-2a-ex1",
-        "title": "Exercise 1",
-        "text": "Beginner Typing Lesson 2a",
-        "targetKeys": [
-          "g",
-          "h",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Key G Drills (Left Index Reach)",
+        "text": "fg fg fg fgf fgt fg ft ft ft dfg dfgt dft dft frt frt frt frtg frtg frtg fgt fgt fgt dfrt dfrt dfrt dfrt dert dert dert dert"
       },
       {
         "id": "beginner-2a-ex2",
-        "title": "Exercise 2",
-        "text": "Introducing 3 Key Letters: T G & H",
-        "targetKeys": [
-          "g",
-          "h",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Key H Drills (Right Index Reach)",
+        "text": "jhj jhj jhj jhj jujhj jujhj jujhj jujhj hijk hujk hijk hujk jhjkik jhjkik jhjkik kikjuj kikjuj kikjuj jujkik jujkik jhik jhik jhik jihk jihk jihi jihi jihi kih kih kih huhi huhi"
       },
       {
         "id": "beginner-2a-ex3",
-        "title": "Exercise 3",
-        "text": "\"I have an average typing speed, but I used to type looking at the keyboard. But ever since I have been following your tutorials, I have improved a lot. And my typing speed too, has increased! Thank you so much for your guidelines!\"",
-        "targetKeys": [
-          "g",
-          "h",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-2a-ex4",
-        "title": "Exercise 4",
-        "text": "After some quick drills you will be diving in to more typing practice with real words and phrases. ​Flex your fingers to loosen them. Notice the two keys G and H in the centre of the keyboard. ​Sit so that these are in front of the centre of your body. Use fingers as shown.",
-        "targetKeys": [
-          "g",
-          "h",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-2a-ex5",
-        "title": "Exercise 5",
-        "text": "Keeping your fingers over the two sets of four home keys we just practised - stretch your index fingers across to G & H (left hand for \"G\" and right hand for \"H\") and up to the T (left hand). Type the drills below.",
-        "targetKeys": [
-          "g",
-          "h",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-2a-ex6",
-        "title": "Exercise 6",
-        "text": "Try These Fun Phrases",
-        "targetKeys": [
-          "g",
-          "h",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-2a-ex7",
-        "title": "Exercise 7",
-        "text": "Progress to Lesson 2b",
-        "targetKeys": [
-          "g",
-          "h",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-2a-ex8",
-        "title": "Exercise 8",
-        "text": "Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems",
-        "targetKeys": [
-          "g",
-          "h",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-2a-ex9",
-        "title": "Exercise 9",
-        "text": "Recommended by professionals",
-        "targetKeys": [
-          "g",
-          "h",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-2a-ex10",
-        "title": "Exercise 10",
-        "text": "See the full eBook contents list with special features explained.",
-        "targetKeys": [
-          "g",
-          "h",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
+        "title": "Exercise 3: G & H Combination Words",
+        "text": "fg jh fg jh ft jh fgt fgt fgt ght ght ght th th th high ghoul ghost flight fight light sight night right tight slight height freight high ghoul ghost flight fight light sight night right tight slight height freight"
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "fg fg fg fgf fgt fg ft ft ft dfg dfgt dft dft frt frt frt frtg frtg frtg fgt fgt fgt dfrt dfrt dfrt dfrt dert dert dert dert"
   },
   {
     "id": "beginner-2b",
     "tier": "beginner",
     "code": "2b",
-    "title": "Beginner Lesson 2(b): O, T, W & R",
-    "subtitle": "Beginner Lesson 2(b): O, T, W & R",
+    "title": "Beginner Lesson 2(b): Letters O, T, W & R",
+    "subtitle": "Top row keys: O, T, W, R",
     "targetKeys": [
       "o",
       "t",
@@ -979,363 +169,38 @@ export const LESSONS: Lesson[] = [
       "l",
       "space"
     ],
-    "fingerGuideHint": "Reach up to O, T, W, R. Maintain your home row posture.",
-    "text": "Beginner Typing Lesson 2b Introducing Letters: W S L O Y \"I have an average typing speed, but I used to type looking at the keyboard. But ever since I have been following your tutorials, I have improved a lot. And my typing speed too, has increased! Thank you so much for your guidelines!\" Heres's some of the longest words you can now make with the letters you'll be typing from the chart above: Flourished, Righteously, Worthiest, Fortitude and Yourself.... plus a heap of common every day words like: yes, right, like, trust, give, follow, look, rest, joke, high, just, food. With the addition of these five new letters, you're really going to go places. W and S on the LEFT hand. Y , L and O on the RIGHT hand. Use your LEFT HAND (ring) FINGER No. 3 for W and S . Exercises - 1 ​ ​ Left Hand Drills - focus letters S and W Use your RIGHT HAND FINGER No. 3 for the letters L and O . ​ ​Use your RIGHT HAND INDEX FINGER No. 1 for Y (stretch the H finger to Y). Right Hand Drills - focus letters Y , L and O Try These Fun Phrases Congratulations You have completed Lesson 2b ​ Progress to Lesson 3 Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems Recommended by professionals See the full eBook contents list with special features explained.",
+    "fingerGuideHint": "Reach to top row keys: W (left ring), T (left index), O (right ring).",
+    "minAccuracyToPass": 87,
+    "starThresholds": {
+      "oneStar": 20,
+      "twoStars": 30,
+      "threeStars": 42
+    },
     "exercises": [
       {
         "id": "beginner-2b-ex1",
-        "title": "Exercise 1",
-        "text": "Beginner Typing Lesson 2b",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Keys T & W (Left Hand Top Row)",
+        "text": "ftt ftt ft ft ft ft ft ft ft ft ft ft ft ft ft ft ft ft ft ft sww sww sw sw sw sw sw sw sw sw sw sw sw sw sw sw sw sw sw sw sw"
       },
       {
         "id": "beginner-2b-ex2",
-        "title": "Exercise 2",
-        "text": "Introducing Letters: W S L O Y",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Key O (Right Ring Finger)",
+        "text": "loo loo lo lo lo lo lo lo lo lo lo lo lo lo lo lo lo lo lo lo loo loo lo lo lo lo lo lo lo lo lo lo lo lo lo lo lo lo lo lo"
       },
       {
         "id": "beginner-2b-ex3",
-        "title": "Exercise 3",
-        "text": "\"I have an average typing speed, but I used to type looking at the keyboard. But ever since I have been following your tutorials, I have improved a lot. And my typing speed too, has increased! Thank you so much for your guidelines!\"",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-2b-ex4",
-        "title": "Exercise 4",
-        "text": "Heres's some of the longest words you can now make with the letters you'll be typing from the chart above: Flourished, Righteously, Worthiest, Fortitude and Yourself.... plus a heap of common every day words like: yes, right, like, trust, give, follow, look, rest, joke, high, just, food.",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-2b-ex5",
-        "title": "Exercise 5",
-        "text": "With the addition of these five new letters, you're really going to go places. W and S on the LEFT hand. Y , L and O on the RIGHT hand.",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-2b-ex6",
-        "title": "Exercise 6",
-        "text": "Use your LEFT HAND (ring) FINGER No. 3 for W and S .",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-2b-ex7",
-        "title": "Exercise 7",
-        "text": "Exercises - 1 ​ ​",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-2b-ex8",
-        "title": "Exercise 8",
-        "text": "Left Hand Drills - focus letters S and W",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-2b-ex9",
-        "title": "Exercise 9",
-        "text": "Use your RIGHT HAND FINGER No. 3 for the letters L and O . ​ ​Use your RIGHT HAND INDEX FINGER No. 1 for Y (stretch the H finger to Y).",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-2b-ex10",
-        "title": "Exercise 10",
-        "text": "Right Hand Drills - focus letters Y , L and O",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-2b-ex11",
-        "title": "Exercise 11",
-        "text": "Try These Fun Phrases",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-2b-ex12",
-        "title": "Exercise 12",
-        "text": "Congratulations",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-2b-ex13",
-        "title": "Exercise 13",
-        "text": "You have completed Lesson 2b ​",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-2b-ex14",
-        "title": "Exercise 14",
-        "text": "Progress to Lesson 3",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-2b-ex15",
-        "title": "Exercise 15",
-        "text": "Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-2b-ex16",
-        "title": "Exercise 16",
-        "text": "Recommended by professionals",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-2b-ex17",
-        "title": "Exercise 17",
-        "text": "See the full eBook contents list with special features explained.",
-        "targetKeys": [
-          "o",
-          "t",
-          "w",
-          "r",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 3: Top Row Word Practice",
+        "text": "two tow row rot tot lot too woo root toot soot boot foot shoot root toot soot boot foot shoot word work world worth worst work word work world worth worst work two tow row rot tot lot too woo root toot"
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "ftt ftt ft ft ft ft ft ft ft ft ft ft ft ft ft ft ft ft ft ft sww sww sw sw sw sw sw sw sw sw sw sw sw sw sw sw sw sw sw sw sw"
   },
   {
     "id": "beginner-3",
     "tier": "beginner",
     "code": "3",
-    "title": "Beginner Lesson 3: Shift Keys & Capitals",
-    "subtitle": "Beginner Lesson 3: Shift Keys & Capitals",
+    "title": "Beginner Lesson 3: Shift Keys & Capitalization",
+    "subtitle": "Left and Right Shift key discipline",
     "targetKeys": [
       "Shift",
       "A",
@@ -1347,278 +212,38 @@ export const LESSONS: Lesson[] = [
       "L",
       "space"
     ],
-    "fingerGuideHint": "Use opposite pinky for the Shift key. Left Shift for right-hand keys, Right Shift for left-hand keys.",
-    "text": "Beginner Typing Lesson 3 Introducing Letters: V B N M I used to use about four fingers to type, using your helpful site I can now use all my fingers! The speed needs work, :) OK maybe lots of work, but am getting there.Trust me. Thanks for keeping it honest, simple, but more so for making it free. Just for fun, type some of the words you find into the box below. Here's a few to get you started: home, newest, mother. love, verify, west, justly, oven, bike You are now advancing to bottom row letters. These will be a bit more challneging but they are yours for the taking. Just keep up the practice and before you know it, they will all be under your command. Use your LEFT HAND INDEX FINGER (No. 1) for V and B ​ Use your RIGHT HAND INDEX FINGER No. 1) for N and M Focus on TOP ROW VOWELS with V , B , N and M Just keep taking one step after the other and before you know it you will have a view that will make ​everything worth it! Try These Fun Phrases Congratulations You have completed Lesson 3 ​ Progress to Lesson 4 Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems Recommended by professionals See the full eBook contents list with special features explained.",
+    "fingerGuideHint": "Use left pinky for right-hand capitals; right pinky for left-hand capitals.",
+    "minAccuracyToPass": 88,
+    "starThresholds": {
+      "oneStar": 22,
+      "twoStars": 32,
+      "threeStars": 45
+    },
     "exercises": [
       {
         "id": "beginner-3-ex1",
-        "title": "Exercise 1",
-        "text": "Beginner Typing Lesson 3",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Right Hand Capitals (Left Shift Key)",
+        "text": "Left Shift key holds for J K L ; to make uppercase J K L ; hold Left Shift press J K L ; J K L ; J K L ; John James Jack Jill Kelly Keith Kenneth Laura Luke"
       },
       {
         "id": "beginner-3-ex2",
-        "title": "Exercise 2",
-        "text": "Introducing Letters: V B N M",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Left Hand Capitals (Right Shift Key)",
+        "text": "Right Shift key holds for A S D F to make uppercase A S D F hold Right Shift press A S D F A S D F A S D F Alice Andrew Arthur Sarah Sam David Daniel Frank"
       },
       {
         "id": "beginner-3-ex3",
-        "title": "Exercise 3",
-        "text": "I used to use about four fingers to type, using your helpful site I can now use all my fingers! The speed needs work, :) OK maybe lots of work, but am getting there.Trust me. Thanks for keeping it honest, simple, but more so for making it free.",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-3-ex4",
-        "title": "Exercise 4",
-        "text": "Just for fun, type some of the words you find into the box below. Here's a few to get you started: home, newest, mother. love, verify, west, justly, oven, bike",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-3-ex5",
-        "title": "Exercise 5",
-        "text": "You are now advancing to bottom row letters. These will be a bit more challneging but they are yours for the taking. Just keep up the practice and before you know it, they will all be under your command.",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-3-ex6",
-        "title": "Exercise 6",
-        "text": "Use your LEFT HAND INDEX FINGER (No. 1) for V and B ​ Use your RIGHT HAND INDEX FINGER No. 1) for N and M",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-3-ex7",
-        "title": "Exercise 7",
-        "text": "Focus on TOP ROW VOWELS with V , B , N and M",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-3-ex8",
-        "title": "Exercise 8",
-        "text": "Just keep taking one step after the other and before you know it you will have a view that will make ​everything worth it!",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-3-ex9",
-        "title": "Exercise 9",
-        "text": "Try These Fun Phrases",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-3-ex10",
-        "title": "Exercise 10",
-        "text": "Congratulations",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-3-ex11",
-        "title": "Exercise 11",
-        "text": "You have completed Lesson 3 ​",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-3-ex12",
-        "title": "Exercise 12",
-        "text": "Progress to Lesson 4",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-3-ex13",
-        "title": "Exercise 13",
-        "text": "Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-3-ex14",
-        "title": "Exercise 14",
-        "text": "Recommended by professionals",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-3-ex15",
-        "title": "Exercise 15",
-        "text": "See the full eBook contents list with special features explained.",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "S",
-          "D",
-          "F",
-          "J",
-          "K",
-          "L",
-          "space"
-        ],
-        "minAccuracyToPass": 89
+        "title": "Exercise 3: Proper Names & Sentences",
+        "text": "Jack and Jill went up the hill. Sam and Sarah saw Daniel and David. Alice asked Andrew to find Frank and Keith. Laura and Luke liked Kelly and Kenneth."
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "Left Shift key holds for J K L ; to make uppercase J K L ; hold Left Shift press J K L ; J K L ; J K L ; John James Jack Jill Kelly Keith Kenneth Laura Luke"
   },
   {
     "id": "beginner-4",
     "tier": "beginner",
     "code": "4",
-    "title": "Beginner Lesson 4: C, V, M & N",
-    "subtitle": "Beginner Lesson 4: C, V, M & N",
+    "title": "Beginner Lesson 4: Letters C, V, M & N",
+    "subtitle": "Bottom row reaches: C, V, M, N",
     "targetKeys": [
       "c",
       "v",
@@ -1633,383 +258,38 @@ export const LESSONS: Lesson[] = [
       "l",
       "space"
     ],
-    "fingerGuideHint": "Reach down to C, V (left hand) and M, N (right hand). Keep wrists stable.",
-    "text": "Beginner Typing Lesson 4 Introducing Capitals! + letter C & punctuation , . Use your LEFT HAND RING FINGER (No. 2) to type the letter C , moving your finger down from letter D . ​Use your RIGHT HAND RING FINGER (No. 2) to type the comma , moving your finger down from letter K. Use your RIGHT HAND RING FINGER (No. 3) to type the full stop . moving your finger down from letter L . Click inside the box below and practice these three movements from middle to the bottom row. You will be able to type a full sentence with a CAPITAL at the start and a full stop (period) at the end. There will be nothing to hold you back now. Thank you very much for this course... I love it! I am 35 and finally decided to learn typing, as I am tired of having to keep looking at the keyboard (and the screen...) -which translates in tiresome extra minutes every time I have to write an email... I am at Beginner - Lesson 4 at the moment and find your course veeeeeeeeery helpful... I will let you know how I get on at the end of it. Thank you very much indeed. IMPORTANT NOTE: Some exercises do not have actual words in them. What they do have is important finger transitions (movements) that when practiced will make it easier to move automatically from one letter (number, punctuation etc.) to another without even thinking about it. You will have created motor memory! Creating motor memory from letter D to letter C . Type these phrases using the right little finger for the semi-colon. Try These Sentences CAPITALS - To type Capital letters you will need to use the Shift keys, above the Ctrl keys on each side of the letter key block. Left of Z and Right of ? The Shift keys are used also for Upper Characters like @ $ % * < Press the shift key - Type the letter key - Release the shift key. For a Left Hand capital hold the RIGHT Shift key. For a Right Hand capital hold the LEFT Shift key. Well Done! Now Try These Hold the Left Shift key for the mainly right hand capitals in the sentences below. Congratulations You have completed Lesson 4 ​ Progress to Lesson 5 Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems Recommended by professionals See the full eBook contents list with special features explained.",
+    "fingerGuideHint": "Reach down: C (left middle), V (left index), M (right index), N (right index).",
+    "minAccuracyToPass": 88,
+    "starThresholds": {
+      "oneStar": 24,
+      "twoStars": 34,
+      "threeStars": 48
+    },
     "exercises": [
       {
         "id": "beginner-4-ex1",
-        "title": "Exercise 1",
-        "text": "Beginner Typing Lesson 4",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Left Hand Bottom Row (C & V)",
+        "text": "dcc dcc dc dc dc dc dc dc dc dc dc dc dc dc dc dc fvv fvv fv fv fv fv fv fv fv fv fv fv fv fv fv fv cave cave cave cave cave cave cave cave cave cave"
       },
       {
         "id": "beginner-4-ex2",
-        "title": "Exercise 2",
-        "text": "Introducing Capitals! + letter C & punctuation , .",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Right Hand Bottom Row (M & N)",
+        "text": "jmm jmm jm jm jm jm jm jm jm jm jm jm jm jm jm jm jnn jnn jn jn jn jn jn jn jn jn jn jn jn jn jn jn name name name name name name name name name name"
       },
       {
         "id": "beginner-4-ex3",
-        "title": "Exercise 3",
-        "text": "Use your LEFT HAND RING FINGER (No. 2) to type the letter C , moving your finger down from letter D . ​Use your RIGHT HAND RING FINGER (No. 2) to type the comma , moving your finger down from letter K. Use your RIGHT HAND RING FINGER (No. 3) to type the full stop . moving your finger down from letter L . Click inside the box below and practice these three movements from middle to the bottom row.",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-4-ex4",
-        "title": "Exercise 4",
-        "text": "You will be able to type a full sentence with a CAPITAL at the start and a full stop (period) at the end. There will be nothing to hold you back now.",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-4-ex5",
-        "title": "Exercise 5",
-        "text": "Thank you very much for this course... I love it! I am 35 and finally decided to learn typing, as I am tired of having to keep looking at the keyboard (and the screen...) -which translates in tiresome extra minutes every time I have to write an email... I am at Beginner - Lesson 4 at the moment and find your course veeeeeeeeery helpful... I will let you know how I get on at the end of it. Thank you very much indeed.",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-4-ex6",
-        "title": "Exercise 6",
-        "text": "IMPORTANT NOTE: Some exercises do not have actual words in them. What they do have is important finger transitions (movements) that when practiced will make it easier to move automatically from one letter (number, punctuation etc.) to another without even thinking about it. You will have created motor memory!",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-4-ex7",
-        "title": "Exercise 7",
-        "text": "Creating motor memory from letter D to letter C .",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-4-ex8",
-        "title": "Exercise 8",
-        "text": "Type these phrases using the right little finger for the semi-colon.",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-4-ex9",
-        "title": "Exercise 9",
-        "text": "Try These Sentences",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-4-ex10",
-        "title": "Exercise 10",
-        "text": "CAPITALS - To type Capital letters you will need to use the Shift keys, above the Ctrl keys on each side of the letter key block. Left of Z and Right of ? The Shift keys are used also for Upper Characters like @ $ % * < Press the shift key - Type the letter key - Release the shift key. For a Left Hand capital hold the RIGHT Shift key. For a Right Hand capital hold the LEFT Shift key.",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-4-ex11",
-        "title": "Exercise 11",
-        "text": "Well Done! Now Try These",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-4-ex12",
-        "title": "Exercise 12",
-        "text": "Hold the Left Shift key for the mainly right hand capitals in the sentences below.",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-4-ex13",
-        "title": "Exercise 13",
-        "text": "Congratulations",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-4-ex14",
-        "title": "Exercise 14",
-        "text": "You have completed Lesson 4 ​",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-4-ex15",
-        "title": "Exercise 15",
-        "text": "Progress to Lesson 5",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-4-ex16",
-        "title": "Exercise 16",
-        "text": "Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-4-ex17",
-        "title": "Exercise 17",
-        "text": "Recommended by professionals",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-4-ex18",
-        "title": "Exercise 18",
-        "text": "See the full eBook contents list with special features explained.",
-        "targetKeys": [
-          "c",
-          "v",
-          "m",
-          "n",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
+        "title": "Exercise 3: Bottom Row Sentences",
+        "text": "can man van cam nam mac vic van can man van cam nam mac vic van cave name main mine vance nance came fame tame name cave name main mine vance nance came fame tame name"
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "dcc dcc dc dc dc dc dc dc dc dc dc dc dc dc dc dc fvv fvv fv fv fv fv fv fv fv fv fv fv fv fv fv fv cave cave cave cave cave cave cave cave cave cave"
   },
   {
     "id": "beginner-5",
     "tier": "beginner",
     "code": "5",
-    "title": "Beginner Lesson 5: B & Y",
-    "subtitle": "Beginner Lesson 5: B & Y",
+    "title": "Beginner Lesson 5: Letters B & Y",
+    "subtitle": "Index finger reaches B and Y",
     "targetKeys": [
       "b",
       "y",
@@ -2022,347 +302,38 @@ export const LESSONS: Lesson[] = [
       "l",
       "space"
     ],
-    "fingerGuideHint": "Left index reaches down to B; right index reaches up-left to Y.",
-    "text": "Beginner Typing Lesson 5 Introducing letters A P Q Z & X By the end of this lesson this can be your story too. I didn't think I could learn through a webpage but, I am typing faster and finally using all my fingers. I am surprised at how quickly I learned this new skill. Thank you! After just four lessons, you will have learned to touch type (without looking) all 26 letters of the English alphabet on a Querty keyboard and to use capitals, commas, full stops and semi columns... and, you will learn more! Type A with the Left little finger and P with the Right little finger. Some more practice typing the letter G and the letter combination NG . Remember to type each exercise twice. Remember to type each exercise twice. Type the letter Q with the Left little finger. Type Z with the Left hand little finger and X with the Left hand ring finger. Remember to type each exercise twice. Remember to type each exercise twice. Try These Sentences You are nearning the end of Beginner Lesson 5. You have achieved a lot and should be proud of having got this far. It's already been said before in this lesson but it's super important that you repeat each typing exercise because there is absolutely no substitute for repetition. Protect your gains! Congratulations You have completed Lesson 5 ​ Progress to Lesson 6 Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems Recommended by professionals See the full eBook contents list with special features explained.",
+    "fingerGuideHint": "Left index reaches down-right to B; right index reaches up-left to Y.",
+    "minAccuracyToPass": 89,
+    "starThresholds": {
+      "oneStar": 25,
+      "twoStars": 35,
+      "threeStars": 50
+    },
     "exercises": [
       {
         "id": "beginner-5-ex1",
-        "title": "Exercise 1",
-        "text": "Beginner Typing Lesson 5",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Key B Drills (Left Index)",
+        "text": "fbb fbb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fbb fbb fb fb fb fb fb fb fb fb fb fb fb fb fb fb boy bag bat bed beg big bin bit bob box boy bag bat bed beg big bin bit bob box"
       },
       {
         "id": "beginner-5-ex2",
-        "title": "Exercise 2",
-        "text": "Introducing letters A P Q Z & X",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Key Y Drills (Right Index)",
+        "text": "jyy jyy jy jy jy jy jy jy jy jy jy jy jy jy jy jy jyy jyy jy jy jy jy jy jy jy jy jy jy jy jy jy jy yam yes yet you your year yard yell yoga yam yes yet you your year yard yell yoga"
       },
       {
         "id": "beginner-5-ex3",
-        "title": "Exercise 3",
-        "text": "By the end of this lesson this can be your story too. I didn't think I could learn through a webpage but, I am typing faster and finally using all my fingers. I am surprised at how quickly I learned this new skill. Thank you!",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-5-ex4",
-        "title": "Exercise 4",
-        "text": "After just four lessons, you will have learned to touch type (without looking) all 26 letters of the English alphabet on a Querty keyboard and to use capitals, commas, full stops and semi columns... and, you will learn more!",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-5-ex5",
-        "title": "Exercise 5",
-        "text": "Type A with the Left little finger and P with the Right little finger.",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-5-ex6",
-        "title": "Exercise 6",
-        "text": "Some more practice typing the letter G and the letter combination NG .",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-5-ex7",
-        "title": "Exercise 7",
-        "text": "Remember to type each exercise twice. Remember to type each exercise twice.",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-5-ex8",
-        "title": "Exercise 8",
-        "text": "Type the letter Q with the Left little finger.",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-5-ex9",
-        "title": "Exercise 9",
-        "text": "Type Z with the Left hand little finger and X with the Left hand ring finger.",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-5-ex10",
-        "title": "Exercise 10",
-        "text": "Remember to type each exercise twice. Remember to type each exercise twice.",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-5-ex11",
-        "title": "Exercise 11",
-        "text": "Try These Sentences",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-5-ex12",
-        "title": "Exercise 12",
-        "text": "You are nearning the end of Beginner Lesson 5. You have achieved a lot and should be proud of having got this far. It's already been said before in this lesson but it's super important that you repeat each typing exercise because there is absolutely no substitute for repetition. Protect your gains!",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-5-ex13",
-        "title": "Exercise 13",
-        "text": "Congratulations",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-5-ex14",
-        "title": "Exercise 14",
-        "text": "You have completed Lesson 5 ​",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-5-ex15",
-        "title": "Exercise 15",
-        "text": "Progress to Lesson 6",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-5-ex16",
-        "title": "Exercise 16",
-        "text": "Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-5-ex17",
-        "title": "Exercise 17",
-        "text": "Recommended by professionals",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-5-ex18",
-        "title": "Exercise 18",
-        "text": "See the full eBook contents list with special features explained.",
-        "targetKeys": [
-          "b",
-          "y",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
+        "title": "Exercise 3: B & Y Word Practice",
+        "text": "baby boy by play bay buy grey key toy day way baby boy by play bay buy grey key toy day way baby boys play by the bay every day baby boys play by the bay every day"
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "fbb fbb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fbb fbb fb fb fb fb fb fb fb fb fb fb fb fb fb fb boy bag bat bed beg big bin bit bob box boy bag bat bed beg big bin bit bob box"
   },
   {
     "id": "beginner-6",
     "tier": "beginner",
     "code": "6",
-    "title": "Beginner Lesson 6: P, Q, X & Z",
-    "subtitle": "Beginner Lesson 6: P, Q, X & Z",
+    "title": "Beginner Lesson 6: Letters P, Q, X & Z",
+    "subtitle": "Corner keys: P, Q, X, Z",
     "targetKeys": [
       "p",
       "q",
@@ -2377,343 +348,38 @@ export const LESSONS: Lesson[] = [
       "l",
       "space"
     ],
-    "fingerGuideHint": "Reach out to P (right pinky), Q (left pinky), X, Z (bottom row).",
-    "text": "Beginner Typing Lesson 6 Introducing Punctuation , . ; ? - ( ) { } [ ] \" ! TAB, SHIFT, CAPS LOCK Hi, I am a new Business Apps teacher (middle school) and I actually teach typing to my 6th graders. I got a new student today so I did a Google search and found your site right away. I started her out at your site and I have to sing your praises. It is awesome and the new student will be able to catch up with the class in no time. I'm surprised that there is no way to donate money to keep this free site going. This site will be critical to the success of my students. Thank you! P u n c t u a t i o n - check the chart below for the correct finger position. The comma is next to M and the fullstop to its right. Use the same fingers as you do for K & L. To type a capital letter as you have done before, or a special character such as brackets ( ) or hypen - do the following ... Hold the Right Shift Key for a Left Hand letter or character Hold the Left Shift Key for a Right Hand letter or character. More Sentence Exercises Type the sentences below to practise your punctuation. Tab and Caps Lock Practice As the lessons progress you will become more expert at all kinds of punctuation. As you already know, the way to improve is practise, pracrtise, practise. Sentences with Brackets Type the sentences below to practise your punctuation. Congratulations You have completed Lesson 6 ​ Progress to Lesson 7 Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems Recommended by professionals See the full eBook contents list with special features explained.",
+    "fingerGuideHint": "Reach to corner keys: P (right pinky), Q (left pinky), X (left ring down), Z (left pinky down).",
+    "minAccuracyToPass": 90,
+    "starThresholds": {
+      "oneStar": 26,
+      "twoStars": 36,
+      "threeStars": 52
+    },
     "exercises": [
       {
         "id": "beginner-6-ex1",
-        "title": "Exercise 1",
-        "text": "Beginner Typing Lesson 6",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Top Corner Keys (P & Q)",
+        "text": "lpp lpp lp lp lp lp lp lp lp lp lp lp lp lp lp lp aqq aqq aq aq aq aq aq aq aq aq aq aq aq aq aq aq pen pan pin pot put quick quit queen quote pen pan pin pot put quick quit queen quote"
       },
       {
         "id": "beginner-6-ex2",
-        "title": "Exercise 2",
-        "text": "Introducing Punctuation , . ; ? - ( ) { } [ ] \" ! TAB, SHIFT, CAPS LOCK",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Bottom Corner Keys (X & Z)",
+        "text": "sxx sxx sx sx sx sx sx sx sx sx sx sx sx sx sx sx azz azz az az az az az az az az az az az az az az six tax box wax axe zip zoo zero zone six tax box wax axe zip zoo zero zone"
       },
       {
         "id": "beginner-6-ex3",
-        "title": "Exercise 3",
-        "text": "Hi, I am a new Business Apps teacher (middle school) and I actually teach typing to my 6th graders. I got a new student today so I did a Google search and found your site right away. I started her out at your site and I have to sing your praises. It is awesome and the new student will be able to catch up with the class in no time. I'm surprised that there is no way to donate money to keep this free site going. This site will be critical to the success of my students. Thank you!",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-6-ex4",
-        "title": "Exercise 4",
-        "text": "P u n c t u a t i o n - check the chart below for the correct finger position. The comma is next to M and the fullstop to its right. Use the same fingers as you do for K & L. To type a capital letter as you have done before, or a special character such as brackets ( ) or hypen - do the following ... Hold the Right Shift Key for a Left Hand letter or character Hold the Left Shift Key for a Right Hand letter or character.",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-6-ex5",
-        "title": "Exercise 5",
-        "text": "More Sentence Exercises",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-6-ex6",
-        "title": "Exercise 6",
-        "text": "Type the sentences below to practise your punctuation.",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-6-ex7",
-        "title": "Exercise 7",
-        "text": "Tab and Caps Lock Practice",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-6-ex8",
-        "title": "Exercise 8",
-        "text": "As the lessons progress you will become more expert at all kinds of punctuation. As you already know, the way to improve is practise, pracrtise, practise.",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-6-ex9",
-        "title": "Exercise 9",
-        "text": "Sentences with Brackets",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-6-ex10",
-        "title": "Exercise 10",
-        "text": "Type the sentences below to practise your punctuation.",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-6-ex11",
-        "title": "Exercise 11",
-        "text": "Congratulations",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-6-ex12",
-        "title": "Exercise 12",
-        "text": "You have completed Lesson 6 ​",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-6-ex13",
-        "title": "Exercise 13",
-        "text": "Progress to Lesson 7",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-6-ex14",
-        "title": "Exercise 14",
-        "text": "Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-6-ex15",
-        "title": "Exercise 15",
-        "text": "Recommended by professionals",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-6-ex16",
-        "title": "Exercise 16",
-        "text": "See the full eBook contents list with special features explained.",
-        "targetKeys": [
-          "p",
-          "q",
-          "x",
-          "z",
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 3: Corner Keys Sentences",
+        "text": "the quick brown fox jumps over the lazy dog. the quick brown fox jumps over the lazy dog. pack my box with five dozen liquor jugs. pack my box with five dozen liquor jugs."
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "lpp lpp lp lp lp lp lp lp lp lp lp lp lp lp lp lp aqq aqq aq aq aq aq aq aq aq aq aq aq aq aq aq aq pen pan pin pot put quick quit queen quote pen pan pin pot put quick quit queen quote"
   },
   {
     "id": "beginner-7",
     "tier": "beginner",
     "code": "7",
-    "title": "Beginner Lesson 7: Paragraph Practice",
-    "subtitle": "Beginner Lesson 7: Paragraph Practice",
+    "title": "Beginner Lesson 7: Paragraph & Sentence Mastery",
+    "subtitle": "Full alphabet touch-typing sentences",
     "targetKeys": [
       "a",
       "b",
@@ -2743,408 +409,38 @@ export const LESSONS: Lesson[] = [
       "z",
       "space"
     ],
-    "fingerGuideHint": "Full paragraph typing. Focus on smooth rhythm over raw speed.",
-    "text": "Beginner Typing Lesson 7 Additional Drills Common Letter Combinations BUT NOT using Z X C V B N M Q Y U P Keep referring to your keyboard chart. The blue arrows below are for use with our eBook. Time to focus on building some extra speed and accuracy More practice with Tabs and Capitals. Congratulations! You have completed all 7 Beginner Lessons ​ Progress to Advanced Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems Recommended by professionals See the full eBook contents list with special features explained.",
+    "fingerGuideHint": "Full keyboard integration. Maintain steady posture and continuous rhythm.",
+    "minAccuracyToPass": 90,
+    "starThresholds": {
+      "oneStar": 28,
+      "twoStars": 38,
+      "threeStars": 55
+    },
     "exercises": [
       {
         "id": "beginner-7-ex1",
-        "title": "Exercise 1",
-        "text": "Beginner Typing Lesson 7",
-        "targetKeys": [
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Short Sentences",
+        "text": "practice makes perfect. consistent daily typing builds muscle memory. keep your eyes on the screen and your hands on the home row keys at all times."
       },
       {
         "id": "beginner-7-ex2",
-        "title": "Exercise 2",
-        "text": "Additional Drills Common Letter Combinations",
-        "targetKeys": [
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Medium Sentences",
+        "text": "touch typing is a valuable skill that increases productivity and speed. by training your fingers to find keys automatically without looking down, you free your mind to focus entirely on your thoughts and writing."
       },
       {
         "id": "beginner-7-ex3",
-        "title": "Exercise 3",
-        "text": "BUT NOT using Z X C V B N M Q Y U P Keep referring to your keyboard chart. The blue arrows below are for use with our eBook.",
-        "targetKeys": [
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-7-ex4",
-        "title": "Exercise 4",
-        "text": "Time to focus on building some extra speed and accuracy",
-        "targetKeys": [
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-7-ex5",
-        "title": "Exercise 5",
-        "text": "More practice with Tabs and Capitals.",
-        "targetKeys": [
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-7-ex6",
-        "title": "Exercise 6",
-        "text": "Congratulations!",
-        "targetKeys": [
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "beginner-7-ex7",
-        "title": "Exercise 7",
-        "text": "You have completed all 7 Beginner Lessons ​",
-        "targetKeys": [
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "beginner-7-ex8",
-        "title": "Exercise 8",
-        "text": "Progress to Advanced",
-        "targetKeys": [
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "beginner-7-ex9",
-        "title": "Exercise 9",
-        "text": "Our new eBook is both a motivational coach, an instruction book and is packed with hot study tips. \"The eBook’s friendly and personal writing style is encouraging and supportive... With this eBook, I know my students [aged 20-60] will continue to improve, building speed and accuracy on the keyboard with ease. Thank you learntyping.org.\" - Sherie Guess: Instructor Computer Application and Office Systems",
-        "targetKeys": [
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "beginner-7-ex10",
-        "title": "Exercise 10",
-        "text": "Recommended by professionals",
-        "targetKeys": [
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "beginner-7-ex11",
-        "title": "Exercise 11",
-        "text": "See the full eBook contents list with special features explained.",
-        "targetKeys": [
-          "a",
-          "b",
-          "c",
-          "d",
-          "e",
-          "f",
-          "g",
-          "h",
-          "i",
-          "j",
-          "k",
-          "l",
-          "m",
-          "n",
-          "o",
-          "p",
-          "q",
-          "r",
-          "s",
-          "t",
-          "u",
-          "v",
-          "w",
-          "x",
-          "y",
-          "z",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 3: Full Paragraph Mastery",
+        "text": "congratulations on reaching the final beginner lesson! you have learned all twenty six letters of the english alphabet, the spacebar, and shift keys. continue practicing daily to build effortless speed and flawless accuracy."
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "practice makes perfect. consistent daily typing builds muscle memory. keep your eyes on the screen and your hands on the home row keys at all times."
   },
   {
     "id": "advanced-1",
     "tier": "advanced",
     "code": "1",
     "title": "Advanced Lesson 1: Speed & Rhythm",
-    "subtitle": "Advanced Lesson 1: Speed & Rhythm",
+    "subtitle": "Cadence control & speed maintenance",
     "targetKeys": [
       "a",
       "s",
@@ -3164,223 +460,38 @@ export const LESSONS: Lesson[] = [
       "p",
       "space"
     ],
-    "fingerGuideHint": "Maintain steady cadence without hesitating between easy and hard keys.",
-    "text": "Advanced Typing Lesson 1 Mastering Common Letter Combinations I'm a teacher/trainer, & one of the things I'm praised for is my knowledge on how best to teach/train people new skills. With my experience, I immediately recognized that each of the lessons focuses on building new skills not only through repetition, but through logical progressions. It's no wonder I have quickly regained my 65 wpm speed! To get the most out of these touch typing exercises apply both of the following techniques. Type each line without correcting errors then check for weaknesses. Work on these. Correct your errors as you type using the Backspace key. The goal = no backspace! To repeat a line hold Backspace to delete from the end of the line to the start then retype. Or, if the cursor is in the text box, hold down CONTROL while pressing letter A, then start typing. To really speed up your skills, choose one or two sentences each day to work on. Become a mind reader and cruise through your typing. Your body is amazing. If you make it repeat patterns over and over again then you will find yourself doing those things with much less effort and thought and very little strain. Typing is an example of how doing one thing (a typing exercise) over and over again will have your body aniticipating the next move. It's almost like your body reads your mind. If you thought this was just another way of saying, repeat, repeat, repeat to get you to type better, you'd be right. Lazy people look for shortcuts. Others work hard now and relax later. Congratulations You have completed Advanced Lesson 1 Progress to Advanced 2",
+    "fingerGuideHint": "Maintain an even metronome cadence across easy and hard word combinations.",
+    "minAccuracyToPass": 92,
+    "starThresholds": {
+      "oneStar": 30,
+      "twoStars": 42,
+      "threeStars": 60
+    },
     "exercises": [
       {
         "id": "advanced-1-ex1",
-        "title": "Exercise 1",
-        "text": "Advanced Typing Lesson 1",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: High-Frequency N-Grams",
+        "text": "the and for are but not you all any can had her was one our out day get has him his how man new now old see two way who boy did its let put say she too use"
       },
       {
         "id": "advanced-1-ex2",
-        "title": "Exercise 2",
-        "text": "Mastering Common Letter Combinations",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Alternating Rhythm Drills",
+        "text": "that with have this will your from they know want been good much some time very when come here just like long make many more only over such take than them well"
       },
       {
         "id": "advanced-1-ex3",
-        "title": "Exercise 3",
-        "text": "I'm a teacher/trainer, & one of the things I'm praised for is my knowledge on how best to teach/train people new skills. With my experience, I immediately recognized that each of the lessons focuses on building new skills not only through repetition, but through logical progressions. It's no wonder I have quickly regained my 65 wpm speed!",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "advanced-1-ex4",
-        "title": "Exercise 4",
-        "text": "To get the most out of these touch typing exercises apply both of the following techniques. Type each line without correcting errors then check for weaknesses. Work on these. Correct your errors as you type using the Backspace key. The goal = no backspace! To repeat a line hold Backspace to delete from the end of the line to the start then retype. Or, if the cursor is in the text box, hold down CONTROL while pressing letter A, then start typing. To really speed up your skills, choose one or two sentences each day to work on.",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "advanced-1-ex5",
-        "title": "Exercise 5",
-        "text": "Become a mind reader and cruise through your typing. Your body is amazing. If you make it repeat patterns over and over again then you will find yourself doing those things with much less effort and thought and very little strain. Typing is an example of how doing one thing (a typing exercise) over and over again will have your body aniticipating the next move. It's almost like your body reads your mind. If you thought this was just another way of saying, repeat, repeat, repeat to get you to type better, you'd be right. Lazy people look for shortcuts. Others work hard now and relax later.",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "advanced-1-ex6",
-        "title": "Exercise 6",
-        "text": "Congratulations",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "advanced-1-ex7",
-        "title": "Exercise 7",
-        "text": "You have completed Advanced Lesson 1",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "advanced-1-ex8",
-        "title": "Exercise 8",
-        "text": "Progress to Advanced 2",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "j",
-          "k",
-          "l",
-          ";",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 87
+        "title": "Exercise 3: Speed Maintenance Sentences",
+        "text": "speed typing is built upon smooth rhythmic execution rather than frantic keystrokes. maintain equal pressure on every key and let your fingers glide effortlessly."
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "the and for are but not you all any can had her was one our out day get has him his how man new now old see two way who boy did its let put say she too use"
   },
   {
     "id": "advanced-2",
     "tier": "advanced",
     "code": "2",
-    "title": "Advanced Lesson 2: Shift Mastery",
-    "subtitle": "Advanced Lesson 2: Shift Mastery",
+    "title": "Advanced Lesson 2: Shift Key Mastery",
+    "subtitle": "Capitalization speed & geographical names",
     "targetKeys": [
       "Shift",
       "A",
@@ -3411,383 +522,38 @@ export const LESSONS: Lesson[] = [
       "Z",
       "space"
     ],
-    "fingerGuideHint": "Fluid shift key transitions. Keep pinkies relaxed.",
-    "text": "Advanced Typing Lesson 2 Mastering Left & Right Shift Keys Found this typing tutor a while back. I was typing but, not as good or fast as I use to a few years ago. That's when I realized I had to freshen up on my typing. This typing tutor has help me more than any other typing tutor I have ever used. It has everything that I have ever wanted to teach me how to be good at typing. It's simple, very understanding and I love the layout and the way it's organized. I love this typing tutor so much I keep coming back from time to time typing in advanced skills and learning the short cuts. I can't say enough about this typing tutor. It's the best. More practice with Tabs and Capitals and Shift Key. Type these New Zealand place names. Right Hand Shift Key Left Hand Shift Key Congratulations You have completed Advanced Lesson 2 Progress to Advanced 3 Left and Right Hand Shift Key",
+    "fingerGuideHint": "Fluid shift key transitions. Never press Shift with the same hand that presses the letter key.",
+    "minAccuracyToPass": 92,
+    "starThresholds": {
+      "oneStar": 32,
+      "twoStars": 44,
+      "threeStars": 62
+    },
     "exercises": [
       {
         "id": "advanced-2-ex1",
-        "title": "Exercise 1",
-        "text": "Advanced Typing Lesson 2",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: City & Country Names (Part 1)",
+        "text": "Auckland Wellington Christchurch Hamilton Dunedin Palmerston North Napier Nelson Rotorua New Plymouth Whangarei Invercargill Gisborne Blenheim Timaru Taupo"
       },
       {
         "id": "advanced-2-ex2",
-        "title": "Exercise 2",
-        "text": "Mastering Left & Right Shift Keys",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: City & Country Names (Part 2)",
+        "text": "London Paris Tokyo New York Sydney Berlin Rome Madrid Toronto Chicago Singapore Seoul Dublin Vienna Prague Budapest Amsterdam Brussels Copenhagen Oslo"
       },
       {
         "id": "advanced-2-ex3",
-        "title": "Exercise 3",
-        "text": "Found this typing tutor a while back. I was typing but, not as good or fast as I use to a few years ago. That's when I realized I had to freshen up on my typing. This typing tutor has help me more than any other typing tutor I have ever used. It has everything that I have ever wanted to teach me how to be good at typing. It's simple, very understanding and I love the layout and the way it's organized. I love this typing tutor so much I keep coming back from time to time typing in advanced skills and learning the short cuts. I can't say enough about this typing tutor. It's the best.",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "advanced-2-ex4",
-        "title": "Exercise 4",
-        "text": "More practice with Tabs and Capitals and Shift Key. Type these New Zealand place names.",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "advanced-2-ex5",
-        "title": "Exercise 5",
-        "text": "Right Hand Shift Key",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "advanced-2-ex6",
-        "title": "Exercise 6",
-        "text": "Left Hand Shift Key",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "advanced-2-ex7",
-        "title": "Exercise 7",
-        "text": "Congratulations",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "advanced-2-ex8",
-        "title": "Exercise 8",
-        "text": "You have completed Advanced Lesson 2",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "advanced-2-ex9",
-        "title": "Exercise 9",
-        "text": "Progress to Advanced 3",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "advanced-2-ex10",
-        "title": "Exercise 10",
-        "text": "Left and Right Hand Shift Key",
-        "targetKeys": [
-          "Shift",
-          "A",
-          "B",
-          "C",
-          "D",
-          "E",
-          "F",
-          "G",
-          "H",
-          "I",
-          "J",
-          "K",
-          "L",
-          "M",
-          "N",
-          "O",
-          "P",
-          "Q",
-          "R",
-          "S",
-          "T",
-          "U",
-          "V",
-          "W",
-          "X",
-          "Y",
-          "Z",
-          "space"
-        ],
-        "minAccuracyToPass": 89
+        "title": "Exercise 3: Proper Titles & Full Capitals",
+        "text": "United Nations World Health Organization International Monetary Fund European Union Federal Reserve Board Supreme Court Parliament Congress Senate House of Representatives"
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "Auckland Wellington Christchurch Hamilton Dunedin Palmerston North Napier Nelson Rotorua New Plymouth Whangarei Invercargill Gisborne Blenheim Timaru Taupo"
   },
   {
     "id": "advanced-3",
     "tier": "advanced",
     "code": "3",
-    "title": "Advanced Lesson 3: Left Hand Focus",
-    "subtitle": "Advanced Lesson 3: Left Hand Focus",
+    "title": "Advanced Lesson 3: Left Hand Emphasis",
+    "subtitle": "Left hand stamina & key coordination",
     "targetKeys": [
       "q",
       "w",
@@ -3806,191 +572,38 @@ export const LESSONS: Lesson[] = [
       "b",
       "space"
     ],
-    "fingerGuideHint": "Left hand focus drills. Keep right hand steady on home row.",
-    "text": "Advanced Typing Lesson 3 Extension Exercises Left Hand Emphasis - Right Shift Key ​ Hi. I often search the net for some good typing practice to improve my typing skills, with useful words and phrases, not lots of useless drills. I like the way yours is set up and how I can start at any level I like. I especially enjoy the challenges of those 'tongue twister sentences' in Advanced Skills.. They are great. Choose one or two sentences each day to work on to improve your skills. You can correct your errors using the \"backspace\" key. In this section and the next, EVERY WORD in each sentence [with few exceptions] starts with the same letter. Congratulations You have completed Advanced Lesson 3 Progress to Advanced 4​",
+    "fingerGuideHint": "Isolate left-hand finger movement while keeping the right hand relaxed on home row.",
+    "minAccuracyToPass": 92,
+    "starThresholds": {
+      "oneStar": 34,
+      "twoStars": 46,
+      "threeStars": 64
+    },
     "exercises": [
       {
         "id": "advanced-3-ex1",
-        "title": "Exercise 1",
-        "text": "Advanced Typing Lesson 3",
-        "targetKeys": [
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "z",
-          "x",
-          "c",
-          "v",
-          "b",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Left Hand Short Words",
+        "text": "art tart dart cart rave wave save ear wear rear tear west rest test fest zest best crest eve ever are ware feed reed deed weed eat seat beat rare fare dare rate"
       },
       {
         "id": "advanced-3-ex2",
-        "title": "Exercise 2",
-        "text": "Extension Exercises Left Hand Emphasis - Right Shift Key ​",
-        "targetKeys": [
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "z",
-          "x",
-          "c",
-          "v",
-          "b",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Left Hand Trigraphs & Words",
+        "text": "fact tact tract ace race trace grace face brace cave craved traced extracted wares terrace garages ravage axe tax wax wasted fasted crafted rested tested great"
       },
       {
         "id": "advanced-3-ex3",
-        "title": "Exercise 3",
-        "text": "Hi. I often search the net for some good typing practice to improve my typing skills, with useful words and phrases, not lots of useless drills. I like the way yours is set up and how I can start at any level I like. I especially enjoy the challenges of those 'tongue twister sentences' in Advanced Skills.. They are great.",
-        "targetKeys": [
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "z",
-          "x",
-          "c",
-          "v",
-          "b",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "advanced-3-ex4",
-        "title": "Exercise 4",
-        "text": "Choose one or two sentences each day to work on to improve your skills. You can correct your errors using the \"backspace\" key. In this section and the next, EVERY WORD in each sentence [with few exceptions] starts with the same letter.",
-        "targetKeys": [
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "z",
-          "x",
-          "c",
-          "v",
-          "b",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "advanced-3-ex5",
-        "title": "Exercise 5",
-        "text": "Congratulations",
-        "targetKeys": [
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "z",
-          "x",
-          "c",
-          "v",
-          "b",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "advanced-3-ex6",
-        "title": "Exercise 6",
-        "text": "You have completed Advanced Lesson 3",
-        "targetKeys": [
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "z",
-          "x",
-          "c",
-          "v",
-          "b",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "advanced-3-ex7",
-        "title": "Exercise 7",
-        "text": "Progress to Advanced 4​",
-        "targetKeys": [
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "z",
-          "x",
-          "c",
-          "v",
-          "b",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 3: Left Hand Alliterations",
+        "text": "sarah's sharp scissors slit sandra's soft silky sweater. david demanded doris drive directly down derek's driveway. finally frank found freedom from freddy's fears."
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "art tart dart cart rave wave save ear wear rear tear west rest test fest zest best crest eve ever are ware feed reed deed weed eat seat beat rare fare dare rate"
   },
   {
     "id": "advanced-4",
     "tier": "advanced",
     "code": "4",
-    "title": "Advanced Lesson 4: Right Hand Focus",
-    "subtitle": "Advanced Lesson 4: Right Hand Focus",
+    "title": "Advanced Lesson 4: Right Hand Emphasis",
+    "subtitle": "Right hand stamina & key coordination",
     "targetKeys": [
       "y",
       "u",
@@ -4006,233 +619,38 @@ export const LESSONS: Lesson[] = [
       "m",
       "space"
     ],
-    "fingerGuideHint": "Right hand focus drills. Maintain light touch on key caps.",
-    "text": "Advanced Typing Lesson 4 Extension Exercises ​ Right Hand Emphasis - Left Shift Key Plus, colon, comma, full stop, exclamation mark! I have been practicing for a few months now, and I am amazed from having no typing skills to not being able to stop..... I also enjoyed the new Advanced lesson 7 .... please keep on adding lessons. Thank You. - totally satisfied. ​ Choose one or two sentences each day to work on to improve your skills. ​​ You can correct your errors using the \"backspace\" key. In this section and the next, EVERY WORD in each sentence [with few exceptions] starts with the same letter. Punctuation and Left Hand Shift Key. Colon \" : \" Comma and both shift keys. Full Stop. Exclaimation Mark! Congratulations You have completed Advanced Lesson 4 Progress to Advanced 5",
+    "fingerGuideHint": "Isolate right-hand finger movement while keeping the left hand relaxed on home row.",
+    "minAccuracyToPass": 92,
+    "starThresholds": {
+      "oneStar": 34,
+      "twoStars": 46,
+      "threeStars": 64
+    },
     "exercises": [
       {
         "id": "advanced-4-ex1",
-        "title": "Exercise 1",
-        "text": "Advanced Typing Lesson 4",
-        "targetKeys": [
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "h",
-          "j",
-          "k",
-          "l",
-          ";",
-          "n",
-          "m",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Right Hand Short Words",
+        "text": "jill hill kill pill mill nil poll jim jimmy john joy molly lolly polly nip nippy hip hippy ilk milk mill you yon upon hook look nook honk ponk lilly link pink"
       },
       {
         "id": "advanced-4-ex2",
-        "title": "Exercise 2",
-        "text": "Extension Exercises ​ Right Hand Emphasis - Left Shift Key Plus, colon, comma, full stop, exclamation mark!",
-        "targetKeys": [
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "h",
-          "j",
-          "k",
-          "l",
-          ";",
-          "n",
-          "m",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Right Hand Longer Words",
+        "text": "opinion million onion pumpkin lump jump hump plum monopoly homonym lymph polyp nymph minimum million opinion nylon kimono typhoon polo pony ploy polyp"
       },
       {
         "id": "advanced-4-ex3",
-        "title": "Exercise 3",
-        "text": "I have been practicing for a few months now, and I am amazed from having no typing skills to not being able to stop..... I also enjoyed the new Advanced lesson 7 .... please keep on adding lessons. Thank You. - totally satisfied.",
-        "targetKeys": [
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "h",
-          "j",
-          "k",
-          "l",
-          ";",
-          "n",
-          "m",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "advanced-4-ex4",
-        "title": "Exercise 4",
-        "text": "​ Choose one or two sentences each day to work on to improve your skills. ​​ You can correct your errors using the \"backspace\" key. In this section and the next, EVERY WORD in each sentence [with few exceptions] starts with the same letter.",
-        "targetKeys": [
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "h",
-          "j",
-          "k",
-          "l",
-          ";",
-          "n",
-          "m",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "advanced-4-ex5",
-        "title": "Exercise 5",
-        "text": "Punctuation and Left Hand Shift Key. Colon \" : \"",
-        "targetKeys": [
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "h",
-          "j",
-          "k",
-          "l",
-          ";",
-          "n",
-          "m",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "advanced-4-ex6",
-        "title": "Exercise 6",
-        "text": "Comma and both shift keys.",
-        "targetKeys": [
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "h",
-          "j",
-          "k",
-          "l",
-          ";",
-          "n",
-          "m",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "advanced-4-ex7",
-        "title": "Exercise 7",
-        "text": "Full Stop. Exclaimation Mark!",
-        "targetKeys": [
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "h",
-          "j",
-          "k",
-          "l",
-          ";",
-          "n",
-          "m",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "advanced-4-ex8",
-        "title": "Exercise 8",
-        "text": "Congratulations",
-        "targetKeys": [
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "h",
-          "j",
-          "k",
-          "l",
-          ";",
-          "n",
-          "m",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "advanced-4-ex9",
-        "title": "Exercise 9",
-        "text": "You have completed Advanced Lesson 4",
-        "targetKeys": [
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "h",
-          "j",
-          "k",
-          "l",
-          ";",
-          "n",
-          "m",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "advanced-4-ex10",
-        "title": "Exercise 10",
-        "text": "Progress to Advanced 5",
-        "targetKeys": [
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "h",
-          "j",
-          "k",
-          "l",
-          ";",
-          "n",
-          "m",
-          "space"
-        ],
-        "minAccuracyToPass": 89
+        "title": "Exercise 3: Right Hand Alliterations",
+        "text": "norman needed ninetynine nifty notches nailed neatly into john's junk yard. humphrey henderson helped henry hunt for hillary's hidden heirloom in honolulu."
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "jill hill kill pill mill nil poll jim jimmy john joy molly lolly polly nip nippy hip hippy ilk milk mill you yon upon hook look nook honk ponk lilly link pink"
   },
   {
     "id": "advanced-5",
     "tier": "advanced",
     "code": "5",
     "title": "Advanced Lesson 5: Alternating Hands",
-    "subtitle": "Advanced Lesson 5: Alternating Hands",
+    "subtitle": "Alternating hand flow & finger independent velocity",
     "targetKeys": [
       "a",
       "s",
@@ -4255,303 +673,38 @@ export const LESSONS: Lesson[] = [
       "p",
       "space"
     ],
-    "fingerGuideHint": "Alternate left and right hand key combinations for maximum flow.",
-    "text": "Advanced Typing Lesson 5 Extension Exercises ​ Useful word drills I didn't think I could learn through a webpage but, I am typing faster and finally using all my fingers. I am surprised at how quickly I learned this new skill. Thank you! ​ ​ Left Hand Only - Short Words ​ ​ Left Hand Only - Longer Words Right Hand Only Words - Shorter and Longer Words with alternate Left and Right hand letters Congratulations You have completed Advanced Lesson 5 Progress to Advanced 6",
+    "fingerGuideHint": "Alternate between left and right hand key strokes for maximum fluid speed.",
+    "minAccuracyToPass": 92,
+    "starThresholds": {
+      "oneStar": 36,
+      "twoStars": 48,
+      "threeStars": 65
+    },
     "exercises": [
       {
         "id": "advanced-5-ex1",
-        "title": "Exercise 1",
-        "text": "Advanced Typing Lesson 5",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "h",
-          "j",
-          "k",
-          "l",
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Strict Alternating Hand Words",
+        "text": "social panel authentic chair field giant form name sign ancient problems shake lake flake quake world wish dish cocoa spam fork both hem them when visual girls"
       },
       {
         "id": "advanced-5-ex2",
-        "title": "Exercise 2",
-        "text": "Extension Exercises ​ Useful word drills",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "h",
-          "j",
-          "k",
-          "l",
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Hand Swapping Trigraphs",
+        "text": "end ne anger sang danger fang rang tang gang hang bang bangle mangle manger dangle tangle wangle say day gay hay jay kay lay pay ray tray way set fetch get regret"
       },
       {
         "id": "advanced-5-ex3",
-        "title": "Exercise 3",
-        "text": "I didn't think I could learn through a webpage but, I am typing faster and finally using all my fingers. I am surprised at how quickly I learned this new skill. Thank you!",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "h",
-          "j",
-          "k",
-          "l",
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "advanced-5-ex4",
-        "title": "Exercise 4",
-        "text": "​ ​ Left Hand Only - Short Words",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "h",
-          "j",
-          "k",
-          "l",
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "advanced-5-ex5",
-        "title": "Exercise 5",
-        "text": "​ ​ Left Hand Only - Longer Words",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "h",
-          "j",
-          "k",
-          "l",
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "advanced-5-ex6",
-        "title": "Exercise 6",
-        "text": "Right Hand Only Words - Shorter and Longer",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "h",
-          "j",
-          "k",
-          "l",
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "advanced-5-ex7",
-        "title": "Exercise 7",
-        "text": "Words with alternate Left and Right hand letters",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "h",
-          "j",
-          "k",
-          "l",
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "advanced-5-ex8",
-        "title": "Exercise 8",
-        "text": "Congratulations",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "h",
-          "j",
-          "k",
-          "l",
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "advanced-5-ex9",
-        "title": "Exercise 9",
-        "text": "You have completed Advanced Lesson 5",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "h",
-          "j",
-          "k",
-          "l",
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "advanced-5-ex10",
-        "title": "Exercise 10",
-        "text": "Progress to Advanced 6",
-        "targetKeys": [
-          "a",
-          "s",
-          "d",
-          "f",
-          "g",
-          "h",
-          "j",
-          "k",
-          "l",
-          "q",
-          "w",
-          "e",
-          "r",
-          "t",
-          "y",
-          "u",
-          "i",
-          "o",
-          "p",
-          "space"
-        ],
-        "minAccuracyToPass": 89
+        "title": "Exercise 3: High-Speed Flow Paragraph",
+        "text": "alternating keystrokes between your left and right hands creates natural typing velocity because one finger positions itself while the opposite hand presses its key."
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "social panel authentic chair field giant form name sign ancient problems shake lake flake quake world wish dish cocoa spam fork both hem them when visual girls"
   },
   {
     "id": "advanced-6",
     "tier": "advanced",
     "code": "6",
     "title": "Advanced Lesson 6: Symbols & Special Characters",
-    "subtitle": "Advanced Lesson 6: Symbols & Special Characters",
+    "subtitle": "Ampersand (&), Percent (%), At (@), Dollar ($)",
     "targetKeys": [
       "1",
       "2",
@@ -4569,184 +722,38 @@ export const LESSONS: Lesson[] = [
       "$",
       "space"
     ],
-    "fingerGuideHint": "Reach up to the symbol/number row without lifting your wrists.",
-    "text": "Advanced Typing Lesson 6 Extension Exercises ​ Upper Character Practice This is very good and helpful even though I am a computer professional and using computers for a living and I am using this site now to learn faster typing... I found this site very professional to the point without any gimmicks. Thank you for your wonderful service.. May God bless you !!!!!!!!! - computer professional... The following drills have been prepared to associate some of the upper characters with the letter keys they are placed on. ​ This is a tough touch typing exercise. However, you are soooooo close to mastering the keyboard. ​ DON'T GIVE UP NOW! Congratulations You have completed Advanced Lesson 6 Progress to Advanced 7",
+    "fingerGuideHint": "Reach to the top row without lifting wrists. Use Shift key for symbols above numbers.",
+    "minAccuracyToPass": 92,
+    "starThresholds": {
+      "oneStar": 38,
+      "twoStars": 50,
+      "threeStars": 66
+    },
     "exercises": [
       {
         "id": "advanced-6-ex1",
-        "title": "Exercise 1",
-        "text": "Advanced Typing Lesson 6",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "&",
-          "%",
-          "@",
-          "$",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Ampersand (&) & Business Names",
+        "text": "Smith & Smith Smith & Brown Black, Brown & Co Ltd J. K. Long & Co Inc. Monday & Friday Turner & Turner Ltd Johnson & Johnson Marks & Spencer Procter & Gamble"
       },
       {
         "id": "advanced-6-ex2",
-        "title": "Exercise 2",
-        "text": "Extension Exercises ​ Upper Character Practice",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "&",
-          "%",
-          "@",
-          "$",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Dollar Sign ($) & Currency Values",
+        "text": "$44 $444 $445 $454 $400 $450 $44.50 $450.45 $44.55 $4.54 $90.00 $90.99 $49.99 $499.99 $450.45 $94.49 $40.49 $90.40 $1,250.00 $5,999.99 $10,000.00"
       },
       {
         "id": "advanced-6-ex3",
-        "title": "Exercise 3",
-        "text": "This is very good and helpful even though I am a computer professional and using computers for a living and I am using this site now to learn faster typing... I found this site very professional to the point without any gimmicks. Thank you for your wonderful service.. May God bless you !!!!!!!!! - computer professional...",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "&",
-          "%",
-          "@",
-          "$",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "advanced-6-ex4",
-        "title": "Exercise 4",
-        "text": "The following drills have been prepared to associate some of the upper characters with the letter keys they are placed on. ​ This is a tough touch typing exercise. However, you are soooooo close to mastering the keyboard. ​ DON'T GIVE UP NOW!",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "&",
-          "%",
-          "@",
-          "$",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "advanced-6-ex5",
-        "title": "Exercise 5",
-        "text": "Congratulations",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "&",
-          "%",
-          "@",
-          "$",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "advanced-6-ex6",
-        "title": "Exercise 6",
-        "text": "You have completed Advanced Lesson 6",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "&",
-          "%",
-          "@",
-          "$",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "advanced-6-ex7",
-        "title": "Exercise 7",
-        "text": "Progress to Advanced 7",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "&",
-          "%",
-          "@",
-          "$",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 3: Percent (%) & At (@) Symbols",
+        "text": "5% 55% 56% 54% 50% 4% 4.5% 3% 3.5% 15% 5.5% 5.4% 3.54% 22 @ 5% 12 @ 15% 12 @ 10% 220 @ 15% 52 @ 5% user@typearena.app admin@learntyping.org support@domain.com"
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "Smith & Smith Smith & Brown Black, Brown & Co Ltd J. K. Long & Co Inc. Monday & Friday Turner & Turner Ltd Johnson & Johnson Marks & Spencer Procter & Gamble"
   },
   {
     "id": "advanced-7",
     "tier": "advanced",
     "code": "7",
     "title": "Advanced Lesson 7: Number Row Mastery",
-    "subtitle": "Advanced Lesson 7: Number Row Mastery",
+    "subtitle": "Complete number row digit coordination",
     "targetKeys": [
       "1",
       "2",
@@ -4760,186 +767,30 @@ export const LESSONS: Lesson[] = [
       "0",
       "space"
     ],
-    "fingerGuideHint": "Map every number to its home row finger. Return to home keys instantly.",
-    "text": "Advanced Typing Lesson 7 Typing Numbers ​ Nail these and become a typing master This is really useful course compared to other courses which are based upon software. I am lucky that I got link to this website. Now, I am able to type using all my fingers and I do not have to look at the keyboard any more. Thanks for putting up efforts in creating this course. Do not rush this lesson. You may need to work on it for several days or a couple of weeks. It will be well worth it because when you master numbers as well as special characters, punctuation and capitalisation, you will be well on your way to becoming a typing master. From this point onwards it will simply be a matter of fine tuning and improving your speed and accuracy as a touch typing master. Left Hand - More Difficult Right Hand - More Difficult Congratulations! You have completed ALL Advanced Lessons Onto the Speed Tests",
+    "fingerGuideHint": "Map each number to its home-row finger. Return to home keys instantly.",
+    "minAccuracyToPass": 92,
+    "starThresholds": {
+      "oneStar": 41,
+      "twoStars": 53,
+      "threeStars": 69
+    },
     "exercises": [
       {
         "id": "advanced-7-ex1",
-        "title": "Exercise 1",
-        "text": "Advanced Typing Lesson 7",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "space"
-        ],
-        "minAccuracyToPass": 85
+        "title": "Exercise 1: Number Row Reaches (1 to 5)",
+        "text": "aq1 qa sw2ws de3ed fr4rf gt5tg 1 queen 11 queens 1 apple 11 apples 2 wishes 22 wishes 2 swims 22 swims 3 eddies 33 eddies 3 deeds 33 deeds 4 roses 44 roses 4 fish 44 fish 5 tugs 55 tugs 5 goats 55 goats"
       },
       {
         "id": "advanced-7-ex2",
-        "title": "Exercise 2",
-        "text": "Typing Numbers ​ Nail these and become a typing master",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "space"
-        ],
-        "minAccuracyToPass": 86
+        "title": "Exercise 2: Number Row Reaches (6 to 0)",
+        "text": "hy6yh ju7uj ki8ik lo9ol p0p 6 yams 66 yams 6 hams 66 hams 7 umpires 77 umpires 7 jokes 77 jokes 8 ideas 88 ideas 8 kites 88 kites 9 olives 99 olives 9 lollies 99 lollies 10 poppies 100 poppies"
       },
       {
         "id": "advanced-7-ex3",
-        "title": "Exercise 3",
-        "text": "This is really useful course compared to other courses which are based upon software. I am lucky that I got link to this website. Now, I am able to type using all my fingers and I do not have to look at the keyboard any more. Thanks for putting up efforts in creating this course.",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "advanced-7-ex4",
-        "title": "Exercise 4",
-        "text": "Do not rush this lesson. You may need to work on it for several days or a couple of weeks. It will be well worth it because when you master numbers as well as special characters, punctuation and capitalisation, you will be well on your way to becoming a typing master. From this point onwards it will simply be a matter of fine tuning and improving your speed and accuracy as a touch typing master.",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "space"
-        ],
-        "minAccuracyToPass": 88
-      },
-      {
-        "id": "advanced-7-ex5",
-        "title": "Exercise 5",
-        "text": "Left Hand - More Difficult",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "space"
-        ],
-        "minAccuracyToPass": 89
-      },
-      {
-        "id": "advanced-7-ex6",
-        "title": "Exercise 6",
-        "text": "Right Hand - More Difficult",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "space"
-        ],
-        "minAccuracyToPass": 85
-      },
-      {
-        "id": "advanced-7-ex7",
-        "title": "Exercise 7",
-        "text": "Congratulations!",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "space"
-        ],
-        "minAccuracyToPass": 86
-      },
-      {
-        "id": "advanced-7-ex8",
-        "title": "Exercise 8",
-        "text": "You have completed ALL Advanced Lessons",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "space"
-        ],
-        "minAccuracyToPass": 87
-      },
-      {
-        "id": "advanced-7-ex9",
-        "title": "Exercise 9",
-        "text": "Onto the Speed Tests",
-        "targetKeys": [
-          "1",
-          "2",
-          "3",
-          "4",
-          "5",
-          "6",
-          "7",
-          "8",
-          "9",
-          "0",
-          "space"
-        ],
-        "minAccuracyToPass": 88
+        "title": "Exercise 3: Addresses & Multi-Digit Numbers",
+        "text": "12 West Side Ave 122 Steep Street 22 Wright Street 22 Stone Street 133 Eastside 13 Drivers Road 14 Rosedale Road 144 Riverside Road 4 Fernhill Road 66 Yardley Hill 88 Idour Lane 90 Princes Lane"
       }
     ],
-    "minAccuracyToPass": 86,
-    "starThresholds": {
-      "oneStar": 15,
-      "twoStars": 25,
-      "threeStars": 40
-    }
+    "text": "aq1 qa sw2ws de3ed fr4rf gt5tg 1 queen 11 queens 1 apple 11 apples 2 wishes 22 wishes 2 swims 22 swims 3 eddies 33 eddies 3 deeds 33 deeds 4 roses 44 roses 4 fish 44 fish 5 tugs 55 tugs 5 goats 55 goats"
   }
 ];
