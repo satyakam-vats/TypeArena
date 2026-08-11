@@ -16,6 +16,7 @@ import { DailyChallengePage } from "./features/daily/DailyChallengePage";
 import { PracticePage } from "./features/practice/PracticePage";
 import { LessonsOverviewPage } from "./features/lessons/LessonsOverviewPage";
 import { LessonPracticePage } from "./features/lessons/LessonPracticePage";
+import { AiChatWidget } from "./components/ai/AiChatWidget";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -46,6 +47,7 @@ export default function App() {
         <Route path="/profile/:uid" element={<ProfilePage />} />
       </Routes>
       {showOnboarding && <OnboardingModal onDismiss={() => setShowOnboarding(false)} />}
+      <AiChatWidget />
     </div>
   );
 }
