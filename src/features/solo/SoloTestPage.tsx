@@ -252,9 +252,17 @@ export function SoloTestPage({ initialWordSource }: Props) {
         return;
       }
 
-      // Refocus on any printable key when blurred
+      // Refocus on any printable key when blurred — but NOT if the user
+      // is typing into another input (e.g. AI Chat widget, search, etc.)
       if (!focused && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
-        inputRef.current?.focus();
+        const active = document.activeElement;
+        const isOtherInput =
+          active instanceof HTMLInputElement ||
+          active instanceof HTMLTextAreaElement ||
+          active?.getAttribute("contenteditable") === "true";
+        if (!isOtherInput) {
+          inputRef.current?.focus();
+        }
       }
     };
 
